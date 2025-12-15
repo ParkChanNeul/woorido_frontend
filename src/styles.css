@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   WOORIDO Design System
+   ============================================ */
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    font-family: "Pretendard Variable", "Pretendard", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-bg text-content-primary;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
+@layer components {
+  /* Glass Effect */
+  .glass {
+    @apply bg-glass backdrop-blur-xl border border-glass-border;
+  }
+
+  .glass-light {
+    @apply bg-glass-light backdrop-blur-2xl border border-glass-border;
+  }
+
+  /* Amount Display */
+  .text-amount {
+    font-family: "Pretendard Variable", "SF Pro Display", system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* Focus Ring */
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-woorido focus-visible:ring-offset-2 focus-visible:ring-offset-surface-bg;
+  }
+}
+
+@layer utilities {
+  /* Scrollbar Hide */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe Area Padding */
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .pt-safe {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+
+  /* Background Patterns (Reserved) */
+  .bg-gradient-woorido {
+    background: linear-gradient(
+      135deg,
+      theme("colors.gradient.purple") 0%,
+      theme("colors.gradient.pink") 50%,
+      theme("colors.woorido.DEFAULT") 100%
+    );
+  }
+
+  .bg-glass-shine {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  }
+}

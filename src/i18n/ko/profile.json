@@ -1,0 +1,20 @@
+{
+  "title": "내 정보",
+  "edit": "프로필 수정",
+  "settings": "설정",
+  "myGye": "내 계모임",
+  "creditScore": "신용 온도",
+  "badges": "획득 배지",
+  "nickname": "닉네임",
+  "phone": "전화번호",
+  "bankAccount": "계좌 정보",
+  "notification": "알림 설정",
+  "language": "언어",
+  "theme": "테마",
+  "darkMode": "다크 모드",
+  "lightMode": "라이트 모드",
+  "systemMode": "시스템 설정",
+  "deleteAccount": "회원 탈퇴",
+  "deleteAccountWarning": "탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.",
+  "version": "버전 {{version}}"
+}

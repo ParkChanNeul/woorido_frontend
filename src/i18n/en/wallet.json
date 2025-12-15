@@ -1,0 +1,27 @@
+{
+  "title": "Wallet",
+  "balance": "Balance",
+  "availableBalance": "Available Balance",
+  "lockedBalance": "Locked Balance",
+  "charge": "Deposit",
+  "withdraw": "Withdraw",
+  "history": "Transaction History",
+  "currentBalance": "Current Balance: ₩{{amount}}",
+  "chargeAmount": "Deposit Amount",
+  "withdrawAmount": "Withdraw Amount",
+  "chargeButton": "Deposit",
+  "withdrawButton": "Withdraw",
+  "minAmount": "Min ₩{{amount}}",
+  "maxAmount": "Max ₩{{amount}}",
+  "transactionType": {
+    "charge": "Deposit",
+    "withdraw": "Withdraw",
+    "payment": "Payment",
+    "receive": "Received",
+    "refund": "Refund"
+  },
+  "empty": {
+    "title": "No transactions yet",
+    "description": "Deposit funds and join a gye"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "지갑",
+  "balance": "보유 잔액",
+  "availableBalance": "출금 가능 금액",
+  "lockedBalance": "락업 금액",
+  "charge": "충전",
+  "withdraw": "출금",
+  "history": "거래 내역",
+  "currentBalance": "현재 잔액: {{amount}}원",
+  "chargeAmount": "충전 금액",
+  "withdrawAmount": "출금 금액",
+  "chargeButton": "충전하기",
+  "withdrawButton": "출금하기",
+  "minAmount": "최소 {{amount}}원",
+  "maxAmount": "최대 {{amount}}원",
+  "transactionType": {
+    "charge": "충전",
+    "withdraw": "출금",
+    "payment": "납입",
+    "receive": "수령",
+    "refund": "환불"
+  },
+  "empty": {
+    "title": "거래 내역이 없어요",
+    "description": "충전하고 계모임에 참여해보세요"
+  }
+}

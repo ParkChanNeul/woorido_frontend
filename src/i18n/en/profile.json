@@ -1,0 +1,20 @@
+{
+  "title": "Profile",
+  "edit": "Edit Profile",
+  "settings": "Settings",
+  "myGye": "My Gye",
+  "creditScore": "Credit Score",
+  "badges": "Badges",
+  "nickname": "Nickname",
+  "phone": "Phone",
+  "bankAccount": "Bank Account",
+  "notification": "Notifications",
+  "language": "Language",
+  "theme": "Theme",
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "systemMode": "System",
+  "deleteAccount": "Delete Account",
+  "deleteAccountWarning": "All data will be permanently deleted and cannot be recovered.",
+  "version": "Version {{version}}"
+}

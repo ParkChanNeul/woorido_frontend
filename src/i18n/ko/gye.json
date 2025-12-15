@@ -1,0 +1,59 @@
+{
+  "title": "계모임",
+  "create": "계 만들기",
+  "join": "참여하기",
+  "leave": "탈퇴하기",
+  "invite": "초대하기",
+  "share": "공유하기",
+  "monthlyAmount": "월 납입금",
+  "totalAmount": "총 적립금",
+  "targetAmount": "목표 금액",
+  "currentAmount": "현재 금액",
+  "members": "참여 인원",
+  "maxMembers": "최대 인원",
+  "schedule": "일정",
+  "rules": "규칙",
+  "host": "방장",
+  "memberCount": "{{count}}명 참여 중",
+  "memberCountShort": "{{count}}명",
+  "monthlyPayment": "월 {{amount}}원",
+  "progressPercent": "{{percent}}% 달성",
+  "dDay": "D-{{days}}",
+  "dDayToday": "D-Day",
+  "dDayPassed": "D+{{days}}",
+  "round": "{{round}}회차",
+  "status": {
+    "recruiting": "모집 중",
+    "ongoing": "진행 중",
+    "completed": "완료",
+    "cancelled": "취소됨"
+  },
+  "type": {
+    "savings": "저축형",
+    "distribution": "분배형"
+  },
+  "tabs": {
+    "info": "정보",
+    "news": "우리 소식",
+    "schedule": "우리 일정",
+    "progress": "우리 진행",
+    "approval": "우리 승인"
+  },
+  "form": {
+    "nameLabel": "계모임 이름",
+    "namePlaceholder": "계모임 이름을 입력해주세요",
+    "descLabel": "설명",
+    "descPlaceholder": "계모임에 대한 설명을 입력해주세요",
+    "amountLabel": "월 납입금",
+    "amountPlaceholder": "월 납입금을 입력해주세요",
+    "maxMembersLabel": "최대 인원",
+    "startDateLabel": "시작일",
+    "endDateLabel": "종료일",
+    "typeLabel": "계모임 유형"
+  },
+  "empty": {
+    "title": "참여 중인 계모임이 없어요",
+    "description": "새로운 계모임을 만들거나 탐색해보세요",
+    "action": "계 탐색하기"
+  }
+}
