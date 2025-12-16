@@ -1,5 +1,6 @@
 import type { Preview } from "@storybook/react-vite";
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import "../src/styles.css"; // Tailwind CSS
@@ -35,11 +36,13 @@ const preview: Preview = {
 
   decorators: [
     (Story) => (
-      <QueryClientProvider client={queryClient}>
-        <div className="p-4">
-          <Story />
-        </div>
-      </QueryClientProvider>
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <div className="p-4">
+            <Story />
+          </div>
+        </QueryClientProvider>
+      </MemoryRouter>
     ),
   ],
 };

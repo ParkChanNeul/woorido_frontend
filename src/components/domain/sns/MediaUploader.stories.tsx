@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { http, HttpResponse, delay } from "msw";
 import { MediaUploader } from "./MediaUploader";
 import type { MediaUploadResponse } from "@/types/post";
-import { MemoryRouter } from "react-router-dom";
 import { useEffect } from "react";
 import { usePostEditorStore } from "@/hooks/stores";
 
@@ -31,11 +30,9 @@ const meta: Meta<typeof MediaUploader> = {
       }, []);
 
       return (
-        <MemoryRouter>
-          <div className="max-w-2xl mx-auto p-4">
-            <Story />
-          </div>
-        </MemoryRouter>
+        <div className="max-w-2xl mx-auto p-4">
+          <Story />
+        </div>
       );
     },
   ],
@@ -280,11 +277,9 @@ export const WithExistingMedia: Story = {
       }, []);
 
       return (
-        <MemoryRouter>
-          <div className="max-w-2xl mx-auto p-4">
-            <Story />
-          </div>
-        </MemoryRouter>
+        <div className="max-w-2xl mx-auto p-4">
+          <Story />
+        </div>
       );
     },
   ],
@@ -337,11 +332,9 @@ export const MaxFilesReached: Story = {
       }, []);
 
       return (
-        <MemoryRouter>
-          <div className="max-w-2xl mx-auto p-4">
-            <Story />
-          </div>
-        </MemoryRouter>
+        <div className="max-w-2xl mx-auto p-4">
+          <Story />
+        </div>
       );
     },
   ],
@@ -386,11 +379,9 @@ export const LargeFiles: Story = {
       }, []);
 
       return (
-        <MemoryRouter>
-          <div className="max-w-2xl mx-auto p-4">
-            <Story />
-          </div>
-        </MemoryRouter>
+        <div className="max-w-2xl mx-auto p-4">
+          <Story />
+        </div>
       );
     },
   ],
@@ -450,11 +441,9 @@ export const MixedMedia: Story = {
       }, []);
 
       return (
-        <MemoryRouter>
-          <div className="max-w-2xl mx-auto p-4">
-            <Story />
-          </div>
-        </MemoryRouter>
+        <div className="max-w-2xl mx-auto p-4">
+          <Story />
+        </div>
       );
     },
   ],
