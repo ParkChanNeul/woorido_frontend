@@ -3,8 +3,8 @@
 > **Project:** WOORIDO (System-Driven Community Funding Solution)
 > **Author:** Project PM × A.M.I Genius Partner
 > **Purpose:** 인간의 리스크를 시스템으로 대체하는 핀테크 계모임 플랫폼 구축 지침
-> **Version:** **V3.0 Final Kick-off Edition (2025-12)**
-> **Status:** **Production Ready (Full Detail)**
+> **Version:** **V3.2 Demo Day Sprint Edition (2025-12)**
+> **Status:** **Dual Track: [Vision] Production Ready + [Demo] 68 Days Sprint**
 
 -----
 
@@ -26,6 +26,70 @@ docker-compose up -d --build
 
   * **배포 목표:** "자금 무결성(Oracle) + 취향 연결(Elastic) + 반응형(Responsive) + 발견(SEO) + **현실적 운영(MVP)**"
   * **핵심 흐름:** User Action → Spring(Money) → Oracle(Save) → Sync → Elasticsearch(Search) → Kibana(Insight)
+
+-----
+
+## [0] 팀 구성 & Demo Day 🚀
+
+> **CRITICAL DEADLINE: 2026년 2월 25일 (공식 시연) - 68일**
+> 이 문서는 **장기 비전 [Vision]** 과 **Demo Day 시연 범위 [Demo]** 를 병렬로 기술합니다.
+
+### 팀 구성
+
+```
+총 인원: 3명
+역할: 풀스택 개발자 아카데미 프로젝트 팀
+배경:
+  - SI 회사 영업원 출신
+  - 종합 마케팅 매니저 출신
+  - 디지털 에이전시 대표 출신
+
+강점: ⭐⭐⭐⭐⭐ 기획력, 비즈니스 이해도, 사용자 관점
+약점: ⭐☆☆☆☆ 개발 능력 (학습 중, 비전공자)
+
+멘토링:
+  - 주 5회 수업시간
+  - 노션, 지라 등 소통 채널로 질의응답
+  - 아카데미 강사 + 연계 기업 사원 멘토
+```
+
+### Demo Day 미션
+
+**2026년 2월 25일 공식 시연에서 작동하는 라이브 데모 성공**
+
+| 구분 | 장기 비전 [Vision] | Demo Day [Demo] |
+|------|-------------------|-----------------|
+| **목표** | 완벽한 핀테크 플랫폼 | 5분 라이브 데모 성공 |
+| **기준** | Production Ready | Zero Error Tolerance |
+| **범위** | 전체 기능 | 4대 코어 + 모임관리 |
+| **이후** | - | 사이드 프로젝트로 지속 발전 |
+
+### 🔺 신뢰 트라이포드 (Trust Tripod) + Elasticsearch = 4대 코어
+
+```
+              [신뢰 트라이포드]
+                    △
+                   /|\
+                  / | \
+                 /  |  \
+    ┌───────────┐ ┌─┴─┐ ┌───────────┐
+    │ 선충전 락  │ │장부│ │ 결제 감시  │
+    │(Deposit   │ │투명│ │ 다각화    │
+    │   Lock)   │ │ 화 │ │(Consensus │
+    └───────────┘ └───┘ │   Pay)    │
+                        └───────────┘
+         +
+    ┌─────────────────────────────────┐
+    │  🔍 Elasticsearch 취향 검색     │
+    │  "Rate(이자)보다 Taste(취향)"   │
+    └─────────────────────────────────┘
+```
+
+**4대 코어 기능:**
+1. **🔒 선충전 락 (Deposit Lock)**: 보증금 선입금으로 신뢰 확보 [Demo: Mock]
+2. **📊 장부 투명화 (Open Ledger)**: Recharts 시각화 + Django 데이터 분석 [Demo: 핵심]
+3. **🗳️ 결제 감시 다각화 (Consensus Pay)**: 투표 기반 지출 승인 시스템 [Demo: 핵심]
+4. **🔍 취향 검색 (Taste Search)**: Elasticsearch 태그/텍스트/카테고리 검색 [Demo: 기본]
 
 -----
 
@@ -95,6 +159,31 @@ WOORIDO는 '믿음'이 아닌 '시스템'으로 작동한다. 모든 기획과 �
 
   * **Automation:** 매월 지정일에 자동 이체 및 지급 수행 (인간 개입 X).
   * **Benefit:** 완주 시 플랫폼 수수료 유지, 대신 \*\*제휴사 할인 쿠폰(Perks)\*\*으로 실질적 보상 제공.
+
+### 5\) 역할 구분: CP(계주) vs 계원 ⭐ [Demo]
+
+> **CP (Community Producer)** = 계주. 커뮤니티 운영 권한만 보유, **자금 접근 권한은 0**
+
+**CP (Community Producer) 권한:**
+| 권한 | 설명 | Demo Day |
+|------|------|----------|
+| 모임 생성/설정 | 모임 생성 및 기본 정보 변경 | ✅ |
+| 멤버 관리 | 초대 및 강제 퇴출 | ⚠️ 제한적 |
+| 공지 핀 고정 | 👑 CP만 공지사항 핀 고정 가능 | ✅ |
+| 지출 요청 | 지출 요청 등록 | ✅ |
+| 장부 수정 | 오류 정정 (감사 로그 기록) | ❌ Post-Demo |
+
+**계원 (Member) 권한:**
+| 권한 | 설명 | Demo Day |
+|------|------|----------|
+| 조회 | 대시보드, 장부, 피드 조회 | ✅ |
+| 투표 | 지출 요청에 찬성/반대 투표 | ✅ |
+| SNS 작성 | 피드/댓글 작성 | ✅ |
+| 지출 요청 | 본인 건만 지출 요청 가능 | ✅ |
+
+**UI 표시:**
+- 👑 아이콘 또는 "계주" 뱃지로 CP 표시
+- 권한별 버튼 노출/숨김 처리
 
 -----
 
@@ -178,6 +267,64 @@ WOORIDO는 '믿음'이 아닌 '시스템'으로 작동한다. 모든 기획과 �
 3.  **Elastic Community:** 취향과 데이터로 연결된다. (No Boring)
 
 > **"WOORIDO는 단순한 핀테크가 아닙니다. 가장 안전하고 투명한 취향 공동체입니다."**
+
+-----
+
+## [H-1] Demo Day MVP (시연 필수 기능) 🚀 [Demo]
+
+> **"Perfect is the enemy of done"** - Demo Day는 완벽한 제품이 아닌, **작동하는 데모**가 목표
+
+### 68일 타임라인
+
+```
+12월 (12일): 환경 세팅 + 학습 + Storybook 스켈레톤
+   ↓
+1월 1-15일 (15일): 핵심 CRUD + 기본 UI + MSW Mock API
+   ↓
+1월 16-31일 (16일): 투표 시스템 + 장부 차트 + 🔍 Elasticsearch 기본
+   ↓
+2월 1-10일 (10일): SNS + Django 분석 + 검색 고도화
+   ↓
+2월 11-20일 (10일): 통합 테스트 + 버그 수정 + 반응형 QA
+   ↓
+2월 21-25일 (5일): 시연 리허설 (Mobile + Desktop 듀얼)
+   ↓
+2월 25일: 🚀 DEMO DAY
+```
+
+### 시연 시나리오 (5분 라이브 데모)
+
+**시나리오: "독서 모임 '책벌레들'의 1월 활동"**
+
+| 시간 | 시연 내용 |
+|------|----------|
+| **1분** | 👑 CP 계정 로그인 → 대시보드 진입 → 잔액/멤버 확인 |
+| **1.5분** | 📊 장부 탭 → Recharts 차트 → Django 분석 결과 확인 |
+| **1분** | 🗳️ 지출 요청 등록 → 멤버 계정으로 투표 → 승인 완료 |
+| **1분** | 💬 SNS 피드 작성 → 댓글 → 공지 핀 고정 |
+| **0.5분** | 🔍 Elasticsearch 검색 → 태그/카테고리 필터 |
+
+### 필수 기능 체크리스트
+
+| 기능 | 구현 범위 | Demo Day |
+|------|----------|----------|
+| 모임 관리 | 생성, 대시보드, 멤버 목록 | ✅ 필수 |
+| 투명 장부 | Recharts + Django 분석 | ✅ 핵심 |
+| 투표 승인 | 지출 요청 → 투표 → 승인 | ✅ 핵심 |
+| SNS 피드 | 텍스트 작성, 댓글, 공지 | ✅ 경량 |
+| 취향 검색 | 태그/텍스트 검색, 필터 | ✅ 기본 |
+| 유저 인증 | 테스트 계정 로그인 (JWT) | ✅ 간소화 |
+
+### 시연 성공 기준
+
+**필수 체크:**
+- [ ] 👑 CP 계정 로그인 → 대시보드 진입 성공
+- [ ] 📊 장부 차트 정상 렌더링 (반응형: Mobile + Desktop)
+- [ ] 🗳️ 지출 요청 → 투표 → 승인 Full Flow 작동
+- [ ] 💬 SNS 글 작성 → 댓글 달기 성공
+- [ ] 🔍 Elasticsearch 검색 정상 작동
+- [ ] ⭐ **모바일 + 데스크톱 듀얼 시연 성공**
+- [ ] **시나리오 3회 반복 테스트 시 에러 Zero**
 
 -----
 
@@ -435,4 +582,147 @@ woorido-client/
 
 -----
 
-*Last Updated: 2025-12 (v3.0 Final) | WOORIDO Project Team*
+## [P] Development Tools & Storybook (개발 도구 표준)
+
+> **"컴포넌트는 격리된 환경에서 개발하고, 통합은 신중하게 한다."**
+> **신규 추가**: 2025-12-16 (Storybook 10.1.8 통합)
+> **업데이트**: 2025-12-19 (Frontend-First 전략 추가)
+
+### 0\) Frontend-First 개발 전략 ⭐ [Demo]
+
+> **Why Frontend-First?**
+> 비전공자 팀의 강점인 **기획력과 UX 감각**을 최대한 활용하기 위해, UI를 먼저 완성하고 백엔드를 역산하는 전략
+
+```
+[Phase 1] Storybook 스켈레톤 (Week 0-1)
+    │
+    │  • Phase 5B 컴포넌트 활용
+    │  • 모든 페이지 스켈레톤 작성
+    │  • Mobile + Desktop 변형 작성
+    │
+    ▼
+[Phase 2] 온보딩 시뮬레이션 (Week 1-2)
+    │
+    │  • Storybook에서 사용자 플로우 시뮬레이션
+    │  • UX 개선점 도출
+    │  • 팀 내부 피드백 반영
+    │
+    ▼
+[Phase 3] MSW Mock API (Week 2-3)
+    │
+    │  • Mock Service Worker 설정
+    │  • 가짜 API 응답 정의
+    │  • Frontend 독립 개발 가능
+    │
+    ▼
+[Phase 4] 백엔드 구현 (Week 3-8)
+    │
+    │  • MSW Mock을 실제 API로 교체
+    │  • Spring Boot + Oracle 연동
+    │  • Django 분석 + Elasticsearch 검색
+    │
+    ▼
+[Phase 5] 통합 테스트 (Week 9-10)
+```
+
+**스토리 구조:**
+```
+src/stories/
+├── pages/           # 페이지 단위 스토리
+│   ├── Login.stories.tsx
+│   ├── Dashboard.stories.tsx
+│   ├── Ledger.stories.tsx
+│   └── Search.stories.tsx
+│
+├── flows/           # 사용자 플로우 시뮬레이션
+│   ├── Onboarding.stories.tsx
+│   ├── VoteFlow.stories.tsx
+│   └── SearchFlow.stories.tsx
+│
+└── components/      # 컴포넌트 단위 (기존 Phase 5B)
+```
+
+### 1\) Storybook 기반 컴포넌트 개발
+
+WOORIDO 프론트엔드는 **Storybook 10.1.8**을 활용하여 컴포넌트 중심 개발을 수행한다.
+
+  * **목적:** 백엔드 API 의존성 없이 독립적인 컴포넌트 개발 및 테스트.
+  * **장점:**
+    1. **독립 개발:** MSW(Mock Service Worker)를 통한 API 모킹으로 백엔드 없이 개발 가능.
+    2. **시각적 테스트:** 67개 스토리를 통해 모든 컴포넌트 상태를 시각적으로 검증.
+    3. **자동 문서화:** Props, 이벤트 핸들러 자동 문서 생성.
+    4. **반응형 테스트:** Mobile/Desktop/Large Desktop 뷰포트 전환 테스트.
+  * **실행:**
+    * 개발 모드: `npm run storybook` (http://localhost:6006)
+    * 프로덕션 빌드: `npm run build-storybook` (정적 배포 가능)
+
+### 2\) MSW (Mock Service Worker) 통합
+
+모든 Storybook 스토리는 MSW를 통해 실제 API 응답을 시뮬레이션한다.
+
+  * **패턴:**
+```typescript
+export const MyStory: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.post(`${API_BASE_URL}/api/posts/:postId/like`, async () => {
+          await delay(500);
+          return HttpResponse.json({ success: true });
+        }),
+      ],
+    },
+  },
+};
+```
+  * **장점:** 네트워크 지연, 에러 상태, 느린 응답 등 다양한 시나리오 테스트 가능.
+
+### 3\) 스토리 작성 표준
+
+모든 주요 컴포넌트는 최소 다음 스토리를 포함해야 한다:
+
+  * **Default** - 기본 상태
+  * **Loading** - 로딩 상태 (Skeleton UI)
+  * **Empty** - 빈 상태 (EmptyState 컴포넌트)
+  * **Error** - 에러 상태 (ErrorFallback)
+  * **Mobile/Desktop** - 반응형 뷰포트
+  * **Interactions** - 사용자 인터랙션 (좋아요, 댓글 등)
+
+### 4\) 개발 환경 문서
+
+상세한 개발 환경 설정 및 Storybook 사용 가이드는 다음 문서를 참조:
+
+  * **`src/docs/DEVELOPMENT_GUIDE.md`** - 로컬 환경 설정, Storybook 사용법, 빌드 가이드
+  * **`src/docs/IMPLEMENTATION_HISTORY.md`** - Phase별 구현 히스토리
+
+### 5\) 컴포넌트 개발 워크플로우
+
+```
+1. Storybook에서 스토리 작성
+   ↓
+2. MSW로 API 모킹
+   ↓
+3. 컴포넌트 개발 및 실시간 확인
+   ↓
+4. 다양한 상태 테스트 (로딩, 에러, 빈 상태)
+   ↓
+5. 메인 앱에 통합
+   ↓
+6. 백엔드 API 연동 및 통합 테스트
+```
+
+### 6\) 현재 Storybook 커버리지
+
+**Phase 5B SNS 컴포넌트** (67개 스토리):
+
+  * **PostCard** - 15 stories (기본, 좋아요, 미디어, 인용 포스트 등)
+  * **FeedTimeline** - 12 stories (무한 스크롤, 정렬, 필터 등)
+  * **CommentList** - 14 stories (댓글, 대댓글, 빈 상태 등)
+  * **MediaUploader** - 13 stories (업로드, 진행률, 미리보기 등)
+  * **AnnouncementBanner** - 18 stories (우선순위별, 읽음 처리 등)
+
+**향후 확장:** UI 컴포넌트, 도메인 컴포넌트 추가 예정
+
+-----
+
+*Last Updated: 2025-12-19 (v3.2 - Demo Day Sprint Edition + Dual Track) | WOORIDO Project Team*
