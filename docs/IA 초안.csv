@@ -1,0 +1,78 @@
+Depth 1 (대분류),Depth 2 (중분류),Depth 3 (상세 기능/화면),Type,Route Path,주요 요건 (Description)
+공통 (Global),헤더 (Header),로고,Component,/,클릭 시 메인 페이지 이동
+,,통합 검색,Component,/search,키워드 입력 및 모임 검색 결과 페이지 진입
+,,사용자 메뉴,Component,-,"로그인 전: 로그인/회원가입 버튼, 로그인 후: 프로필/잔액/충전 버튼"
+,,내비게이션 메뉴,Component,-,"홈, 모임 찾기, 나의 모임"
+,레이아웃 (Layout),반응형 처리,Component,-,"모바일(<768px) 햄버거 메뉴, 태블릿/데스크탑 전체 메뉴"
+,,글로벌 오류 처리,Component,-,"세션 만료, 네트워크 오류, 서버 오류 공통 처리"
+,푸터 (Footer),정보,Component,-,서비스 소개/이용약관/개인정보처리방침/고객센터
+인증 (Auth),로그인 (Sign In),로그인 폼,Page,/login,"일반 로그인(ID/PW), 소셜 로그인(Google/Kakao)"
+,,로그인 유지,Component,/login,자동 로그인 체크박스
+,,계정 찾기,Page,/find-account,아이디 찾기/비밀번호 재설정 (이메일 인증)
+,회원가입 (Sign Up),약관 동의,Page,/signup/terms,"필수: 이용약관/개인정보처리방침, 선택: 마케팅 수신"
+,,정보 입력,Page,/signup/info,"아이디, 비밀번호, 이메일, 전화번호 (실시간 유효성/중복 검사)"
+,,본인 인증,Page,/signup/verify,이메일 인증 코드 발송 및 확인
+,,가입 완료,Page,/signup/complete,환영 메시지 및 메인 페이지 이동
+사용자 (User),마이페이지 (My Page),내 정보 관리,Page,/mypage,"프로필 이미지, 닉네임, 이메일, 전화번호 수정"
+,,계정 설정,Page,/mypage/settings,"비밀번호 변경, 알림 설정"
+,,회원 탈퇴,Modal,/mypage/settings,탈퇴 사유 선택 및 최종 확인
+,충전 (Charge),충전하기,Modal,/charge,충전 금액 입력 (천원 단위)
+,,결제 수단 선택,Modal,/charge,"카드, 계좌이체, 간편결제 (PG사 연동)"
+,,결제 내역,Page,/charge/history,충전/사용 내역 조회 (날짜별 필터)
+,알림 (Notification),알림 목록,Drawer,/notifications,"모임 초대, 납입 알림, 투표 알림, 공지사항"
+,,알림 설정,Page,/notifications/settings,푸시/이메일 알림 on/off
+홈 (Home),메인 (Main),히어로 배너,Section,/,"이벤트/프로모션 배너 (자동 슬라이드, 터치 스와이프)"
+,,카테고리 탐색,Section,/,"취미별 카테고리 아이콘 (수평 스크롤), 클릭 시 해당 카테고리 모임 리스트"
+,,추천 모임,Section,/,"내 성향 기반 추천, 인기 모임, 신규 모임"
+,,모임 생성 버튼,Component (FAB),/groups/create,새로운 모임 만들기 (Floating Action Button)
+모임 탐색 (Discovery),검색 (Search),통합 검색,Page,/search,키워드 입력 및 실시간 자동완성
+,,검색 결과,Page,/search,"매칭된 모임 리스트, 결과 없음 안내"
+,필터 (Filter),조건 필터,Drawer,/search,"카테고리, 지역(시/구), 회비 범위, 모집 상태"
+,,정렬,Component,/search,인기순/최신순/회비순
+,모임 리스트 (List),모임 카드,Component,/search,"썸네일, 제목, 카테고리, 현재 인원/최대 인원, 회비, 지역"
+,,카드 액션,Component,/search,관심 등록(북마크)/바로 가입 신청
+모임 생성 (Create),기본 정보,모임 이름,Page,/groups/create/step1,최대 20자
+,,모임 소개,Page,/groups/create/step1,최대 500자
+,,대표 이미지,Page,/groups/create/step1,이미지 업로드 및 미리보기
+,카테고리/태그,주 카테고리,Page,/groups/create/step2,하나 선택 (운동/스터디/취미/친목 등)
+,,성향 태그,Page,/groups/create/step2,"다중 선택 (진지한, 편한, 활발한 등)"
+,운영 규칙,회원 정보,Page,/groups/create/step3,"최소 인원, 최대 인원"
+,,회비 설정,Page,/groups/create/step3,"월 회비 금액 (천원 단위), 납입일 지정"
+,가입 조건,제한 설정,Page,/groups/create/step4,"연령 범위, 성별, 지역(시/구) 선택적 제한"
+,,승인 방식,Page,/groups/create/step4,자동 승인/수동 승인
+,생성 완료,확인 및 생성,Page,/groups/create/confirm,입력 정보 최종 확인 후 모임 생성
+,,생성 후 안내,Modal,/groups/create/complete,모임 상세 페이지 이동 및 초대 링크 공유
+모임 상세 - 공개 (Public),모임 정보 (Info),배너 영역,Section,/groups/:id,"대표 이미지, 모임명, 카테고리, 태그"
+,,기본 정보,Section,/groups/:id,"소개글, 회비, 현재 인원/최대 인원, 지역, 가입 조건"
+,,모임장 정보,Section,/groups/:id,프로필 사진/닉네임
+,가입 신청 (Join),신청 버튼,Modal,/groups/:id/join,가입 신청 모달 (조건 확인)
+,,신청 완료,Toast,/groups/:id/join,승인 대기 상태 안내
+,미리보기 (Preview),최근 소식,Section,/groups/:id,최근 게시글 3개 미리보기 (가입 후 전체 확인 가능)
+,,예정 일정,Section,/groups/:id,다가오는 일정 미리보기
+모임 상세 - 멤버 (Member),대시보드 (Dashboard),모임 현황,Page,/groups/:id/dashboard,"총 적립금, 이번 달 납입률, 다음 납입일, 참여율"
+,,빠른 액션,Section,/groups/:id/dashboard,"출금 신청, 일정 투표, 공지 확인"
+,소식 (Feed),게시판,Tab,/groups/:id/feed,"글 작성(텍스트/이미지), 수정/삭제"
+,,댓글/대댓글,Component,/groups/:id/feed,댓글 작성/삭제/좋아요
+,,공지사항,Component,/groups/:id/feed,모임장 공지 (상단 고정)
+,일정 (Schedule),캘린더 뷰,Tab,/groups/:id/schedule,월별 캘린더 (납입일/모임 일정 표시)
+,,일정 목록,Section,/groups/:id/schedule,다가오는 일정 리스트
+,,일정 생성,Modal,/groups/:id/schedule/create,일정 제목/날짜/장소/설명 입력 (모임장/멤버)
+,,참석 투표,Modal,/groups/:id/schedule/:scheduleId,참석/불참/미정 투표 및 현황 확인
+,멤버 (Members),멤버 리스트,Tab,/groups/:id/members,"프로필, 닉네임, 가입일, 역할(모임장/멤버)"
+,,멤버 관리,Modal,/groups/:id/members,"(모임장) 멤버 강퇴, (전체) 멤버 추방 투표"
+,회비 관리 (Finance),장부,Tab,/groups/:id/finance,회비 납입 내역 (주차별/월별)
+,,지출 내역,Section,/groups/:id/finance,출금 내역 및 영수증
+,,통계,Section,/groups/:id/finance,수입/지출 그래프 (월별/분기별) - Recharts
+,출금 (Withdraw),출금 신청,Modal,/groups/:id/withdraw/create,금액 입력 및 사용 목적 작성
+,,승인 관리,Modal,/groups/:id/withdraw/:id,"(모임장) 출금 승인/거절"
+,,바코드 생성,Modal,/groups/:id/withdraw/:id/barcode,승인된 출금 건에 대한 결제 바코드 생성
+,설정 (Settings),모임 정보 수정,Tab,/groups/:id/settings,"(모임장) 모임 정보, 회비, 인원 수정"
+,,모임 탈퇴,Modal,/groups/:id/settings/leave,탈퇴 확인 및 처리
+,,모임 삭제,Modal,/groups/:id/settings/delete,(모임장) 모임 해체 및 정산
+나의 모임 (My Groups),모임 목록 (List),가입한 모임,Page,/my-groups,내가 속한 모임 카드 리스트
+,,역할 표시,Component,/my-groups,모임장/멤버 뱃지
+,,상태 관리,Component,/my-groups,"활동 중, 승인 대기, 승인 거절"
+,대기 중 신청,신청 현황,Tab,/my-groups/pending,승인 대기 중인 모임 목록
+,,신청 취소,Modal,/my-groups/pending/:id,가입 신청 취소
+,관심 모임,북마크 목록,Tab,/my-groups/bookmarks,관심 등록한 모임 리스트
+,,빠른 신청,Component,/my-groups/bookmarks,북마크에서 바로 가입 신청
