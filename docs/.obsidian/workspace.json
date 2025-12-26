@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "34fce9a6a5c27db1",
+        "id": "36fa7c7e4d1665fb",
         "type": "tabs",
         "children": [
           {
-            "id": "399909734c7d6f37",
+            "id": "15323b2f670fe9f3",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "PRODUCT_AGENDA.md",
+                "file": "WOORIDO_PROJECT_INTRO.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "PRODUCT_AGENDA"
+              "title": "WOORIDO_PROJECT_INTRO"
             }
           }
         ]
@@ -44,7 +44,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "파일 탐색기"
             }
           },
           {
@@ -174,17 +174,26 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false
     }
   },
-  "active": "399909734c7d6f37",
+  "active": "15323b2f670fe9f3",
   "lastOpenFiles": [
+    "DEVELOPMENT_ENVIRONMENT.md",
+    "DEVELOPMENT_ENVIRONMENT.md.tmp.26984.1766719703325",
+    "src/lib/api/spring/post.ts.md",
+    "src/lib/api/spring",
+    "src/lib/api",
+    "src/lib",
+    "src",
+    "PRODUCT_AGENDA.md",
+    "WOORIDO_PROJECT_INTRO.md",
     "MARKET_RESEARCH_REPORT.md"
   ]
 }
