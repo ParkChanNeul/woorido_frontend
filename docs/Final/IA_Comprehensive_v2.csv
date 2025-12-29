@@ -1,0 +1,80 @@
+Depth1_대분류,Depth2_중분류,Depth3_화면기능,Type,Route,설명,우선순위,담당,Demo필수,EmptyState_CTA,에러복구,플랫폼,터치타겟,비고
+공통,헤더,로고,Component,/,홈으로 이동,P0,FE,Y,-,-,Both,44px,
+공통,헤더,어카운트 잔액,Component,-,가용잔액 표시 + Animated Counter,P0,FE,Y,-,-,Both,44px,로그인 시만 표시
+공통,헤더,프로필 메뉴,Component,-,마이페이지/설정/로그아웃,P1,FE,N,-,-,Both,44px,
+공통,네비게이션,바텀 네비 (Mobile),Component,-,홈/탐색/생성/내모임/MY,P0,FE,Y,-,-,Mobile,56px,5개 탭 - 활성 탭 강조
+공통,네비게이션,사이드바 (Desktop),Component,-,좌측 고정 메뉴,P1,FE,N,-,-,Desktop,-,
+공통,푸터,서비스 정보,Component,-,이용약관/개인정보처리방침,P2,FE,N,-,-,Both,-,Demo 제외
+인증,로그인,로그인 폼,Page,/login,ID/PW 입력,P0,Both,Y,-,재시도 버튼 + 비밀번호 찾기 링크,Both,48px (버튼),JWT 발급
+인증,로그인,소셜 로그인,Component,/login,Google/Kakao,P2,Both,N,-,-,Both,48px,Demo 제외
+인증,로그인,생체 인증,Component,/login,Face ID/지문 (재로그인),P2,FE,N,-,-,Mobile,-,Demo 제외
+인증,회원가입,약관 동의,Page,/signup/terms,필수/선택 약관,P1,FE,N,-,-,Both,-,테스트 계정 사용
+인증,회원가입,정보 입력,Page,/signup/info,이메일/비밀번호/닉네임,P1,Both,N,-,실시간 유효성 표시 + 구체적 에러 메시지,Both,48px,
+인증,회원가입,가입 완료,Page,/signup/complete,환영 + 충전 유도,P1,FE,N,-,-,Both,-,첫 충전 CTA 강조
+어카운트,대시보드,잔액 카드,Section,/mypage,가용/락 잔액 분리 표시,P0,Both,Y,첫 충전 유도 배너 (잔액 0원 시),-,Both,-,핵심 기능
+어카운트,대시보드,락 상세,BottomSheet,/mypage,모임별 보증금 현황,P0,Both,Y,가입한 모임 없음 → 모임 찾기 CTA,-,Both,-,
+어카운트,대시보드,거래 내역,Page,/mypage/history,충전/차감/락 히스토리,P1,Both,N,거래 없음 → 첫 충전 CTA,-,Both,-,
+어카운트,충전,충전 금액 선택,Modal,/charge,프리셋 + 직접 입력,P0,FE,Y,-,-,Both,48px,최소 1만/최대 100만
+어카운트,충전,결제 수단,Modal,/charge,토스페이 (MVP),P0,BE,Y,-,결제 실패 → 재시도 버튼 + 다른 수단 안내,Both,-,PG 연동
+어카운트,충전,충전 완료,Toast,-,성공 알림 + 잔액 갱신,P0,FE,Y,-,-,Both,-,이전 화면 복귀 (가입 플로우 연결)
+어카운트,충전,충전 후 가입 복귀,Component,-,충전 후 가입 화면으로 자동 복귀,P0,FE,Y,-,-,Both,-,⭐ 이탈 방지 핵심
+어카운트,출금,출금 금액 입력,Modal,/withdraw,가용 잔액 한도 표시,P1,Both,N,-,-,Both,-,Demo 제외
+어카운트,출금,출금 계좌,Modal,/withdraw,계좌 선택/등록,P1,Both,N,-,-,Both,-,
+어카운트,보증금 해제,완주 축하,Modal,/groups/:id/complete,자동 반환 안내,P1,Both,N,-,-,Both,-,Post-Demo
+어카운트,보증금 해제,탈퇴 확인,Modal,/groups/:id/leave,정상 탈퇴 프로세스,P1,Both,N,-,-,Both,-,
+어카운트,보증금 해제,강제 퇴출,Toast,-,보증금 몰수 알림,P2,BE,N,-,-,Both,-,
+홈,온보딩 (신규),웰컴 카드,Section,/,신규 유저 환영 + 첫 단계 안내,P0,FE,Y,-,-,Both,-,⭐ 신규 유저 이탈 방지
+홈,온보딩 (신규),첫 충전 유도,Component,/,충전하고 모임 가입하기 CTA,P0,FE,Y,-,-,Both,48px,잔액 0원 시
+홈,온보딩 (신규),인기 모임 추천,Section,/,바로 가입 가능한 모임 3개,P0,Both,Y,-,-,Both,-,모임 없는 유저용
+홈,나의 모임 (재방문),모임 리스트,Page,/,가입한 모임 카드 (최대 6개),P0,Both,Y,-,-,Both,-,모임 있는 유저용
+홈,나의 모임 (재방문),빠른 진입,Component,/,클릭 → 해당 모임 피드 이동,P0,FE,Y,-,-,Both,전체 카드,
+홈,나의 모임 (재방문),모임 탐색 유도,Section,/,새 모임 찾기 버튼,P1,FE,N,-,-,Both,44px,
+모임 탐색,카테고리 검색,카테고리 그리드,Page,/discover,운동/독서/영화/맛집 등,P1,Both,N,-,-,Both,56px (아이콘),
+모임 탐색,카테고리 검색,검색 바,Component,/discover,키워드 검색,P1,Both,N,검색 결과 없음 → 다른 키워드 제안,-,Both,44px,Elasticsearch 제외
+모임 탐색,카테고리 검색,필터,BottomSheet,/discover,회비 범위/지역,P2,FE,N,-,-,Both,-,
+모임 탐색,모임 리스트,모임 카드 리스트,Page,/discover/:category,카테고리별 모임,P1,Both,N,모임 없음 → 새 모임 만들기 CTA,-,Both,-,
+모임 탐색,모임 리스트,모임 카드,Component,-,썸네일/이름/회비/인원,P1,FE,N,-,-,Both,전체 카드,
+모임 생성,기본 정보,모임 이름,Page,/groups/create/step1,최대 20자,P0,Both,Y,-,글자수 실시간 표시,Both,-,
+모임 생성,기본 정보,모임 소개,Page,/groups/create/step1,최대 500자,P0,Both,Y,-,-,Both,-,
+모임 생성,기본 정보,카테고리 선택,Page,/groups/create/step1,단일 선택,P0,Both,Y,-,-,Both,48px (칩),
+모임 생성,기본 정보,대표 이미지,Page,/groups/create/step1,S3 업로드,P1,Both,N,-,업로드 실패 → 재시도 + 기본 이미지 사용,Both,-,
+모임 생성,운영 설정,월 납입금,Page,/groups/create/step2,최소 1만원,P0,Both,Y,-,-,Both,-,
+모임 생성,운영 설정,최대 인원,Page,/groups/create/step2,2-50명,P0,Both,Y,-,-,Both,-,
+모임 생성,운영 설정,납입일,Page,/groups/create/step2,매월 1일 고정 (MVP),P0,BE,Y,-,-,Both,-,
+모임 생성,운영 설정,보증금 미리보기,Component,/groups/create/step2,자동 계산 결과 표시,P0,FE,Y,-,-,Both,-,⭐ 가입자 필요 금액 명시
+모임 생성,확인 및 생성,정보 확인,Page,/groups/create/confirm,입력 정보 최종 확인,P0,FE,Y,-,-,Both,-,
+모임 생성,확인 및 생성,생성 완료,Page,/groups/create/complete,모임 상세로 이동,P0,Both,Y,-,-,Both,-,
+모임 상세-공개,모임 정보,배너 영역,Section,/groups/:id,대표 이미지/모임명/카테고리,P0,FE,Y,-,-,Both,-,
+모임 상세-공개,모임 정보,기본 정보,Section,/groups/:id,소개/회비/인원/수수료 안내,P0,Both,Y,-,-,Both,-,
+모임 상세-공개,모임 정보,비용 계산기,Component,/groups/:id,납입금+보증금 = 필요 금액 표시,P0,FE,Y,-,-,Both,-,⭐ 인지 부하 감소
+모임 상세-공개,모임 정보,최근 활동,Section,/groups/:id,최근 피드 3개 미리보기,P1,Both,N,-,-,Both,-,
+모임 상세-공개,가입 신청,가입 버튼,Component,/groups/:id,CTA 가입하기,P0,FE,Y,-,-,Both,56px,고정 하단 버튼
+모임 상세-공개,가입 신청,가입 확인 모달,Modal,/groups/:id/join,비용 안내 + 보증금 설명,P0,Both,Y,-,-,Both,-,핵심 차별화
+모임 상세-공개,가입 신청,잔액 부족 안내,Modal,/groups/:id/join,충전 유도 + 복귀 약속,P0,FE,Y,-,충전 후 자동 복귀 안내,Both,-,⭐ 이탈 방지
+모임 상세-공개,가입 신청,가입 완료,Toast,-,성공 알림 + 피드 이동,P0,Both,Y,-,-,Both,-,
+모임 상세-멤버,탭 구조,탭 네비게이션,Component,/groups/:id,피드/장부/투표/멤버,P0,FE,Y,-,-,Both,44px,SNS-First - 스와이프 지원
+모임 상세-멤버,피드 (Tab1),피드 목록,Tab,/groups/:id/feed,페이지네이션 20개,P0,Both,Y,첫 글 작성 유도 CTA,-,Both,-,1순위 기능
+모임 상세-멤버,피드 (Tab1),공지사항,Component,/groups/:id/feed,상단 핀 고정 (CP만),P0,Both,Y,-,-,Both,-,
+모임 상세-멤버,피드 (Tab1),글 작성 FAB,FAB,/groups/:id/feed,플로팅 버튼,P0,FE,Y,-,-,Mobile,56px,우측 하단 고정
+모임 상세-멤버,피드 (Tab1),글 작성,Modal,/groups/:id/feed/new,텍스트 + 이미지,P0,Both,Y,-,이미지 업로드 실패 시 텍스트만 게시 옵션,Both,-,
+모임 상세-멤버,피드 (Tab1),댓글/대댓글,Component,/groups/:id/feed,2단계까지,P0,Both,Y,-,-,Both,44px,
+모임 상세-멤버,피드 (Tab1),좋아요,Component,-,토글 + 카운트,P0,Both,Y,-,-,Both,44px,
+모임 상세-멤버,피드 (Tab1),이미지 업로드,Component,/groups/:id/feed/new,S3 연동,P1,Both,Y,-,재시도 + 건너뛰기,Both,-,
+모임 상세-멤버,장부 (Tab2),장부 요약,Section,/groups/:id/ledger,총 잔액/수입/지출,P0,Both,Y,거래 없음 → 첫 지출 요청 안내,-,Both,-,
+모임 상세-멤버,장부 (Tab2),Django 분석 카드,Section,/groups/:id/ledger,평균 지출/트렌드,P0,Both,Y,데이터 부족 → 분석 불가 안내,분석 실패 → 기본 통계만 표시,Both,-,Django 연동
+모임 상세-멤버,장부 (Tab2),Recharts 차트,Section,/groups/:id/ledger,Line/Pie Chart,P0,FE,Y,차트 렌더링 실패 → 숫자만 표시,-,Both,-,
+모임 상세-멤버,장부 (Tab2),거래 내역,Section,/groups/:id/ledger,타임라인 형식,P0,Both,Y,거래 없음 → CP에게 지출 요청 안내,-,Both,-,
+모임 상세-멤버,투표 (Tab3),진행 중 투표,Tab,/groups/:id/votes,활성 투표 리스트,P0,Both,Y,투표 없음 → CP만 생성 가능 안내,-,Both,-,
+모임 상세-멤버,투표 (Tab3),완료된 투표,Tab,/groups/:id/votes,결과 + 장부 연결,P0,Both,Y,-,-,Both,-,
+모임 상세-멤버,투표 (Tab3),투표 상세,Modal,/groups/:id/votes/:voteId,찬성/반대 현황,P0,Both,Y,-,-,Both,-,
+모임 상세-멤버,투표 (Tab3),지출 요청,Modal,/groups/:id/votes/new,금액/목적 입력,P0,Both,Y,-,-,Both,-,CP 전용 (멤버에게 권한 없음 안내)
+모임 상세-멤버,투표 (Tab3),투표 참여,Component,-,찬성/반대 버튼,P0,Both,Y,-,이미 투표함 → 변경 불가 안내,Both,56px,
+모임 상세-멤버,투표 (Tab3),투표 마감 알림,Component,-,마감 임박 경고,P0,FE,Y,-,-,Both,-,⭐ 참여 유도
+모임 상세-멤버,멤버 (Tab4),멤버 리스트,Tab,/groups/:id/members,프로필/가입일/역할,P1,Both,N,-,-,Both,-,
+모임 상세-멤버,멤버 (Tab4),CP 뱃지,Component,-,계주 표시,P1,FE,N,-,-,Both,-,
+모임 상세-멤버,멤버 (Tab4),신고,BottomSheet,/groups/:id/members,악성 유저 신고,P2,Both,N,-,-,Both,-,
+모임 상세-멤버,설정,모임 정보 수정,Page,/groups/:id/settings,CP 전용,P2,Both,N,-,-,Both,-,Demo 제외
+나의 모임,모임 리스트,가입한 모임,Page,/my-groups,모임 카드 리스트,P0,Both,Y,모임 없음 → 모임 찾기 CTA,-,Both,-,
+나의 모임,모임 리스트,역할 뱃지,Component,/my-groups,CP/멤버 표시,P0,FE,Y,-,-,Both,-,
+나의 모임,모임 리스트,알림 뱃지,Component,/my-groups,미결 투표/새 글 카운트,P0,FE,Y,-,-,Both,-,⭐ 재방문 유도
+나의 모임,모임 리스트,빠른 진입,Component,/my-groups,미결 투표/납입 알림,P1,Both,N,-,-,Both,-,
