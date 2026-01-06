@@ -612,10 +612,14 @@ CREATE TABLE votes (
   gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
+  -- 투표 유형 (⭐ 추가)
+  type VARCHAR(20) NOT NULL CHECK (type IN ('EXPENSE', 'KICK', 'RULE_CHANGE')),
+
   -- 투표 내용
   title VARCHAR(200) NOT NULL,
   description VARCHAR(2000),
-  amount BIGINT,
+  amount BIGINT,  -- EXPENSE 타입인 경우 필수
+  target_user_id UUID REFERENCES users(id),  -- KICK 타입인 경우 필수
 
   -- 투표 설정
   required_approval_count NUMBER NOT NULL,
@@ -624,7 +628,7 @@ CREATE TABLE votes (
   status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')),
   approved_at TIMESTAMP,
 
-  -- 장부 연동 (원자성 보장)
+  -- 장부 연동 (원자성 보장, EXPENSE 타입만 사용)
   ledger_entry_id UUID REFERENCES ledger_entries(id),  -- ⭐ 투표-장부 연결
   ledger_status VARCHAR(20) DEFAULT 'PENDING' CHECK (ledger_status IN ('PENDING', 'RECORDED', 'FAILED')),
 
@@ -633,7 +637,14 @@ CREATE TABLE votes (
   expires_at TIMESTAMP NOT NULL,
 
   -- 제약조건
-  CONSTRAINT chk_vote_amount CHECK (amount IS NULL OR amount > 0),
+  CONSTRAINT chk_vote_amount CHECK (
+    (type = 'EXPENSE' AND amount IS NOT NULL AND amount > 0) OR
+    (type != 'EXPENSE' AND amount IS NULL)
+  ),
+  CONSTRAINT chk_vote_target_user CHECK (
+    (type = 'KICK' AND target_user_id IS NOT NULL) OR
+    (type != 'KICK' AND target_user_id IS NULL)
+  ),
   CONSTRAINT chk_approval_count CHECK (required_approval_count > 0)
 );
 
