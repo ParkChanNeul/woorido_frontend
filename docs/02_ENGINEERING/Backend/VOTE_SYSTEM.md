@@ -20,11 +20,12 @@
 
 ## 1. 투표 유형 개요
 
-### 1.1 세 가지 투표 타입
+### 1.1 네 가지 투표 타입
 
 | 타입 | 코드 | 설명 | 필수 필드 | 승인 시 동작 |
 |------|------|------|----------|------------|
-| **지출 요청** | `EXPENSE` | 모임 금고에서 지출 | `amount` | 장부 기록 + 잔액 차감 |
+| **오픈 사용 (지출)** | `EXPENSE` | 오픈(모임 금고)에서 지출 | `amount` | 장부 기록 + 오픈 차감 |
+| **정기 모임 참석** | `MEETING_ATTENDANCE` | 모임 개최 참석 투표 | `meeting_title`, `meeting_date`, `meeting_location` | MEETINGS 테이블 생성 |
 | **회원 강퇴** | `KICK` | 문제 회원 강제 탈퇴 | `target_user_id` | 회원 탈퇴 처리 + 보증금 락 해제 |
 | **규칙 변경** | `RULE_CHANGE` | 모임 규칙 수정 | - | 모임 설정 업데이트 |
 
@@ -96,15 +97,17 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum VoteType {
-    EXPENSE("지출 요청", true, false),
-    KICK("회원 강퇴", false, true),
-    RULE_CHANGE("규칙 변경", false, false);
+    EXPENSE("오픈 사용 (지출)", true, false, false),
+    MEETING_ATTENDANCE("정기 모임 참석", false, false, true),
+    KICK("회원 강퇴", false, true, false),
+    RULE_CHANGE("규칙 변경", false, false, false);
 
     private final String description;
-    private final boolean requiresAmount;      // amount 필수 여부
-    private final boolean requiresTargetUser;  // target_user_id 필수 여부
+    private final boolean requiresAmount;       // amount 필수 여부
+    private final boolean requiresTargetUser;   // target_user_id 필수 여부
+    private final boolean requiresMeetingInfo;  // 모임 정보 필수 여부 (⭐ NEW)
 
-    public void validate(Long amount, String targetUserId) {
+    public void validate(Long amount, String targetUserId, MeetingInfo meetingInfo) {
         if (requiresAmount && amount == null) {
             throw new IllegalArgumentException(
                 this.name() + " 타입은 amount가 필수입니다."
@@ -128,6 +131,18 @@ public enum VoteType {
                 this.name() + " 타입은 target_user_id를 사용하지 않습니다."
             );
         }
+
+        // ⭐ 모임 정보 검증 추가
+        if (requiresMeetingInfo && meetingInfo == null) {
+            throw new IllegalArgumentException(
+                this.name() + " 타입은 모임 정보(meeting_title, meeting_date, meeting_location)가 필수입니다."
+            );
+        }
+    }
+
+    // 오버로드: 기존 호환성 유지
+    public void validate(Long amount, String targetUserId) {
+        validate(amount, targetUserId, null);
     }
 }
 ```

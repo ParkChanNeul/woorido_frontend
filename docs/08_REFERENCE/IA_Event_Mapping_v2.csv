@@ -31,12 +31,18 @@
 모임 상세-멤버,장부,Django 분석 요청,onMount,/api/groups/:id/ledger/analysis,GET,-,"{avgExpense, topCategory, trend, comparison}",분석 카드 렌더링,분석 실패 → 기본 통계만,기본값 표시,Skeleton Card,P0,Fallback 필수
 모임 상세-멤버,장부,차트 데이터 조회,onMount,/api/groups/:id/ledger/chart,GET,"{type: line|pie}","{labels, datasets}",Recharts 렌더링,차트 실패 → 숫자 표시,Fallback UI,Skeleton Chart,P0,
 모임 상세-멤버,장부,거래 내역 조회,onScroll,/api/groups/:id/ledger/transactions,GET,"{page, limit}","[{type, amount, description, voter, createdAt}]",타임라인 추가,로드 실패 Toast,재시도 버튼,Skeleton Items,P0,무한스크롤
-모임 상세-멤버,투표,진행 중 투표 조회,onMount,/api/groups/:id/votes?status=active,GET,-,"[{id, title, amount, requester, yesCount, noCount, deadline}]",투표 카드 / 빈 상태,빈 상태 + CP 권한 안내,-,Skeleton Cards,P0,마감 임박 강조
+모임 상세-멤버,정기모임,모임 목록 조회,onMount,/api/groups/:id/meetings,GET,-,"[{id, title, meetingDate, location, status, attendeeCount}]",모임 카드 렌더링 / 빈 상태,빈 상태 + CP 생성 안내,-,Skeleton Cards,P0,⭐ 신규
+모임 상세-멤버,정기모임,모임 상세 조회,onClick,/api/meetings/:meetingId,GET,-,"{id, title, date, location, attendees, relatedVotes}",상세 모달 표시,-,-,Skeleton Modal,P0,⭐ 신규
+모임 상세-멤버,정기모임,참석 투표 생성 (CP),onClick,/api/groups/:id/meetings/vote,POST,"{title, meetingDate, location}","{voteId}",투표 생성 완료 Toast,권한 없음 에러,권한 안내 모달,버튼 Spinner,P0,⭐ MEETING_ATTENDANCE
+모임 상세-멤버,정기모임,참석/불참 투표,onClick,/api/votes/:id/cast,POST,"{vote: attend|absent}","{attendCount, absentCount, myVote}",Progress Bar 갱신 (Optimistic),이미 투표함 / 마감됨 에러,상태 안내 모달,없음,P0,⭐ 과반수 필수
+모임 상세-멤버,정기모임,참석 등록,onClick,/api/meetings/:meetingId/attend,POST,-,"{attendeeCount, isAttending}",참석 완료 Toast,정원 초과 에러,대기 목록 안내,버튼 Spinner,P0,⭐ 신규
+모임 상세-멤버,정기모임,참석 취소,onClick,/api/meetings/:meetingId/attend,DELETE,-,"{attendeeCount, isAttending}",취소 완료 Toast,취소 불가 (마감),마감 안내,버튼 Spinner,P1,⭐ 신규
+모임 상세-멤버,투표,진행 중 투표 조회,onMount,/api/groups/:id/votes?status=active,GET,-,"[{id, title, amount, type, requester, yesCount, noCount, deadline}]",투표 카드 / 빈 상태,빈 상태 + CP 권한 안내,-,Skeleton Cards,P0,⭐ type에 MEETING_ATTENDANCE 포함
 모임 상세-멤버,투표,완료된 투표 조회,onTabChange,/api/groups/:id/votes?status=completed,GET,-,"[{id, title, result, ledgerEntryId}]",결과 카드 렌더링,-,-,Skeleton Cards,P0,장부 연결 링크
-모임 상세-멤버,투표,지출 요청 (CP),onClick,/api/groups/:id/votes,POST,"{title, amount, description}","{voteId}",투표 생성 완료 Toast,권한 없음 에러 (멤버),권한 안내 모달,버튼 Spinner,P0,CP 전용
-모임 상세-멤버,투표,찬성/반대 투표,onClick,/api/votes/:id/cast,POST,"{vote: yes|no}","{yesCount, noCount, myVote}",Progress Bar 갱신 (Optimistic),이미 투표함 / 마감됨 에러,상태 안내 모달,없음,P0,56px 버튼
-모임 상세-멤버,투표,투표 상세 조회,onClick,/api/votes/:id,GET,-,"{title, amount, requester, voters, deadline, status}",상세 모달 표시,-,-,Skeleton Modal,P0,
+모임 상세-멤버,투표,지출 요청 (CP),onClick,/api/groups/:id/votes,POST,"{title, amount, description, meetingId?}","{voteId}",투표 생성 완료 Toast,권한 없음 에러 (멤버),권한 안내 모달,버튼 Spinner,P0,⭐ meetingId 추가: 참석자만 투표
+모임 상세-멤버,투표,찬성/반대 투표,onClick,/api/votes/:id/cast,POST,"{vote: yes|no}","{yesCount, noCount, myVote}",Progress Bar 갱신 (Optimistic),이미 투표함 / 마감됨 / 참석자 아님,상태 안내 모달,없음,P0,⭐ 모임 지출은 참석자만
+모임 상세-멤버,투표,투표 상세 조회,onClick,/api/votes/:id,GET,-,"{title, amount, requester, voters, deadline, status, meetingId}",상세 모달 표시,-,-,Skeleton Modal,P0,
 모임 상세-멤버,멤버,멤버 목록 조회,onMount,/api/groups/:id/members,GET,-,"[{id, nickname, avatar, role, joinedAt}]",멤버 리스트 렌더링,-,-,Skeleton List,P1,
-나의 모임,모임 리스트,목록 조회,onMount,/api/my-groups,GET,-,"[{id, name, role, thumbnail, status, newPosts, pendingVotes}]",카드 렌더링 / 빈 상태,빈 상태 + 모임 찾기 CTA,-,Skeleton Cards,P0,알림 뱃지 포함
+나의 모임,모임 리스트,목록 조회,onMount,/api/my-groups,GET,-,"[{id, name, role, thumbnail, status, newPosts, pendingVotes, upcomingMeetings}]",카드 렌더링 / 빈 상태,빈 상태 + 모임 찾기 CTA,-,Skeleton Cards,P0,⭐ upcomingMeetings 추가
 나의 모임,모임 리스트,모임 진입,onClick,-,-,-,-,모임 피드로 이동,-,-,-,P0,전체 카드 클릭
 탈퇴,탈퇴 확인,탈퇴 요청,onClick,/api/groups/:id/leave,POST,-,"{unlockedAmount, newBalance}",성공 Toast + 홈 이동,미납금 있음 에러,미납금 안내 + 납부 유도,버튼 Spinner,P1,확인 다이얼로그 필수

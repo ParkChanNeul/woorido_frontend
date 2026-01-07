@@ -49,10 +49,10 @@ Depth1_대분류,Depth2_중분류,Depth3_화면기능,Type,Route,설명,우선�
 모임 상세-공개,모임 정보,비용 계산기,Component,/groups/:id,납입금+보증금 = 필요 금액 표시,P0,FE,Y,-,-,Both,-,⭐ 인지 부하 감소
 모임 상세-공개,모임 정보,최근 활동,Section,/groups/:id,최근 피드 3개 미리보기,P1,Both,N,-,-,Both,-,
 모임 상세-공개,가입 신청,가입 버튼,Component,/groups/:id,CTA 가입하기,P0,FE,Y,-,-,Both,56px,고정 하단 버튼
-모임 상세-공개,가입 신청,가입 확인 모달,Modal,/groups/:id/join,비용 안내 + 보증금 설명,P0,Both,Y,-,-,Both,-,핵심 차별화
+모임 상세-공개,가입 신청,가입 확인 모달,Modal,/groups/:id/join,보증금 + 입회비 안내,P0,Both,Y,-,-,Both,-,⭐ 입회비 표시 추가
 모임 상세-공개,가입 신청,잔액 부족 안내,Modal,/groups/:id/join,충전 유도 + 복귀 약속,P0,FE,Y,-,충전 후 자동 복귀 안내,Both,-,⭐ 이탈 방지
 모임 상세-공개,가입 신청,가입 완료,Toast,-,성공 알림 + 피드 이동,P0,Both,Y,-,-,Both,-,
-모임 상세-멤버,탭 구조,탭 네비게이션,Component,/groups/:id,피드/장부/투표/멤버,P0,FE,Y,-,-,Both,44px,SNS-First - 스와이프 지원
+모임 상세-멤버,탭 구조,탭 네비게이션,Component,/groups/:id,피드/정기모임/장부/투표/멤버,P0,FE,Y,-,-,Both,44px,⭐ 정기모임 Tab 추가
 모임 상세-멤버,피드 (Tab1),피드 목록,Tab,/groups/:id/feed,페이지네이션 20개,P0,Both,Y,첫 글 작성 유도 CTA,-,Both,-,1순위 기능
 모임 상세-멤버,피드 (Tab1),공지사항,Component,/groups/:id/feed,상단 핀 고정 (CP만),P0,Both,Y,-,-,Both,-,
 모임 상세-멤버,피드 (Tab1),글 작성 FAB,FAB,/groups/:id/feed,플로팅 버튼,P0,FE,Y,-,-,Mobile,56px,우측 하단 고정
@@ -60,19 +60,26 @@ Depth1_대분류,Depth2_중분류,Depth3_화면기능,Type,Route,설명,우선�
 모임 상세-멤버,피드 (Tab1),댓글/대댓글,Component,/groups/:id/feed,2단계까지,P0,Both,Y,-,-,Both,44px,
 모임 상세-멤버,피드 (Tab1),좋아요,Component,-,토글 + 카운트,P0,Both,Y,-,-,Both,44px,
 모임 상세-멤버,피드 (Tab1),이미지 업로드,Component,/groups/:id/feed/new,S3 연동,P1,Both,Y,-,재시도 + 건너뛰기,Both,-,
-모임 상세-멤버,장부 (Tab2),장부 요약,Section,/groups/:id/ledger,총 잔액/수입/지출,P0,Both,Y,거래 없음 → 첫 지출 요청 안내,-,Both,-,
-모임 상세-멤버,장부 (Tab2),Django 분석 카드,Section,/groups/:id/ledger,평균 지출/트렌드,P0,Both,Y,데이터 부족 → 분석 불가 안내,분석 실패 → 기본 통계만 표시,Both,-,Django 연동
-모임 상세-멤버,장부 (Tab2),Recharts 차트,Section,/groups/:id/ledger,Line/Pie Chart,P0,FE,Y,차트 렌더링 실패 → 숫자만 표시,-,Both,-,
-모임 상세-멤버,장부 (Tab2),거래 내역,Section,/groups/:id/ledger,타임라인 형식,P0,Both,Y,거래 없음 → CP에게 지출 요청 안내,-,Both,-,
-모임 상세-멤버,투표 (Tab3),진행 중 투표,Tab,/groups/:id/votes,활성 투표 리스트,P0,Both,Y,투표 없음 → CP만 생성 가능 안내,-,Both,-,
-모임 상세-멤버,투표 (Tab3),완료된 투표,Tab,/groups/:id/votes,결과 + 장부 연결,P0,Both,Y,-,-,Both,-,
-모임 상세-멤버,투표 (Tab3),투표 상세,Modal,/groups/:id/votes/:voteId,찬성/반대 현황,P0,Both,Y,-,-,Both,-,
-모임 상세-멤버,투표 (Tab3),지출 요청,Modal,/groups/:id/votes/new,금액/목적 입력,P0,Both,Y,-,-,Both,-,CP 전용 (멤버에게 권한 없음 안내)
-모임 상세-멤버,투표 (Tab3),투표 참여,Component,-,찬성/반대 버튼,P0,Both,Y,-,이미 투표함 → 변경 불가 안내,Both,56px,
-모임 상세-멤버,투표 (Tab3),투표 마감 알림,Component,-,마감 임박 경고,P0,FE,Y,-,-,Both,-,⭐ 참여 유도
-모임 상세-멤버,멤버 (Tab4),멤버 리스트,Tab,/groups/:id/members,프로필/가입일/역할,P1,Both,N,-,-,Both,-,
-모임 상세-멤버,멤버 (Tab4),CP 뱃지,Component,-,계주 표시,P1,FE,N,-,-,Both,-,
-모임 상세-멤버,멤버 (Tab4),신고,BottomSheet,/groups/:id/members,악성 유저 신고,P2,Both,N,-,-,Both,-,
+모임 상세-멤버,정기모임 (Tab2),모임 일정 목록,Tab,/groups/:id/meetings,예정/완료된 모임 리스트,P0,Both,Y,예정된 모임 없음 → CP가 모임 생성 안내,-,Both,-,⭐ 신규
+모임 상세-멤버,정기모임 (Tab2),모임 카드,Component,/groups/:id/meetings,제목/날짜/장소/참석자수,P0,FE,Y,-,-,Both,-,⭐ 신규
+모임 상세-멤버,정기모임 (Tab2),모임 상세,Modal,/groups/:id/meetings/:meetingId,참석자 목록/지출 연결,P0,Both,Y,-,-,Both,-,⭐ 신규
+모임 상세-멤버,정기모임 (Tab2),참석 투표 생성,Modal,/groups/:id/meetings/vote,날짜/장소만 입력 (비용 없음),P0,Both,Y,-,-,Both,-,⭐ CP전용 MEETING_ATTENDANCE
+모임 상세-멤버,정기모임 (Tab2),참석/불참 투표,Component,-,참석/불참 버튼,P0,Both,Y,-,이미 투표함 → 변경 불가,Both,56px,⭐ 신규
+모임 상세-멤버,정기모임 (Tab2),참석 신청,Component,-,모임 확정 후 참석 등록,P0,Both,Y,-,-,Both,44px,⭐ 신규
+모임 상세-멤버,정기모임 (Tab2),과반수 경고,Component,-,참석 미달 시 모임 취소 안내,P0,FE,Y,-,-,Both,-,⭐ 먹튀 방지
+모임 상세-멤버,장부 (Tab3),장부 요약,Section,/groups/:id/ledger,총 잔액/수입/지출,P0,Both,Y,거래 없음 → 첫 지출 요청 안내,-,Both,-,
+모임 상세-멤버,장부 (Tab3),Django 분석 카드,Section,/groups/:id/ledger,평균 지출/트렌드,P0,Both,Y,데이터 부족 → 분석 불가 안내,분석 실패 → 기본 통계만 표시,Both,-,Django 연동
+모임 상세-멤버,장부 (Tab3),Recharts 차트,Section,/groups/:id/ledger,Line/Pie Chart,P0,FE,Y,차트 렌더링 실패 → 숫자만 표시,-,Both,-,
+모임 상세-멤버,장부 (Tab3),거래 내역,Section,/groups/:id/ledger,타임라인 형식,P0,Both,Y,거래 없음 → CP에게 지출 요청 안내,-,Both,-,
+모임 상세-멤버,투표 (Tab4),진행 중 투표,Tab,/groups/:id/votes,활성 투표 리스트,P0,Both,Y,투표 없음 → CP만 생성 가능 안내,-,Both,-,
+모임 상세-멤버,투표 (Tab4),완료된 투표,Tab,/groups/:id/votes,결과 + 장부 연결,P0,Both,Y,-,-,Both,-,
+모임 상세-멤버,투표 (Tab4),투표 상세,Modal,/groups/:id/votes/:voteId,찬성/반대 현황,P0,Both,Y,-,-,Both,-,
+모임 상세-멤버,투표 (Tab4),지출 요청,Modal,/groups/:id/votes/new,금액/목적 + 관련 모임 선택,P0,Both,Y,-,-,Both,-,⭐ 모임 연결 시 참석자만 투표
+모임 상세-멤버,투표 (Tab4),투표 참여,Component,-,찬성/반대 버튼,P0,Both,Y,-,이미 투표함 → 변경 불가 안내,Both,56px,
+모임 상세-멤버,투표 (Tab4),투표 마감 알림,Component,-,마감 임박 경고,P0,FE,Y,-,-,Both,-,⭐ 참여 유도
+모임 상세-멤버,멤버 (Tab5),멤버 리스트,Tab,/groups/:id/members,프로필/가입일/역할,P1,Both,N,-,-,Both,-,
+모임 상세-멤버,멤버 (Tab5),CP 뱃지,Component,-,계주 표시,P1,FE,N,-,-,Both,-,
+모임 상세-멤버,멤버 (Tab5),신고,BottomSheet,/groups/:id/members,악성 유저 신고,P2,Both,N,-,-,Both,-,
 모임 상세-멤버,설정,모임 정보 수정,Page,/groups/:id/settings,CP 전용,P2,Both,N,-,-,Both,-,Demo 제외
 나의 모임,모임 리스트,가입한 모임,Page,/my-groups,모임 카드 리스트,P0,Both,Y,모임 없음 → 모임 찾기 CTA,-,Both,-,
 나의 모임,모임 리스트,역할 뱃지,Component,/my-groups,CP/멤버 표시,P0,FE,Y,-,-,Both,-,

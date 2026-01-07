@@ -47,7 +47,7 @@
 - RULE_CHANGE (규칙 변경)
 
 **추가 필요:**
-- **MEETING_CREATE** (모임 개최 투표)
+- **MEETING_ATTENDANCE** (모임 참석 투표) - ❌ 예상 비용 기재 안 함
 
 ### 1.2 ERD 변경사항
 
@@ -113,20 +113,20 @@ CREATE INDEX idx_attendees_user ON meeting_attendees(user_id, registered_at DESC
 
 ```sql
 -- 기존 컬럼
-ALTER TABLE votes ADD meeting_title VARCHAR(200);      -- MEETING_CREATE인 경우
-ALTER TABLE votes ADD meeting_date TIMESTAMP;           -- MEETING_CREATE인 경우
-ALTER TABLE votes ADD meeting_location VARCHAR(500);    -- MEETING_CREATE인 경우
-ALTER TABLE votes ADD meeting_cost BIGINT;              -- MEETING_CREATE인 경우
+ALTER TABLE votes ADD meeting_title VARCHAR(200);      -- MEETING_ATTENDANCE인 경우
+ALTER TABLE votes ADD meeting_date TIMESTAMP;           -- MEETING_ATTENDANCE인 경우
+ALTER TABLE votes ADD meeting_location VARCHAR(500);    -- MEETING_ATTENDANCE인 경우
+-- ❌ meeting_cost 제거: 정기 모임 투표는 참석 여부만 투표, 비용은 별도 지출 투표로 처리
 
 -- CHECK 제약조건 추가
 ALTER TABLE votes ADD CONSTRAINT chk_vote_meeting CHECK (
-  (type = 'MEETING_CREATE' AND meeting_title IS NOT NULL AND meeting_date IS NOT NULL) OR
-  (type != 'MEETING_CREATE' AND meeting_title IS NULL)
+  (type = 'MEETING_ATTENDANCE' AND meeting_title IS NOT NULL AND meeting_date IS NOT NULL) OR
+  (type != 'MEETING_ATTENDANCE' AND meeting_title IS NULL)
 );
 
 -- type Enum 업데이트
 -- 기존: EXPENSE, KICK, RULE_CHANGE
--- 추가: MEETING_CREATE
+-- 추가: MEETING_ATTENDANCE
 ```
 
 ### 1.3 Spring Boot 변경사항
@@ -142,7 +142,7 @@ public enum VoteType {
     EXPENSE("지출 요청", true, false, false),
     KICK("회원 강퇴", false, true, false),
     RULE_CHANGE("규칙 변경", false, false, false),
-    MEETING_CREATE("모임 개최", false, false, true);  // ⭐ 추가
+    MEETING_ATTENDANCE("모임 참석", false, false, true);  // ⭐ 참석/불참 투표 (비용 없음)
 
     private final String description;
     private final boolean requiresAmount;
@@ -236,7 +236,7 @@ public class MeetingCreateVoteStrategy implements VoteApprovalStrategy {
 
     @Override
     public boolean supports(Vote vote) {
-        return vote.getType() == VoteType.MEETING_CREATE;
+        return vote.getType() == VoteType.MEETING_ATTENDANCE;
     }
 
     @Override
@@ -352,20 +352,20 @@ public class MeetingService {
 
 ### 1.4 API 엔드포인트 추가
 
-#### 1.4.1 모임 개최 투표 생성
+#### 1.4.1 모임 참석 투표 생성
 
 ```
 POST /api/groups/:groupId/votes
 
 Request Body:
 {
-  "type": "MEETING_CREATE",
-  "title": "2월 독서 모임 개최 투표",
-  "description": "2월 10일 강남역 근처에서 모임을 가지려고 합니다.",
+  "type": "MEETING_ATTENDANCE",
+  "title": "2월 독서 모임 참석 투표",
+  "description": "2월 10일 강남역 근처에서 모임을 가지려고 합니다. 참석 여부를 투표해주세요.",
   "meetingTitle": "2월 독서 모임",
   "meetingDate": "2026-02-10T14:00:00Z",
-  "meetingLocation": "강남역 스터디카페 A",
-  "meetingCost": 50000
+  "meetingLocation": "강남역 스터디카페 A"
+  // ❌ meetingCost 제거: 비용은 별도 지출 투표로 처리
 }
 
 Response:
@@ -981,18 +981,18 @@ Backend: 모임 개최 투표 구현 시작
 - [ ] MEETINGS 테이블 생성
 - [ ] MEETING_ATTENDEES 테이블 생성
 - [ ] VOTES 테이블에 meeting 관련 컬럼 4개 추가
-- [ ] VOTES.type에 'MEETING_CREATE' 추가
+- [ ] VOTES.type에 'MEETING_ATTENDANCE' 추가
 - [ ] CHECK 제약조건 추가
 
 #### Backend
 - [ ] Meeting 도메인 모델 추가
-- [ ] VoteType Enum에 MEETING_CREATE 추가
-- [ ] MeetingCreateVoteStrategy 구현
+- [ ] VoteType Enum에 MEETING_ATTENDANCE 추가
+- [ ] MeetingAttendanceVoteStrategy 구현
 - [ ] MeetingService 추가
 - [ ] MeetingMapper 인터페이스 및 XML 추가
 
 #### API
-- [ ] POST /api/groups/:groupId/votes (MEETING_CREATE 타입)
+- [ ] POST /api/groups/:groupId/votes (MEETING_ATTENDANCE 타입)
 - [ ] GET /api/groups/:groupId/meetings
 - [ ] POST /api/meetings/:meetingId/attend
 - [ ] DELETE /api/meetings/:meetingId/attend
