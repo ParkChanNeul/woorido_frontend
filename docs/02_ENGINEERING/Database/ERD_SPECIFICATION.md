@@ -489,6 +489,8 @@ CREATE INDEX idx_acct_tx_type ON account_transactions(type, created_at DESC);
 
 ### 3.4 모임 (gye)
 
+> ⭐ **v2.1 업데이트**: 완주 인증(is_verified) 추가, 용어 매핑 주석 추가
+
 ```sql
 CREATE TABLE gye (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
@@ -496,29 +498,33 @@ CREATE TABLE gye (
   description VARCHAR(2000),
   category VARCHAR(50) NOT NULL,
 
-  -- 모임장
+  -- 모임장 (⭐ creator_id → leaderId 용어 매핑)
   creator_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 
-  -- 회원 관리 (동시성 제어)
-  current_members NUMBER DEFAULT 0 NOT NULL,
-  max_members NUMBER NOT NULL,
-  version BIGINT DEFAULT 0 NOT NULL,  -- ⭐ Optimistic Lock
+  -- 팔로워 관리 (동시성 제어) (⭐ members → followers 용어 매핑)
+  current_members NUMBER DEFAULT 0 NOT NULL,  -- → currentFollowers
+  max_members NUMBER NOT NULL,  -- → maxFollowers
+  version BIGINT DEFAULT 0 NOT NULL,  -- Optimistic Lock
 
-  -- 재무 정보
-  balance BIGINT DEFAULT 0 NOT NULL,
-  monthly_fee BIGINT NOT NULL,
-  deposit_amount BIGINT NOT NULL,
+  -- 재무 정보 (⭐ 용어 매핑)
+  balance BIGINT DEFAULT 0 NOT NULL,  -- → openBalance (오픈 잔액)
+  monthly_fee BIGINT NOT NULL,  -- → supportAmount (월 서포트)
+  deposit_amount BIGINT NOT NULL,  -- → depositLock (보증금 락)
 
   -- 모임 설정
   is_public CHAR(1) DEFAULT 'Y' CHECK (is_public IN ('Y', 'N')),
   join_approval_required CHAR(1) DEFAULT 'N' CHECK (join_approval_required IN ('Y', 'N')),
 
+  -- ⭐ NEW: 완주 인증 시스템 (1년 운영 시 부여)
+  is_verified CHAR(1) DEFAULT 'N' CHECK (is_verified IN ('Y', 'N')),
+  verified_at TIMESTAMP,  -- 완주 인증 시점
+
   -- 이미지
   thumbnail_url VARCHAR(500),
   banner_url VARCHAR(500),
 
-  -- Soft Delete (사용자 결정사항)
-  deleted_at TIMESTAMP,  -- ⭐ NULL이면 활성, 값 있으면 삭제됨
+  -- Soft Delete
+  deleted_at TIMESTAMP,
   dissolution_reason VARCHAR(500),
 
   -- 타임스탬프
@@ -532,13 +538,27 @@ CREATE TABLE gye (
   CONSTRAINT chk_deposit CHECK (deposit_amount >= 0)
 );
 
+-- 인덱스
 CREATE INDEX idx_gye_creator ON gye(creator_id);
 CREATE INDEX idx_gye_category ON gye(category, created_at DESC);
 CREATE INDEX idx_gye_public ON gye(is_public, created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_gye_deleted ON gye(deleted_at DESC);  -- Soft delete 조회용
+CREATE INDEX idx_gye_deleted ON gye(deleted_at DESC);
+CREATE INDEX idx_gye_verified ON gye(is_verified, created_at DESC);  -- ⭐ 완주 인증 챌린지 조회용
 ```
 
+**컬럼 용어 매핑:**
+| ERD 컬럼명 | 프론트엔드/API 용어 |
+|-----------|-------------------|
+| `creator_id` | `leaderId` (리더 ID) |
+| `current_members` | `currentFollowers` (현재 팔로워 수) |
+| `balance` | `openBalance` (오픈 잔액) |
+| `monthly_fee` | `supportAmount` (월 서포트) |
+| `deposit_amount` | `depositLock` (보증금 락) |
+| `is_verified` | `isVerified` (완주 인증) |
+
 ### 3.5 모임 회원 (gye_members)
+
+> ⭐ **v2.1 업데이트**: 권한 박탈/복구 기능 추가
 
 ```sql
 CREATE TABLE gye_members (
@@ -546,31 +566,46 @@ CREATE TABLE gye_members (
   gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 
-  -- 역할
-  role VARCHAR(20) DEFAULT 'MEMBER' CHECK (role IN ('LEADER', 'MANAGER', 'MEMBER')),
+  -- 역할 (⭐ MEMBER → FOLLOWER 용어 변경)
+  role VARCHAR(20) DEFAULT 'FOLLOWER' CHECK (role IN ('LEADER', 'MANAGER', 'FOLLOWER')),
 
-  -- 보증금 정보
+  -- 보증금 락 정보 (⭐ deposit → depositLock 용어 매핑)
   deposit_paid CHAR(1) DEFAULT 'N' CHECK (deposit_paid IN ('Y', 'N')),
   deposit_paid_at TIMESTAMP,
-  deposit_locked_at TIMESTAMP,
-  deposit_unlocked_at TIMESTAMP,
+  deposit_locked_at TIMESTAMP,  -- 보증금 락 시점
+  deposit_unlocked_at TIMESTAMP,  -- 보증금 락 해제 시점
 
-  -- 회비 납부 상태
-  last_fee_paid_at TIMESTAMP,
-  total_fees_paid BIGINT DEFAULT 0 NOT NULL,
+  -- ⭐ NEW: 권한 박탈 시스템 (보증금 충당 시)
+  privilege_status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (privilege_status IN ('ACTIVE', 'REVOKED')),
+  privilege_revoked_at TIMESTAMP,  -- 권한 박탈 시점 (자동 탈퇴 60일 카운트 기준)
+
+  -- 서포트 납부 상태 (⭐ fee → support 용어 매핑)
+  last_support_paid_at TIMESTAMP,  -- last_fee_paid_at → last_support_paid_at
+  total_support_paid BIGINT DEFAULT 0 NOT NULL,  -- total_fees_paid → total_support_paid
 
   -- 타임스탬프
   joined_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   left_at TIMESTAMP,
+  leave_reason VARCHAR(50),  -- ⭐ NEW: 탈퇴 사유 (NORMAL, AUTO_LEAVE_DEPOSIT_NOT_RECHARGED, KICKED)
 
   -- 제약조건
   CONSTRAINT uk_gye_user UNIQUE (gye_id, user_id)
 );
 
+-- 인덱스
 CREATE INDEX idx_members_gye ON gye_members(gye_id, joined_at DESC);
 CREATE INDEX idx_members_user ON gye_members(user_id, joined_at DESC);
 CREATE INDEX idx_members_active ON gye_members(gye_id) WHERE left_at IS NULL;
+CREATE INDEX idx_members_revoked ON gye_members(privilege_status, privilege_revoked_at) 
+  WHERE privilege_status = 'REVOKED';  -- ⭐ 자동 탈퇴 대상 조회용
 ```
+
+**컬럼 용어 매핑:**
+| ERD 컬럼명 | 프론트엔드/API 용어 |
+|-----------|-------------------|
+| `deposit_*` | `depositLock` (보증금 락) |
+| `last_support_paid_at` | `lastSupportPaidAt` (최근 서포트 납입) |
+| `privilege_status` | `privilegeStatus` (권한 상태) |
 
 ### 3.6 장부 (ledger_entries)
 
@@ -1698,7 +1733,179 @@ def detect_anomaly(request):
 
 ---
 
-**문서 버전**: v2.0
-**최종 수정**: 2026-01-05
-**작성자**: Claude (Sonnet 4.5)
+## 7. 관리자 CMS 테이블 ⭐ NEW (v2.1)
+
+> 플랫폼 운영을 위한 관리자 전용 테이블
+
+### 7.1 관리자 계정 (admins)
+
+```sql
+CREATE TABLE admins (
+  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  
+  -- 권한
+  role VARCHAR(20) DEFAULT 'ADMIN' CHECK (role IN ('SUPER_ADMIN', 'ADMIN', 'SUPPORT')),
+  
+  -- 상태
+  is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
+  last_login_at TIMESTAMP,
+  
+  -- 타임스탬프
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_admins_email ON admins(email);
+CREATE INDEX idx_admins_role ON admins(role, is_active);
+```
+
+### 7.2 수수료 정책 (fee_policies)
+
+> 동적 수수료율 관리 (1%/3%/1.5% 등)
+
+```sql
+CREATE TABLE fee_policies (
+  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  
+  -- 금액 범위
+  min_amount BIGINT NOT NULL,  -- 최소 금액 (이상)
+  max_amount BIGINT,           -- 최대 금액 (이하), NULL이면 상한 없음
+  
+  -- 수수료율 (소수점 4자리까지, 0.0300 = 3%)
+  rate DECIMAL(5,4) NOT NULL CHECK (rate >= 0 AND rate <= 1),
+  
+  -- 상태
+  is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
+  
+  -- 감사
+  created_by UUID REFERENCES admins(id),
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  
+  -- 제약조건
+  CONSTRAINT chk_fee_amount_range CHECK (min_amount >= 0 AND (max_amount IS NULL OR max_amount > min_amount))
+);
+
+CREATE INDEX idx_fee_policies_active ON fee_policies(is_active, min_amount);
+```
+
+**기본 데이터:**
+```sql
+-- 초기 수수료 정책 (PRODUCT_AGENDA 기준)
+INSERT INTO fee_policies (id, min_amount, max_amount, rate, is_active) VALUES
+  (SYS_GUID(), 0, 9999, 0.0100, 'Y'),        -- 소액: 1%
+  (SYS_GUID(), 10000, 200000, 0.0300, 'Y'),  -- 일반: 3%
+  (SYS_GUID(), 200001, NULL, 0.0150, 'Y');   -- 고액: 1.5%
+```
+
+### 7.3 신고 관리 (reports)
+
+```sql
+CREATE TABLE reports (
+  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  
+  -- 신고자
+  reporter_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  
+  -- 신고 대상
+  target_type VARCHAR(20) NOT NULL CHECK (target_type IN ('USER', 'GYE', 'POST', 'COMMENT')),
+  target_id UUID NOT NULL,
+  
+  -- 신고 내용
+  reason VARCHAR(500) NOT NULL,
+  evidence_url VARCHAR(500),  -- 증거 첨부
+  
+  -- 처리 상태
+  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'REVIEWING', 'RESOLVED', 'DISMISSED')),
+  
+  -- 처리 결과
+  handled_by UUID REFERENCES admins(id),
+  handled_at TIMESTAMP,
+  action_taken VARCHAR(500),  -- 조치 내용
+  
+  -- 타임스탬프
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_reports_status ON reports(status, created_at DESC);
+CREATE INDEX idx_reports_target ON reports(target_type, target_id);
+CREATE INDEX idx_reports_reporter ON reports(reporter_id);
+```
+
+### 7.4 관리자 활동 로그 (admin_logs)
+
+> 감사 추적용 (누가 무엇을 언제 했는지)
+
+```sql
+CREATE TABLE admin_logs (
+  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  
+  -- 관리자
+  admin_id UUID REFERENCES admins(id) ON DELETE SET NULL,
+  
+  -- 활동 정보
+  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_GYE 등
+  target_type VARCHAR(20),
+  target_id UUID,
+  
+  -- 상세 내용 (JSON)
+  details CLOB,
+  
+  -- 접속 정보
+  ip_address VARCHAR(50),
+  user_agent VARCHAR(500),
+  
+  -- 타임스탬프
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_admin_logs_admin ON admin_logs(admin_id, created_at DESC);
+CREATE INDEX idx_admin_logs_action ON admin_logs(action, created_at DESC);
+CREATE INDEX idx_admin_logs_created ON admin_logs(created_at DESC);
+```
+
+---
+
+## 8. 요약
+
+### 설계 원칙
+
+1. **모든 트랜잭션**: Spring Boot에서만 처리
+2. **Django**: 분석 전용 (DB 연결 없음)
+3. **동시성 제어**: Optimistic + Pessimistic Lock 조합
+4. **Idempotency**: 모든 금융 트랜잭션에 적용
+5. **Soft Delete**: 모임(gye) 테이블에 적용
+6. **CASCADE 정책**: 명시적 정의
+7. **Hybrid returnUrl**: 돈은 DB Session, 의견은 Frontend
+8. **Django 역할**: 순수 분석 엔진 (DB 연결 없음)
+
+### 트랜잭션 오류 해결
+
+| 오류 유형 | 해결 방법 | 적용 테이블 |
+|----------|----------|-----------|
+| Race Condition | Optimistic Lock | gye, accounts |
+| Lost Update | Pessimistic Lock | accounts |
+| Atomicity Violation | Single @Transactional | votes, ledger_entries |
+| Counter Drift | Atomic Operations | posts |
+| Missing CASCADE | Explicit ON DELETE | 모든 FK |
+
+### v2.1 변경사항
+
+| 테이블 | 변경 내용 |
+|--------|---------|
+| **gye** | `is_verified`, `verified_at` 추가, 용어 매핑 주석 |
+| **gye_members** | `privilege_status`, `privilege_revoked_at`, `leave_reason` 추가, 역할 FOLLOWER로 변경 |
+| **admins** | ⭐ 신규 - 관리자 계정 |
+| **fee_policies** | ⭐ 신규 - 수수료 정책 |
+| **reports** | ⭐ 신규 - 신고 관리 |
+| **admin_logs** | ⭐ 신규 - 감사 추적 |
+
+---
+
+**문서 버전**: v2.1
+**최종 수정**: 2026-01-08
+**작성자**: AI-Assisted Development Team
 **검토 필요**: Spring Boot 팀, Oracle DBA
