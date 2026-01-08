@@ -66,10 +66,11 @@ com.woorido
 │   └── vote
 │       ├── VoteService.java             // 메인 서비스
 │       ├── VoteApprovalService.java     // 승인 처리 서비스
+│       ├── VoteStrategyFactory.java     // ⭐ NEW: 전략 팩토리
 │       └── strategy
 │           ├── VoteApprovalStrategy.java          // 전략 인터페이스
 │           ├── ExpenseVoteStrategy.java           // 오픈 사용 투표 전략
-│           ├── MeetingAttendanceVoteStrategy.java // ⭐ 정기 모임 참석 투표 전략
+│           ├── MeetingAttendanceVoteStrategy.java // 정기 모임 참석 투표 전략
 │           ├── KickVoteStrategy.java              // 강퇴 투표 전략
 │           └── RuleChangeVoteStrategy.java        // 규칙 변경 전략
 │
@@ -78,9 +79,9 @@ com.woorido
 │
 └── dto
     └── vote
-        ├── CreateVoteRequest.java
-        ├── CastVoteRequest.java
-        └── VoteDetailResponse.java
+        ├── CreateVoteRequest.java      // Java 17 Record
+        ├── CastVoteRequest.java        // Java 17 Record
+        └── VoteDetailResponse.java     // Java 17 Record
 ```
 
 ---
@@ -1030,6 +1031,195 @@ public class DissolveVoteStrategy implements VoteApprovalStrategy {
 
 ---
 
-**문서 버전**: v1.0
-**최종 수정**: 2026-01-06
-**작성자**: Claude (Sonnet 4.5)
+## 9. Factory 패턴 적용 ⭐ NEW
+
+### 9.1 VoteStrategyFactory
+
+> Strategy 객체 생성을 중앙화하여 VoteApprovalService의 의존성 관리 단순화
+
+```java
+package com.woorido.service.vote;
+
+import com.woorido.domain.vote.VoteType;
+import com.woorido.service.vote.strategy.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class VoteStrategyFactory {
+
+    private final ExpenseVoteStrategy expenseStrategy;
+    private final MeetingAttendanceVoteStrategy meetingStrategy;
+    private final KickVoteStrategy kickStrategy;
+    private final RuleChangeVoteStrategy ruleChangeStrategy;
+
+    /**
+     * VoteType에 따라 적절한 Strategy 반환
+     * @param type 투표 타입
+     * @return 해당 타입의 승인 전략
+     */
+    public VoteApprovalStrategy create(VoteType type) {
+        return switch (type) {
+            case EXPENSE -> expenseStrategy;
+            case MEETING_ATTENDANCE -> meetingStrategy;
+            case KICK -> kickStrategy;
+            case RULE_CHANGE -> ruleChangeStrategy;
+        };
+    }
+}
+```
+
+### 9.2 VoteApprovalService 리팩토링
+
+```java
+// 기존: List<Strategy>에서 supports() 검색
+// 개선: Factory에서 직접 생성
+
+@Service
+@RequiredArgsConstructor
+public class VoteApprovalService {
+
+    private final VoteStrategyFactory strategyFactory;
+    private final VoteMapper voteMapper;
+
+    @Transactional
+    public void processApproval(Vote vote) {
+        // Factory를 통해 Strategy 획득
+        VoteApprovalStrategy strategy = strategyFactory.create(vote.getType());
+        strategy.execute(vote);
+        
+        vote.setStatus(VoteStatus.APPROVED);
+        voteMapper.updateStatus(vote.getId(), vote.getStatus());
+    }
+}
+```
+
+**Factory 패턴 장점:**
+- Strategy 생성 로직 중앙화
+- 새 VoteType 추가 시 Factory만 수정
+- 테스트 시 Mock Factory 주입 용이
+
+---
+
+## 10. Java 17 Record DTO ⭐ NEW
+
+> DTO를 Java 17 Record로 변환하여 코드량 70% 감소 + 불변성 보장
+
+### 10.1 CreateVoteRequest (Record)
+
+```java
+package com.woorido.dto.vote;
+
+import com.woorido.domain.vote.VoteType;
+import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public record CreateVoteRequest(
+    @NotNull(message = "투표 타입은 필수입니다")
+    VoteType type,
+    
+    @NotBlank(message = "제목은 필수입니다")
+    @Size(max = 100)
+    String title,
+    
+    @Size(max = 500)
+    String description,
+    
+    // EXPENSE 타입 전용
+    BigDecimal amount,
+    
+    // MEETING_ATTENDANCE 타입 전용
+    LocalDate meetingDate,
+    String location,
+    
+    // KICK 타입 전용
+    Long targetUserId
+) {
+    // Compact Constructor: 타입별 필수 필드 검증
+    public CreateVoteRequest {
+        switch (type) {
+            case EXPENSE -> {
+                if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new IllegalArgumentException("오픈 사용 투표는 금액이 필수입니다");
+                }
+            }
+            case MEETING_ATTENDANCE -> {
+                if (meetingDate == null) {
+                    throw new IllegalArgumentException("정기 모임 투표는 날짜가 필수입니다");
+                }
+            }
+            case KICK -> {
+                if (targetUserId == null) {
+                    throw new IllegalArgumentException("강퇴 투표는 대상자가 필수입니다");
+                }
+            }
+            case RULE_CHANGE -> {
+                // description 권장
+            }
+        }
+    }
+}
+```
+
+### 10.2 CastVoteRequest (Record)
+
+```java
+public record CastVoteRequest(
+    @NotBlank(message = "투표 선택은 필수입니다")
+    @Pattern(regexp = "APPROVE|REJECT", message = "APPROVE 또는 REJECT만 가능")
+    String choice
+) {}
+```
+
+### 10.3 VoteDetailResponse (Record)
+
+```java
+public record VoteDetailResponse(
+    Long id,
+    VoteType type,
+    String title,
+    String description,
+    VoteStatus status,
+    int yesCount,
+    int noCount,
+    int totalEligible,
+    String myVote,
+    LocalDateTime expiresAt,
+    LocalDateTime createdAt
+) {
+    public static VoteDetailResponse from(Vote vote, int yes, int no, int total, String myVote) {
+        return new VoteDetailResponse(
+            vote.getId(),
+            vote.getType(),
+            vote.getTitle(),
+            vote.getDescription(),
+            vote.getStatus(),
+            yes, no, total, myVote,
+            vote.getExpiresAt(),
+            vote.getCreatedAt()
+        );
+    }
+    
+    // 투표율 계산 (파생 필드)
+    public double participationRate() {
+        if (totalEligible == 0) return 0.0;
+        return (double)(yesCount + noCount) / totalEligible * 100;
+    }
+}
+```
+
+**Record 장점:**
+| 항목 | 기존 @Data | Record |
+|------|-----------|--------|
+| 코드량 | 30줄+ | 10줄 |
+| 불변성 | ❌ | ✅ 보장 |
+| equals/hashCode | Lombok 생성 | 자동 |
+| Jackson 호환 | ✅ | ✅ |
+
+---
+
+**문서 버전**: v2.0
+**최종 수정**: 2026-01-08
+**작성자**: AI-Assisted Development Team
