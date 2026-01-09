@@ -3,8 +3,8 @@
 
 **작성일**: 2026-01-09
 **대상 DBMS**: Oracle 21c XE
-**ORM**: MyBatis 3.5.16
-**트랜잭션 관리**: Spring Boot 3.1.18 (@Transactional)
+**ORM**: mybatis-spring-boot-starter 3.0.3
+**트랜잭션 관리**: Spring Boot 3.2.3 (@Transactional)
 
 > 📖 정책 기준: [POLICY_DEFINITION.md](../../01_PLANNING/Product/POLICY_DEFINITION.md)
 > 📋 변경 이력: [BACKLOG.md](../../BACKLOG.md)

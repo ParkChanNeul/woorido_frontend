@@ -504,24 +504,25 @@ Django → Spring Boot → Frontend (차트 데이터)
 
 | 레이어 | 기술 | 비고 | AI 도구 |
 |--------|------|------|---------|
-| **Frontend** | React 18 + TypeScript | Vite 빌드 | v0.dev, Cursor |
-| | Tailwind CSS | 반응형 | v0.dev |
+| **Frontend** | React 18.2.0 + TypeScript 5.3.3 | Vite 5.0.12 빌드 | v0.dev, Cursor |
+| | Tailwind CSS 3.4.1 | 반응형 | v0.dev |
 | | Radix UI | 접근성 컴포넌트 | Copilot |
-| | Recharts | 차트 시각화 | v0.dev |
-| | React Query | 서버 상태 관리 | Cursor |
-| | Zustand | 클라이언트 상태 | Copilot |
-| **Main Backend** | Spring Boot 3.2 | REST API, DB 전담 | Claude Code |
-| | Spring Security + JWT | 인증/인가 | Claude Code |
-| | MyBatis | SQL 매핑 | Cursor |
-| **Sub Backend** | Django 5.0 | 분석/검색 전용 | Claude Code |
-| | pandas 2.1 + numpy | 데이터 분석 | Claude Code |
-| | Elasticsearch 8.x | 검색/추천 엔진 | Claude Code |
-| | **scikit-learn** | **ML 추천 (향후)** | Claude Code |
-| | DRF | REST API | Copilot |
+| | Recharts 2.12.0 | 차트 시각화 | v0.dev |
+| | TanStack Query 5.17.9 | 서버 상태 관리 | Cursor |
+| | Zustand 4.4.7 | 클라이언트 상태 | Copilot |
+| **Main Backend** | Java 21.0.2 + Spring Boot 3.2.3 | REST API, DB 전담, Virtual Threads | Claude Code |
+| | Spring Security 6.2.1 + JWT | 인증/인가 | Claude Code |
+| | mybatis-spring-boot-starter 3.0.3 | SQL 매핑 | Cursor |
+| **Sub Backend** | Python 3.11.7 + Django 5.0.1 | 분석/검색 전용 | Claude Code |
+| | pandas 2.1.4 + numpy 1.26.3 | 데이터 분석 | Claude Code |
+| | Elasticsearch 8.11.3 | 검색/추천 엔진 | Claude Code |
+| | **scikit-learn 1.3.2** | **ML 추천 (향후)** | Claude Code |
+| | DRF 3.14.0 | REST API | Copilot |
 | **Database** | Oracle 21c XE | Docker | Claude Code (DDL) |
 | **Storage** | AWS S3 | 이미지 저장 | - |
 | **Payment** | 토스페이먼츠 | MVP 결제 | - |
 | **Deployment** | Vercel (FE) / Docker (BE) | | - |
+| **동시성 전략** | Hybrid High-End | JDK 21 Virtual Threads + Pessimistic Lock | Claude Code |
 
 ### Django 역할 (분석/검색/추천)
 
@@ -1014,9 +1015,9 @@ GET    /api/recommendations/similar/{id}   # 유사 챌린지
 
 ---
 
-**Document Version**: 4.0 AI-Accelerated
-**Previous Version**: 3.0 Final (2025-12-30)
-**Last Updated**: 2026-01-07
+**Document Version**: 4.1 AI-Accelerated (ToT Verified)
+**Previous Version**: 4.0 AI-Accelerated (2026-01-07)
+**Last Updated**: 2026-01-09
 **AI Tools Used**: Claude Code, Cursor, Copilot, v0.dev
 
 **관련 문서:**
