@@ -128,6 +128,25 @@
 
 > **참고**: Document Version 4.0 → 4.1 업그레이드
 
+---
+
+## SYSTEM_ARCHITECTURE.md 변경 이력 (2026-01-09)
+
+| 항목 | 변경 전 | 변경 후 | 사유 |
+|------|---------|---------|------|
+| Oracle | 19c | 21c XE | 팀 확정 기술 스택 반영 |
+| Django | 4.x | 5.0.1 | 팀 확정 기술 스택 반영 |
+| Spring Boot | 3.x | 3.2.3 | 구체적 버전 명시 |
+| Java | 미명시 | 21 (LTS) | Virtual Threads 지원 명시 |
+| Spring Retry | 없음 | 2.0.5 | 외부 서비스 재시도 추가 |
+| Django 로컬 DB | SQLite/PostgreSQL | **제거** | Spring Boot 경유 실시간 데이터만 사용 |
+| ES Fallback | Django 로컬 DB | Spring Boot API | 로컬 DB 제거에 따른 변경 |
+| 문서 버전 | 2.0 | 3.0 | 주요 변경 반영 |
+
+> **참고**: Django는 별도 로컬 DB 없이 Spring Boot로부터 실시간 데이터를 수신하여 분석/검색 처리
+
+---
+
 ### Spring Retry 적용 가이드 (2026-01-09)
 
 **추가 사유**: 외부 서비스 연동 시 일시적 장애 복원력 확보

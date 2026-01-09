@@ -46,21 +46,25 @@ graph TB
 
 | 계층 | 기술 | 버전 | 역할 |
 |------|------|------|------|
-| **Frontend** | React | 18.x | SPA 웹 애플리케이션 |
+| **Frontend** | React | 18.2.0 | SPA 웹 애플리케이션 |
 | | React Router | 6.x | 클라이언트 라우팅 |
-| | Axios | 1.x | HTTP 클라이언트 |
-| **Main Backend** | Spring Boot | 3.x | 주요 비즈니스 로직 API |
-| | MyBatis | 3.x | SQL 매핑 프레임워크 |
+| | Axios | 1.6.5 | HTTP 클라이언트 |
+| | Zustand | 4.5.0 | 클라이언트 상태 관리 |
+| | React Query | 5.17.19 | 서버 상태 관리 |
+| **Main Backend** | Spring Boot | 3.2.3 | 주요 비즈니스 로직 API |
+| | Java | 21 (LTS) | Virtual Threads 지원 |
+| | MyBatis | 3.0.3 | SQL 매핑 프레임워크 |
 | | Spring Security | 6.x | 인증/인가 |
+| | Spring Retry | 2.0.5 | 외부 서비스 재시도 |
 | | RestTemplate/WebClient | - | Django 호출용 |
-| **Sub Backend** | Django | 4.x | 알고리즘/연산/검색 |
-| | Django REST Framework | 3.x | REST API 구성 |
-| | Pandas | 2.x | 데이터 분석 |
-| | Elasticsearch-py | 8.x | ES 클라이언트 |
-| **Database** | Oracle Database | 19c | 메인 데이터베이스 |
-| **Search/Analytics** | Elasticsearch | 8.x | 검색 및 추천 엔진 |
+| **Sub Backend** | Django | 5.0.1 | 알고리즘/연산/검색 |
+| | Django REST Framework | 3.14.0 | REST API 구성 |
+| | Pandas | 2.1.4 | 데이터 분석 |
+| | Elasticsearch-py | 8.11.1 | ES 클라이언트 |
+| **Database** | Oracle Database | 21c XE | 메인 데이터베이스 |
+| **Search/Analytics** | Elasticsearch | 8.11.3 | 검색 및 추천 엔진 |
 | **Infra** | Docker | Latest | 컨테이너화 |
-| | Nginx | Latest | 리버스 프록시 |
+| | Nginx | 1.25.3 | 리버스 프록시 |
 
 ## 2. 3-Tier 아키텍처
 
@@ -213,7 +217,6 @@ Django Application
 
 **주요 책임**:
 - **Spring Boot로부터 데이터 수신** (REST API 엔드포인트)
-- Django 로컬 DB에 데이터 저장 (SQLite 또는 PostgreSQL)
 - **알고리즘 실행** (추천, 유사도 계산, 통계 분석)
 - **데이터 가공 및 집계** (Pandas 활용)
 - **Elasticsearch 인덱싱** (가공된 데이터 저장)
@@ -241,20 +244,6 @@ Django Application
 **주요 뷰**:
 - `GYE AS SELECT * FROM CHALLENGES` (용어 변경 대응)
 - `ACTIVE_MEMBERS`: 활성 멤버 조회
-
-#### Django 로컬 데이터베이스 (SQLite/PostgreSQL)
-
-**Spring Boot로부터 받은 데이터 저장**:
-- `sync_challenges`: 챌린지 데이터 (Spring Boot → Django)
-- `sync_transactions`: 거래 데이터
-- `sync_members`: 멤버 데이터
-- `computed_statistics`: 계산된 통계 (Django 자체 생성)
-- `recommendation_scores`: 추천 점수 (Django 자체 생성)
-
-**용도**:
-- Spring Boot 데이터의 로컬 캐시
-- 알고리즘 실행 시 중간 데이터 저장
-- Elasticsearch 인덱싱 소스
 
 #### Elasticsearch (검색/추천 엔진)
 
@@ -1214,40 +1203,57 @@ GET http://localhost:9200/_cluster/health
 | `SEARCH_UNAVAILABLE` | 검색 서비스를 사용할 수 없습니다 | 503 | Fallback 안내 |
 | `DJANGO_SYNC_FAILED` | 동기화 실패 | 500 | 재시도 큐 등록 |
 
-### 10.2 Django Sync 실패 처리 (Spring Boot)
+### 10.2 Django Sync 실패 처리 (Spring Boot + Spring Retry)
 
 ```java
 // Spring Boot: DjangoSyncService.java
 
 @Service
+@EnableRetry
 public class DjangoSyncService {
 
-    @Autowired
-    private SyncRetryQueue retryQueue;
+    @Value("${django.api.base-url}")
+    private String djangoApiUrl;
 
+    private final RestTemplate restTemplate;
+
+    /**
+     * Spring Retry를 활용한 Django 동기화
+     * - 최대 3회 재시도
+     * - 지수 백오프 (1초 → 2초 → 4초)
+     * - RestClientException 발생 시 자동 재시도
+     */
+    @Retryable(
+        retryFor = { RestClientException.class },
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 1000, multiplier = 2)
+    )
     public void syncChallenge(Challenge challenge) {
         String url = djangoApiUrl + "/api/sync/challenge";
 
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                url,
-                ChallengeDTO.from(challenge),
-                String.class
-            );
+        ResponseEntity<String> response = restTemplate.postForEntity(
+            url,
+            ChallengeDTO.from(challenge),
+            String.class
+        );
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                log.info("Synced challenge {} to Django", challenge.getId());
-            } else {
-                throw new DjangoSyncException("Unexpected status: " + response.getStatusCode());
-            }
-
-        } catch (Exception e) {
-            log.error("Failed to sync challenge {} to Django: {}",
-                challenge.getId(), e.getMessage());
-
-            // 재시도 큐에 추가 (향후 재전송)
-            retryQueue.add(new SyncTask(challenge.getId(), "challenge"));
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new DjangoSyncException("Unexpected status: " + response.getStatusCode());
         }
+
+        log.info("Synced challenge {} to Django", challenge.getId());
+    }
+
+    /**
+     * 3회 재시도 후에도 실패 시 호출
+     */
+    @Recover
+    public void recoverSyncChallenge(RestClientException e, Challenge challenge) {
+        log.error("Failed to sync challenge {} to Django after 3 retries: {}",
+            challenge.getId(), e.getMessage());
+
+        // 알림 발송 또는 Dead Letter Queue 등록
+        notificationService.alertSyncFailure(challenge.getId());
     }
 }
 ```
@@ -1266,25 +1272,22 @@ def search_challenges(request):
         return Response(results)
 
     except (ConnectionError, Timeout) as e:
-        # Elasticsearch 장애 시 Django 로컬 DB로 Fallback
-        logger.warning(f"ES unavailable, fallback to local DB: {e}")
-        results = local_db_search(keyword)
+        # Elasticsearch 장애 시 Spring Boot API로 Fallback
+        logger.warning(f"ES unavailable, fallback to Spring Boot API: {e}")
+        results = spring_boot_search(keyword)
         return Response({
             'results': results,
             'fallback': True,
             'message': '검색 서비스가 일시적으로 제한됩니다'
         })
 
-def local_db_search(keyword):
+def spring_boot_search(keyword):
     """
-    ES 장애 시 Django 로컬 DB에서 검색 (성능 저하 예상)
+    ES 장애 시 Spring Boot API 호출로 Fallback (성능 저하 예상)
     """
-    from sync.models import Challenge
-    return Challenge.objects.filter(
-        title__icontains=keyword
-    ) | Challenge.objects.filter(
-        description__icontains=keyword
-    )
+    url = f"{settings.SPRING_BOOT_API_URL}/api/challenges/search?q={keyword}"
+    response = requests.get(url)
+    return response.json()
 ```
 
 ## 11. 향후 확장 계획
@@ -1329,6 +1332,6 @@ def local_db_search(keyword):
 
 ---
 
-**문서 버전**: 2.0
-**최종 수정**: 2025-01-07
+**문서 버전**: 3.0
+**최종 수정**: 2026-01-09
 **작성자**: AI-Assisted Development Team
