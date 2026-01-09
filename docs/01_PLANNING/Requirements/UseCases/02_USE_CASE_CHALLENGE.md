@@ -41,7 +41,7 @@
 
 **상태 전환 조건** (P-047):
 - 3번째 멤버 가입 시 → 자동 ACTIVE 전환
-- activated_at 기록 (입회비 3개월 계산 기준)
+- activated_at 기록, 전체 멤버 보증금 락 처리
 
 ---
 
@@ -73,10 +73,10 @@
 
 ---
 
-## UC-CHALLENGE-03: 챌린지 가입 (ACTIVE 상태 - 3개월 이상)
+## UC-CHALLENGE-03: 챌린지 가입 (ACTIVE 상태 - 입회비 존재)
 
 **액터**: 로그인 유저
-**전제조건**: gye.status = 'ACTIVE', activated_at 기준 3개월 이상
+**전제조건**: gye.status = 'ACTIVE', gye.balance > 0 (기존 팔로워 매몰 비용 존재)
 **관련 테이블**: `gye`, `gye_members`, `accounts`, `account_transactions`, `ledger_entries`
 
 **입회비 계산 공식**:

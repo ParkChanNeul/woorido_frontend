@@ -581,7 +581,7 @@ CREATE TABLE gye (
 
   -- P-046 ~ P-050: 챌린지 상태 (모집 중 → 진행 중 자동 전환)
   status VARCHAR(20) DEFAULT 'RECRUITING' CHECK (status IN ('RECRUITING', 'ACTIVE', 'PAUSED', 'CLOSED')),
-  activated_at TIMESTAMP,  -- ACTIVE 상태 전환 시점 (입회비 3개월 계산 기준)
+  activated_at TIMESTAMP,  -- ACTIVE 상태 전환 시점
 
   -- 재무 정보 (용어 매핑)
   balance BIGINT DEFAULT 0 NOT NULL,  -- → openBalance (오픈 잔액)
