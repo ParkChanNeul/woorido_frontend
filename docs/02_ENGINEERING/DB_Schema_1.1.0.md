@@ -27,11 +27,19 @@ Total Tables    : 30
 중요 공지 (Important Notice)
 ================================================================================
 
-※ 용어 변경: "gye" → "challenges"
+※ 용어 변경 1: "gye" → "challenges"
   - 테이블명 "gye"는 레거시 용어입니다.
   - 실제 DB 스키마에서는 "challenges" 테이블명을 사용합니다.
   - 이 문서의 모든 스키마는 "challenges" 기준으로 작성되었습니다.
   - View 별칭 없이 실제 테이블명이 "challenges"입니다.
+
+※ 용어 변경 2: "member" → "follower"
+  - 테이블명 "challenge_members"는 레거시 용어입니다.
+  - 실제 DB 스키마에서는 "challenge_followers" 테이블명을 사용합니다.
+  - 컬럼명: current_members → current_followers
+  - 컬럼명: min_members → min_followers
+  - 컬럼명: max_members → max_followers
+  - 설명 텍스트: "멤버" → "팔로워"로 변경
 
 
 ################################################################################
@@ -188,7 +196,7 @@ updated_at                  TIMESTAMP        NN                        수정일
 #                                                                              #
 #   2. 챌린지 도메인 (Challenge Domain)                                         #
 #                                                                              #
-#   챌린지 생성, 멤버 관리                                                       #
+#   챌린지 생성, 팔로워 관리                                                      #
 #                                                                              #
 ################################################################################
 
@@ -196,7 +204,10 @@ updated_at                  TIMESTAMP        NN                        수정일
 --------------------------------------------------------------------------------
 2.1 challenges (챌린지)
 --------------------------------------------------------------------------------
-※ 주의: 테이블명은 "challenges"입니다. "gye"는 레거시 용어로, 실제 DB에서는 사용되지 않습니다.
+※ 주의:
+  - 테이블명은 "challenges"입니다. "gye"는 레거시 용어입니다.
+  - 컬럼명은 "current_followers", "min_followers", "max_followers"입니다.
+    "members"는 레거시 용어입니다.
 
 컬럼명                  데이터타입        제약조건      기본값          설명
 ------------------------------------------------------------------------------------------
@@ -207,9 +218,9 @@ category               VARCHAR2(50)     NN                           카테고�
 creator_id             VARCHAR2(36)     FK, NN                       리더 ID
 sub_leader_id          VARCHAR2(36)     FK                           부리더 ID
 leader_last_active_at  TIMESTAMP                                     리더 마지막 활동일
-current_members        NUMBER(10)       NN            1              현재 멤버 수
-min_members            NUMBER(10)       NN            3              최소 멤버 수
-max_members            NUMBER(10)       NN                           최대 멤버 수
+current_followers      NUMBER(10)       NN            1              현재 팔로워 수
+min_followers          NUMBER(10)       NN            3              최소 팔로워 수
+max_followers          NUMBER(10)       NN                           최대 팔로워 수
 balance                NUMBER(19)       NN            0              챌린지 금고 잔액
 monthly_fee            NUMBER(19)       NN                           월 서포트 금액
 deposit_amount         NUMBER(19)       NN                           보증금
@@ -243,12 +254,13 @@ updated_at             TIMESTAMP        NN                           수정일
 
 
 --------------------------------------------------------------------------------
-2.2 challenge_members (챌린지 멤버)
+2.2 challenge_followers (챌린지 팔로워)
 --------------------------------------------------------------------------------
+※ 주의: 테이블명은 "challenge_followers"입니다. "challenge_members"는 레거시 용어입니다.
 
 컬럼명                데이터타입        제약조건      기본값       설명
 ------------------------------------------------------------------------------------------
-id                   VARCHAR2(36)     PK                        멤버 ID (UUID)
+id                   VARCHAR2(36)     PK                        팔로워십 ID (UUID)
 challenge_id               VARCHAR2(36)     FK, NN                    챌린지 ID
 user_id              VARCHAR2(36)     FK, NN                    사용자 ID
 role                 VARCHAR2(20)                  'FOLLOWER'   역할
@@ -273,9 +285,9 @@ leave_reason         VARCHAR2(50)                               탈퇴 사유
                        CHALLENGE_CLOSED(챌린지종료)
 
 [Indexes]
-  - UK_challenge_members_challenge_user (challenge_id, user_id)
-  - IDX_challenge_members_user_id (user_id)
-  - IDX_challenge_members_role (role)
+  - UK_challenge_followers_challenge_user (challenge_id, user_id)
+  - IDX_challenge_followers_user_id (user_id)
+  - IDX_challenge_followers_role (role)
 
 [Foreign Keys]
   - challenge_id → challenges.id
@@ -611,7 +623,7 @@ expires_at     TIMESTAMP        NN                       만료 시간
 closed_at      TIMESTAMP                                 종료 시점
 
 [컬럼값 정의]
-  - type   : KICK(멤버강퇴), LEADER_KICK(리더탄핵), DISSOLVE(챌린지해산)
+  - type   : KICK(팔로워 강퇴), LEADER_KICK(리더 탄핵), DISSOLVE(챌린지 해산)
   - status : PENDING(진행중), APPROVED(승인), REJECTED(거절), EXPIRED(만료)
 
 [Indexes]
@@ -1068,7 +1080,7 @@ NN      Not Null
                     user_scores          사용자 당도 점수
 
 챌린지 (2)          challenges           챌린지
-                    challenge_members    챌린지 멤버
+                    challenge_followers  챌린지 팔로워
 
 모임 (3)            meetings             모임
                     meeting_votes        모임 참석 투표
@@ -1114,8 +1126,8 @@ SNS (4)             posts                피드
 5   user_scores.user_id                       users.id
 6   challenges.creator_id                            users.id
 7   challenges.sub_leader_id                         users.id
-8   challenge_members.challenge_id                        challenges.id
-9   challenge_members.user_id                       users.id
+8   challenge_followers.challenge_id                 challenges.id
+9   challenge_followers.user_id                      users.id
 10  meetings.challenge_id                           challenges.id
 11  meetings.created_by                       users.id
 12  meeting_votes.meeting_id                  meetings.id

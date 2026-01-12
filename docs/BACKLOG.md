@@ -11,7 +11,7 @@
 | 항목 | 설명 | 관련 정책 |
 |------|------|----------|
 | 챌린지 상태 시스템 | RECRUITING → ACTIVE → CLOSED 상태 흐름 | P-046 ~ P-050 |
-| 입회비 계산 공식 | 챌린지 어카운트 잔액 / (현재 멤버 수 - 1) | P-015 |
+| 입회비 계산 공식 | 챌린지 어카운트 잔액 / (현재 팔로워 수 - 1) | P-015 |
 
 ### 유저 시스템
 
@@ -53,13 +53,13 @@
 
 | 테이블 | 컬럼 | 설명 |
 |--------|------|------|
-| `gye` | `sub_leader_id` | 부리더 (점수 2위 자동 지정) |
-| `gye` | `leader_last_active_at` | 리더 최근 활동일 |
-| `gye` | `is_verified` | 완주 인증 (1년 운영) |
-| `gye` | `status` | 챌린지 상태 (RECRUITING/ACTIVE/CLOSED) |
-| `gye` | `activated_at` | ACTIVE 전환 시점 |
-| `gye_members` | `privilege_status` | 권한 상태 (ACTIVE/REVOKED) |
-| `gye_members` | `privilege_revoked_at` | 권한 박탈 시점 |
+| `challenges` | `sub_leader_id` | 부리더 (점수 2위 자동 지정) |
+| `challenges` | `leader_last_active_at` | 리더 최근 활동일 |
+| `challenges` | `is_verified` | 완주 인증 (1년 운영) |
+| `challenges` | `status` | 챌린지 상태 (RECRUITING/ACTIVE/CLOSED) |
+| `challenges` | `activated_at` | ACTIVE 전환 시점 |
+| `challenge_followers` | `privilege_status` | 권한 상태 (ACTIVE/REVOKED) |
+| `challenge_followers` | `privilege_revoked_at` | 권한 박탈 시점 |
 | `ledger_entries` | `merchant_name` | 상호명 (PG 자동 입력) |
 | `ledger_entries` | `merchant_category` | 업종 |
 | `ledger_entries` | `pg_provider` | PG사 |
@@ -74,17 +74,17 @@
 | `accounts` | `version` | Optimistic Lock |
 | `account_transactions` | `type` 확장 | ENTRY_FEE, SUPPORT 추가 |
 | `account_transactions` | `idempotency_key` | 중복 요청 검증 |
-| `gye_members` | `leave_reason` | 탈퇴 사유 |
+| `challenge_followers` | `leave_reason` | 탈퇴 사유 |
 
 ### 인덱스 추가
 
 | 테이블 | 인덱스 | 설명 |
 |--------|--------|------|
-| `gye` | `idx_gye_verified` | 완주 인증 챌린지 조회용 |
-| `gye` | `idx_gye_inactive_leader` | 리더 미활동 조회용 |
+| `challenges` | `idx_challenges_verified` | 완주 인증 챌린지 조회용 |
+| `challenges` | `idx_challenges_inactive_leader` | 리더 미활동 조회용 |
 | `votes` | `idx_votes_ledger` | 장부 연결 조회용 |
 | `votes` | `idx_votes_meeting` | 모임 관련 지출 조회용 |
-| `gye_members` | `idx_members_revoked` | 자동 탈퇴 대상 조회용 |
+| `challenge_followers` | `idx_followers_revoked` | 자동 탈퇴 대상 조회용 |
 | `ledger_entries` | `idx_ledger_merchant` | 사용처 검색용 |
 | `users` | `idx_users_status` | 계정 상태 조회용 |
 | `users` | `idx_users_suspended` | 정지 해제 예정 조회용 |
@@ -95,8 +95,8 @@
 
 | 테이블 | 변경 내용 |
 |--------|---------|
-| **gye** | `is_verified`, `verified_at` 추가, 용어 매핑 주석 |
-| **gye_members** | `privilege_status`, `privilege_revoked_at`, `leave_reason` 추가, 역할 FOLLOWER로 변경 |
+| **challenges** | `is_verified`, `verified_at` 추가, 용어 변경 (gye→challenges, members→followers) |
+| **challenge_followers** | `privilege_status`, `privilege_revoked_at`, `leave_reason` 추가, 역할 FOLLOWER로 변경, 테이블명 변경 (challenge_members→challenge_followers) |
 | **admins** | 신규 - 관리자 계정 |
 | **fee_policies** | 신규 - 수수료 정책 |
 | **reports** | 신규 - 신고 관리 |
@@ -237,6 +237,69 @@
 | `PRODUCT_AGENDA.md` | 챌린지 상태 흐름도 수정 |
 | `02_SCHEMA_CHALLENGE.md` | activated_at 주석 수정 |
 | `ERD_SPECIFICATION.md` | activated_at 주석 수정 |
+
+---
+
+## DB 스키마 리팩토링 백로그 (2026-01-12)
+
+> **목적**: 브랜딩 일관성 확보 및 용어 통일
+>
+> **완료 항목**:
+> - ✅ "gye" → "challenges"
+> - ✅ "member" → "follower"
+>
+> **문서 현황**: DB Schema v1.1.0에 모두 반영 완료
+
+---
+
+### 용어 변경: "gye" → "challenges" (완료)
+
+> **현황**: 문서 및 실제 테이블명 모두 "challenges"로 변경 완료 (2026-01-12)
+
+**변경 완료 항목:**
+
+| 항목 | 변경 전 | 변경 후 | 상태 |
+|------|---------|---------|------|
+| 테이블명 | `gye` | `challenges` | ✅ 완료 |
+| 테이블명 | `gye_members` | `challenge_followers` | ✅ 완료 |
+| 컬럼명 | `gye_id` | `challenge_id` | ✅ 완료 |
+| 컬럼명 | `related_gye_id` | `related_challenge_id` | ✅ 완료 |
+| 인덱스명 | `idx_gye_*` | `idx_challenges_*` | ✅ 완료 |
+
+**참고사항:**
+- DB Schema 문서에 레거시 안내 추가: "gye는 레거시 용어이며, 실제 DB에서는 challenges 사용"
+- View 별칭 없이 실제 테이블명이 "challenges"
+
+---
+
+### 용어 변경: "member" → "follower" (완료)
+
+> **현황**: 문서 및 실제 테이블명/컬럼명 모두 "follower"로 변경 완료 (2026-01-12)
+
+**변경 완료 항목:**
+
+| 항목 | 변경 전 | 변경 후 | 상태 |
+|------|---------|---------|------|
+| 테이블명 | `challenge_followers` | `challenge_followers` | ✅ 완료 |
+| 컬럼명 | `current_members` | `current_followers` | ✅ 완료 |
+| 컬럼명 | `min_members` | `min_followers` | ✅ 완료 |
+| 컬럼명 | `max_members` | `max_followers` | ✅ 완료 |
+| 인덱스명 | `idx_challenge_followers_*` | `idx_challenge_followers_*` | ✅ 완료 |
+
+**참고사항:**
+- DB Schema 문서에 용어 변경 반영 완료
+- "member"는 레거시 용어이며, 실제 DB에서는 "follower" 사용
+- 설명 텍스트: "멤버" → "팔로워" 변경 완료
+
+**실제 구현 시 고려사항 (Demo Day 전 DDL 작성 시):**
+- Foreign Key 재생성 필요
+- 인덱스 재생성 필요
+- MyBatis Mapper 전체 수정
+- Spring Service/Repository 레이어 수정
+- API 응답 DTO 필드명 변경
+- React Frontend 코드 변경
+
+**예상 소요 시간**: 4-6시간 (Backend 3h + Frontend 2h + 테스트 1h)
 
 ---
 
@@ -405,7 +468,7 @@
 // IA Type → Radix UI 매핑
 Modal      → @radix-ui/react-dialog        // 가입 신청, 충전, 보증금 해제 확인
 BottomSheet→ @radix-ui/react-sheet         // 락 상세, 필터
-Tab        → @radix-ui/react-tabs          // 피드/장부/투표/멤버
+Tab        → @radix-ui/react-tabs          // 피드/장부/투표/팔로워
 Toast      → sonner (Radix-based)          // 성공/에러 메시지
 Dropdown   → @radix-ui/react-dropdown-menu // 사용자 메뉴
 Select     → @radix-ui/react-select        // 카테고리 선택
