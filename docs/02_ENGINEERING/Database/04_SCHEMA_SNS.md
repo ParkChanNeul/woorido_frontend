@@ -1,7 +1,8 @@
 # WOORIDO ERD - SNS 도메인
-**posts, post_images, post_likes, comments**
+**posts, post_images, post_likes, comments, comment_likes**
 
 > 📖 상위 문서: [00_ERD_OVERVIEW.md](./00_ERD_OVERVIEW.md)
+> 📖 기준 문서: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
 
 ---
 
@@ -9,35 +10,44 @@
 
 ```sql
 CREATE TABLE posts (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID REFERENCES gye(id) ON DELETE CASCADE,  -- NULL이면 공개 피드
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 피드 ID (UUID)
+  challenge_id VARCHAR2(36) REFERENCES challenges(id),  -- 챌린지 ID (NULL이면 공개)
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id),
 
   -- 내용
-  content VARCHAR(4000) NOT NULL,
+  content VARCHAR2(4000) NOT NULL,
+
+  -- 공지/고정 (신규 추가)
+  is_notice CHAR(1) DEFAULT 'N',                  -- 공지사항 여부
+  is_pinned CHAR(1) DEFAULT 'N',                  -- 상단 고정 여부
 
   -- 비정규화 카운터 (Atomic Operations)
-  like_count NUMBER DEFAULT 0 NOT NULL,
-  comment_count NUMBER DEFAULT 0 NOT NULL,
+  like_count NUMBER(10) DEFAULT 0,
+  comment_count NUMBER(10) DEFAULT 0,
 
   -- 타임스탬프
-  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-
-  -- 제약조건
-  CONSTRAINT chk_like_count CHECK (like_count >= 0),
-  CONSTRAINT chk_comment_count CHECK (comment_count >= 0)
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP                            -- Soft Delete (신규 추가)
 );
 
-CREATE INDEX idx_posts_gye_created ON posts(gye_id, created_at DESC);
-CREATE INDEX idx_posts_creator ON posts(created_by, created_at DESC);
-CREATE INDEX idx_posts_created ON posts(created_at DESC);  -- 전체 피드용
+-- 인덱스
+CREATE INDEX idx_posts_challenge_id ON posts(challenge_id);
+CREATE INDEX idx_posts_created_by ON posts(created_by);
+CREATE INDEX idx_posts_created_at ON posts(created_at);
+CREATE INDEX idx_posts_is_notice ON posts(is_notice);
+CREATE INDEX idx_posts_is_pinned ON posts(is_pinned);
 ```
+
+**컬럼값 정의:**
+| 컬럼 | 값 |
+|------|-----|
+| `is_notice` | Y(공지사항), N(일반 피드) |
+| `is_pinned` | Y(상단고정), N(일반) |
 
 **비정규화 카운터 관리:**
 - `like_count`, `comment_count`는 Atomic Operations로 증감
 - 매일 새벽 3시 Scheduled Job으로 정합성 검증
-- 상세 구현: [07_IMPLEMENTATION_PATTERNS.md](./07_IMPLEMENTATION_PATTERNS.md) 참조
 
 ---
 
@@ -45,36 +55,34 @@ CREATE INDEX idx_posts_created ON posts(created_at DESC);  -- 전체 피드용
 
 ```sql
 CREATE TABLE post_images (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  image_url VARCHAR(500) NOT NULL,
-  display_order NUMBER NOT NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 이미지 ID (UUID)
+  post_id VARCHAR2(36) NOT NULL REFERENCES posts(id),
+  image_url VARCHAR2(500) NOT NULL,
+  display_order NUMBER(10) NOT NULL,
 
-  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-
-  CONSTRAINT uk_post_image_order UNIQUE (post_id, display_order)
+  created_at TIMESTAMP NOT NULL
 );
 
-CREATE INDEX idx_post_images_post ON post_images(post_id, display_order);
+CREATE INDEX idx_post_images_post_id ON post_images(post_id);
 ```
 
 ---
 
-## 3. 좋아요 (post_likes)
+## 3. 게시글 좋아요 (post_likes)
 
 ```sql
 CREATE TABLE post_likes (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 좋아요 ID (UUID)
+  post_id VARCHAR2(36) NOT NULL REFERENCES posts(id),
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id),
 
-  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
 
-  CONSTRAINT uk_post_user_like UNIQUE (post_id, user_id)
+  created_at TIMESTAMP NOT NULL,
+
+  CONSTRAINT uk_post_likes_post_user UNIQUE (post_id, user_id)
 );
 
-CREATE INDEX idx_likes_post ON post_likes(post_id, created_at DESC);
-CREATE INDEX idx_likes_user ON post_likes(user_id, created_at DESC);
+CREATE INDEX idx_post_likes_user_id ON post_likes(user_id);
 ```
 
 ---
@@ -83,22 +91,47 @@ CREATE INDEX idx_likes_user ON post_likes(user_id, created_at DESC);
 
 ```sql
 CREATE TABLE comments (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 댓글 ID (UUID)
+  post_id VARCHAR2(36) NOT NULL REFERENCES posts(id),
+  parent_id VARCHAR2(36) REFERENCES comments(id), -- 부모 댓글 ID (대댓글용, 신규 추가)
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id),
 
   -- 내용
-  content VARCHAR(1000) NOT NULL,
+  content VARCHAR2(1000) NOT NULL,
+
+  -- 좋아요 카운트 (신규 추가)
+  like_count NUMBER(10) DEFAULT 0,
 
   -- 타임스탬프
-  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP                            -- Soft Delete (신규 추가)
 );
 
-CREATE INDEX idx_comments_post_created ON comments(post_id, created_at DESC);
-CREATE INDEX idx_comments_creator ON comments(created_by, created_at DESC);
+CREATE INDEX idx_comments_post_id ON comments(post_id);
+CREATE INDEX idx_comments_parent_id ON comments(parent_id);
+CREATE INDEX idx_comments_created_by ON comments(created_by);
 ```
 
 ---
 
-**최종 수정**: 2026-01-09
+## 5. 댓글 좋아요 (comment_likes) - 신규 테이블
+
+```sql
+CREATE TABLE comment_likes (
+  id VARCHAR2(36) PRIMARY KEY,                    -- 좋아요 ID (UUID)
+  comment_id VARCHAR2(36) NOT NULL REFERENCES comments(id),
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id),
+
+  created_at TIMESTAMP NOT NULL,
+
+  CONSTRAINT uk_comment_likes_comment_user UNIQUE (comment_id, user_id)
+);
+
+CREATE INDEX idx_comment_likes_user_id ON comment_likes(user_id);
+```
+
+---
+
+**최종 수정**: 2026-01-13
+**기준 문서**: DB_Schema_1.0.0.md

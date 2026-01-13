@@ -14,7 +14,7 @@
 ```sql
 CREATE TABLE meetings (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 모임 정보 (예상 비용 없음 - 지출은 건별 별도 투표)
@@ -37,7 +37,7 @@ CREATE TABLE meetings (
   CONSTRAINT chk_meeting_date CHECK (meeting_date > created_at)
 );
 
-CREATE INDEX idx_meetings_gye_date ON meetings(gye_id, meeting_date DESC);
+CREATE INDEX idx_meetings_challenge_date ON meetings(challenge_id, meeting_date DESC);
 CREATE INDEX idx_meetings_vote ON meetings(vote_id);
 CREATE INDEX idx_meetings_status ON meetings(status, meeting_date);
 ```
@@ -91,7 +91,7 @@ CREATE INDEX idx_attendees_user ON meeting_attendees(user_id, registered_at DESC
 ```sql
 CREATE TABLE votes (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 투표 유형 (P-037 ~ P-041: RULE_CHANGE 제거 - MVP 범위 외)
@@ -140,7 +140,7 @@ CREATE TABLE votes (
   CONSTRAINT chk_approval_count CHECK (required_approval_count > 0)
 );
 
-CREATE INDEX idx_votes_gye_created ON votes(gye_id, created_at DESC);
+CREATE INDEX idx_votes_challenge_created ON votes(challenge_id, created_at DESC);
 CREATE INDEX idx_votes_status ON votes(status, created_at DESC);
 CREATE INDEX idx_votes_creator ON votes(created_by);
 CREATE INDEX idx_votes_ledger ON votes(ledger_entry_id);  -- 장부 연결 조회용

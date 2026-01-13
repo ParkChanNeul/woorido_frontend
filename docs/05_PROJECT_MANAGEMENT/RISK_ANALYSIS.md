@@ -163,7 +163,7 @@ P2 (선택): 공지사항 핀 고정 (2개 API)
 
 #### 리스크 상세
 **원인:**
-- 다중 테이블 트랜잭션 (accounts, gye, gye_members, ledger_entries)
+- 다중 테이블 트랜잭션 (accounts, challenges, challenge_members, ledger_entries)
 - 동시성 제어 필요 (여러 유저 동시 가입 시)
 - 롤백 시나리오 복잡 (잔액 부족, 중복 가입 등)
 
@@ -182,13 +182,13 @@ UPDATE accounts SET available = available - ? WHERE user_id = ?;
 UPDATE accounts SET locked = locked + ? WHERE user_id = ?;
 
 -- 4. 멤버 추가
-INSERT INTO gye_members (gye_id, user_id, deposit_locked, ...) VALUES (...);
+INSERT INTO challenge_members (challenge_id, user_id, deposit_status, ...) VALUES (...);
 
 -- 5. 장부 기록 (입금)
-INSERT INTO ledger_entries (gye_id, type, amount, ...) VALUES (...);
+INSERT INTO ledger_entries (challenge_id, type, amount, ...) VALUES (...);
 
--- 6. 모임 금고 증가
-UPDATE gye SET balance = balance + ? WHERE id = ?;
+-- 6. 챌린지 금고 증가
+UPDATE challenges SET balance = balance + ? WHERE id = ?;
 
 COMMIT;
 -- 어느 단계든 실패 시 전체 ROLLBACK
@@ -341,7 +341,7 @@ SELECT
   category,
   COUNT(*) as count
 FROM ledger_entries
-WHERE gye_id = ?
+WHERE challenge_id = ?
 GROUP BY category;
 ```
 
@@ -475,10 +475,10 @@ WHERE vote_id = ?;
 UPDATE votes SET status = 'approved' WHERE id = ?;
 
 -- 4. 장부 기록
-INSERT INTO ledger_entries (gye_id, type, amount, vote_id, ...) VALUES (...);
+INSERT INTO ledger_entries (challenge_id, type, amount, vote_id, ...) VALUES (...);
 
--- 5. 모임 금고 차감
-UPDATE gye SET balance = balance - ? WHERE id = ?;
+-- 5. 챌린지 금고 차감
+UPDATE challenges SET balance = balance - ? WHERE id = ?;
 
 COMMIT;
 ```

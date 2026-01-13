@@ -1,8 +1,10 @@
 # WOORIDO 용어 정의 (Terminology)
 
-**작성일**: 2026-01-07
+**작성일**: 2026-01-13
 **목적**: 법적 이슈 방지 및 도메인 개념 명확화
-**버전**: v2.0
+**버전**: v2.1
+
+> 📖 기준 문서: [DB_Schema_1.0.0.md](../../02_ENGINEERING/DB_Schema_1.0.0.md)
 
 ---
 
@@ -177,29 +179,6 @@
 | "함께 저축하는 계모임" | "함께 도전하는 커뮤니티 챌린지" |
 | "매월 회비를 모아요" | "매월 서포트로 오픈을 채워요" |
 | "계주가 지출을 승인해요" | "리더와 팔로워가 함께 결정해요" |
-
----
-
-## 💾 DB 레이어 변경 전략
-
-### 옵션 A: View 별칭 사용 (권장) ✅
-
-**장점**:
-- 기존 코드 수정 불필요
-- 빠른 적용 (1시간 이내)
-- 롤백 용이
-
-**구현**:
-```sql
--- View 생성으로 기존 테이블명 유지
-CREATE VIEW challenges AS SELECT * FROM gye;
-CREATE VIEW challenge_followers AS SELECT * FROM gye_members;
-CREATE VIEW challenge_meetings AS SELECT * FROM meetings;
-```
-
-### 옵션 B: 실제 테이블 리네이밍 (Phase 2)
-
-**시점**: Demo Day 이후 리팩토링 시
 
 ---
 

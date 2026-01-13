@@ -101,7 +101,7 @@ CREATE TABLE admin_logs (
   admin_id UUID REFERENCES admins(id) ON DELETE SET NULL,
   
   -- 활동 정보
-  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_GYE 등
+  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_CHALLENGE 등
   target_type VARCHAR(20),
   target_id UUID,
   
@@ -128,8 +128,8 @@ CREATE INDEX idx_admin_logs_created ON admin_logs(created_at DESC);
 | `UPDATE_FEE_POLICY` | 수수료 정책 수정 |
 | `RESOLVE_REPORT` | 신고 처리 완료 |
 | `SUSPEND_USER` | 유저 정지 |
-| `VERIFY_GYE` | 챌린지 완주 인증 |
-| `DISSOLVE_GYE` | 챌린지 강제 해산 |
+| `VERIFY_CHALLENGE` | 챌린지 완주 인증 |
+| `DISSOLVE_CHALLENGE` | 챌린지 강제 해산 |
 
 **로그 조회 예시:**
 ```sql

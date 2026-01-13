@@ -1,12 +1,13 @@
 # WOORIDO 유스케이스 명세서 (Use Cases) - 개요
 
-**작성일**: 2026-01-09
-**버전**: v3.1 - 도메인별 분배
+**작성일**: 2026-01-13
+**버전**: v3.2 - DB_Schema 동기화
 **목적**: 데이터베이스 스키마 기반 사용자 시나리오 정의
 
 > 📖 정책 기준: [POLICY_DEFINITION.md](../../Product/POLICY_DEFINITION.md)
 > 📋 프로덕트 아젠다: [PRODUCT_AGENDA.md](../../Product/PRODUCT_AGENDA.md)
 > 🗄️ ERD 문서: [00_ERD_OVERVIEW.md](../../../02_ENGINEERING/Database/00_ERD_OVERVIEW.md)
+> 📖 기준 문서: [DB_Schema_1.0.0.md](../../../02_ENGINEERING/DB_Schema_1.0.0.md)
 
 ---
 
@@ -29,8 +30,8 @@
 
 | 액터 | 영문 | 설명 | DB 테이블 |
 |------|------|------|----------|
-| **리더** | Leader | 챌린지 생성자 및 운영자 | users, gye_members (role='LEADER') |
-| **팔로워** | Follower | 챌린지 참여자 | users, gye_members (role='FOLLOWER') |
+| **리더** | Leader | 챌린지 생성자 및 운영자 | users, challenge_members (role='LEADER') |
+| **팔로워** | Follower | 챌린지 참여자 | users, challenge_members (role='FOLLOWER') |
 | **미가입 유저** | Guest User | 로그인만 한 상태 | users |
 | **관리자** | Admin | 플랫폼 운영자 | admins |
 | **시스템** | System | 자동화 배치/스케줄러 | - |
@@ -85,15 +86,15 @@
 | KICK | 모두 | 전체 멤버 (대상 제외) | 70% 이상 | votes.target_user_id |
 | MEETING_ATTENDANCE | 리더 | 전체 멤버 | 과반수 (50%+1) | votes.meeting_* |
 | LEADER_KICK | 팔로워 | 전체 팔로워 | 70% 이상 | votes.target_user_id |
-| DISSOLVE | 리더 | 전체 멤버 | 전원 (100%) | gye.deleted_at |
+| DISSOLVE | 리더 | 전체 멤버 | 전원 (100%) | challenges.deleted_at |
 
 ### 2.3 트랜잭션 패턴 매핑
 
 | 유스케이스 | Lock 타입 | 테이블 | 패턴 |
 |-----------|----------|--------|------|
 | UC-USER-03 | Pessimistic | accounts | FOR UPDATE WAIT 3 |
-| UC-CHALLENGE-02/03 | Optimistic | gye | version 컬럼 |
-| UC-MEETING-05 | Both | gye, ledger_entries | @Transactional + Lock |
+| UC-CHALLENGE-02/03 | Optimistic | challenges | version 컬럼 |
+| UC-MEETING-05 | Both | challenges, ledger_entries | @Transactional + Lock |
 | UC-SNS-02 | Atomic | posts | INCREMENT/DECREMENT |
 
 ---
@@ -102,21 +103,23 @@
 
 ### ERD ↔ API 용어 매핑
 
-| ERD 컬럼 | API/프론트엔드 용어 |
-|----------|-------------------|
-| `gye` | `challenge` |
+| ERD 테이블/컬럼 | API/프론트엔드 용어 |
+|----------------|-------------------|
+| `challenges` | `challenge` |
+| `challenge_members` | `challengeMembers` |
+| `challenge_id` | `challengeId` |
 | `creator_id` | `leaderId` |
-| `current_members` | `currentFollowers` |
+| `current_members` | `currentMembers` |
 | `monthly_fee` | `supportAmount` |
 | `deposit_amount` | `depositLock` |
 | `balance` (accounts) | `availableBalance` |
 | `locked_balance` | `depositLock` |
-| `balance` (gye) | `challengeAccountBalance` |
+| `balance` (challenges) | `challengeAccountBalance` |
 
 ---
 
-**문서 버전**: v3.1
-**최종 수정**: 2026-01-09
+**문서 버전**: v3.2
+**최종 수정**: 2026-01-13
 **작성자**: AI-Assisted Development Team
 **관련 문서**:
 - [00_ERD_OVERVIEW.md](../../../02_ENGINEERING/Database/00_ERD_OVERVIEW.md)

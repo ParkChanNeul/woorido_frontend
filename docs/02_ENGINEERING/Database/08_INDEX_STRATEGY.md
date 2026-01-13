@@ -2,6 +2,7 @@
 **인덱스 정의 및 적용 체크리스트**
 
 > 📖 상위 문서: [00_ERD_OVERVIEW.md](./00_ERD_OVERVIEW.md)
+> 📖 기준 문서: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
 
 ---
 
@@ -33,23 +34,23 @@ CREATE INDEX idx_user_scores_month ON user_scores(calculated_month);
 ### 1.2 챌린지 도메인
 
 ```sql
--- 모임 조회
-CREATE INDEX idx_gye_creator ON gye(creator_id);
-CREATE INDEX idx_gye_category ON gye(category, created_at DESC);
-CREATE INDEX idx_gye_public ON gye(is_public, created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_gye_deleted ON gye(deleted_at DESC);
-CREATE INDEX idx_gye_verified ON gye(is_verified, created_at DESC);
-CREATE INDEX idx_gye_inactive_leader ON gye(leader_last_active_at) WHERE deleted_at IS NULL;
+-- 챌린지 조회
+CREATE INDEX idx_challenges_creator ON challenges(creator_id);
+CREATE INDEX idx_challenges_category ON challenges(category, created_at DESC);
+CREATE INDEX idx_challenges_public ON challenges(is_public, created_at DESC) WHERE deleted_at IS NULL;
+CREATE INDEX idx_challenges_deleted ON challenges(deleted_at DESC);
+CREATE INDEX idx_challenges_verified ON challenges(is_verified, created_at DESC);
+CREATE INDEX idx_challenges_inactive_leader ON challenges(leader_last_active_at) WHERE deleted_at IS NULL;
 
--- 모임 회원 조회
-CREATE INDEX idx_members_gye ON gye_members(gye_id, joined_at DESC);
-CREATE INDEX idx_members_user ON gye_members(user_id, joined_at DESC);
-CREATE INDEX idx_members_active ON gye_members(gye_id) WHERE left_at IS NULL;
-CREATE INDEX idx_members_revoked ON gye_members(privilege_status, privilege_revoked_at) 
+-- 챌린지 멤버 조회
+CREATE INDEX idx_challenge_members_challenge ON challenge_members(challenge_id, joined_at DESC);
+CREATE INDEX idx_challenge_members_user ON challenge_members(user_id, joined_at DESC);
+CREATE INDEX idx_challenge_members_active ON challenge_members(challenge_id) WHERE left_at IS NULL;
+CREATE INDEX idx_challenge_members_revoked ON challenge_members(privilege_status, privilege_revoked_at) 
   WHERE privilege_status = 'REVOKED';
 
 -- 장부 조회
-CREATE INDEX idx_ledger_gye_created ON ledger_entries(gye_id, created_at DESC);
+CREATE INDEX idx_ledger_challenge_created ON ledger_entries(challenge_id, created_at DESC);
 CREATE INDEX idx_ledger_type ON ledger_entries(type, created_at DESC);
 CREATE INDEX idx_ledger_creator ON ledger_entries(created_by);
 CREATE INDEX idx_ledger_merchant ON ledger_entries(merchant_name);
@@ -59,31 +60,28 @@ CREATE INDEX idx_ledger_merchant ON ledger_entries(merchant_name);
 
 ```sql
 -- 모임 조회
-CREATE INDEX idx_meetings_gye_date ON meetings(gye_id, meeting_date DESC);
+CREATE INDEX idx_meetings_challenge_date ON meetings(challenge_id, meeting_date DESC);
 CREATE INDEX idx_meetings_vote ON meetings(vote_id);
 CREATE INDEX idx_meetings_status ON meetings(status, meeting_date);
 
 -- 참석자 조회
-CREATE INDEX idx_attendees_meeting ON meeting_attendees(meeting_id);
-CREATE INDEX idx_attendees_user ON meeting_attendees(user_id, registered_at DESC);
+CREATE INDEX idx_meeting_vote_records_vote ON meeting_vote_records(meeting_vote_id);
+CREATE INDEX idx_meeting_vote_records_user ON meeting_vote_records(user_id, created_at DESC);
 
--- 투표 조회
-CREATE INDEX idx_votes_gye_created ON votes(gye_id, created_at DESC);
-CREATE INDEX idx_votes_status ON votes(status, created_at DESC);
-CREATE INDEX idx_votes_creator ON votes(created_by);
-CREATE INDEX idx_votes_ledger ON votes(ledger_entry_id);
-CREATE INDEX idx_votes_meeting ON votes(meeting_id);
+-- 지출 투표 조회
+CREATE INDEX idx_expense_votes_request ON expense_votes(expense_request_id);
+CREATE INDEX idx_expense_votes_status ON expense_votes(status, created_at DESC);
 
 -- 투표 기록 조회
-CREATE INDEX idx_vote_records_vote ON vote_records(vote_id, created_at DESC);
-CREATE INDEX idx_vote_records_user ON vote_records(user_id, created_at DESC);
+CREATE INDEX idx_expense_vote_records_vote ON expense_vote_records(expense_vote_id, created_at DESC);
+CREATE INDEX idx_expense_vote_records_user ON expense_vote_records(user_id, created_at DESC);
 ```
 
 ### 1.4 SNS 도메인
 
 ```sql
 -- 게시글 조회
-CREATE INDEX idx_posts_gye_created ON posts(gye_id, created_at DESC);
+CREATE INDEX idx_posts_challenge_created ON posts(challenge_id, created_at DESC);
 CREATE INDEX idx_posts_creator ON posts(created_by, created_at DESC);
 CREATE INDEX idx_posts_created ON posts(created_at DESC);
 
@@ -97,6 +95,11 @@ CREATE INDEX idx_likes_user ON post_likes(user_id, created_at DESC);
 -- 댓글 조회
 CREATE INDEX idx_comments_post_created ON comments(post_id, created_at DESC);
 CREATE INDEX idx_comments_creator ON comments(created_by, created_at DESC);
+CREATE INDEX idx_comments_parent ON comments(parent_id);
+
+-- 댓글 좋아요 조회
+CREATE INDEX idx_comment_likes_comment ON comment_likes(comment_id);
+CREATE INDEX idx_comment_likes_user ON comment_likes(user_id);
 ```
 
 ### 1.5 시스템 도메인
@@ -138,11 +141,11 @@ CREATE INDEX idx_admin_logs_created ON admin_logs(created_at DESC);
 ## 2. 복합 인덱스 활용
 
 ```sql
--- 활성 공개 모임 검색
-CREATE INDEX idx_gye_public_active ON gye(is_public, deleted_at, created_at DESC);
+-- 활성 공개 챌린지 검색
+CREATE INDEX idx_challenges_public_active ON challenges(is_public, deleted_at, created_at DESC);
 
--- 내 활성 모임 목록
-CREATE INDEX idx_members_user_active ON gye_members(user_id, left_at, joined_at DESC);
+-- 내 활성 챌린지 목록
+CREATE INDEX idx_challenge_members_user_active ON challenge_members(user_id, left_at, joined_at DESC);
 
 -- 미읽은 알림 조회
 CREATE INDEX idx_notifications_unread_created ON notifications(user_id, is_read, created_at DESC);
@@ -153,12 +156,12 @@ CREATE INDEX idx_notifications_unread_created ON notifications(user_id, is_read,
 ## 3. 적용 체크리스트
 
 ### ✅ 스키마 생성
-- [ ] 모든 테이블 생성 (users, accounts, gye, posts 등)
-- [ ] `version` 컬럼 추가 (gye, accounts)
-- [ ] `deleted_at` 컬럼 추가 (gye - Soft Delete)
+- [ ] 모든 테이블 생성 (users, accounts, challenges, posts 등)
+- [ ] `version` 컬럼 추가 (challenges, accounts)
+- [ ] `deleted_at` 컬럼 추가 (challenges - Soft Delete)
 - [ ] `account_transactions` 테이블 생성 (idempotency_key 포함)
 - [ ] `sessions` 테이블 생성 (returnUrl 저장용)
-- [ ] `ledger_entry_id`, `ledger_status` 컬럼 추가 (votes)
+- [ ] `comment_likes` 테이블 생성 (댓글 좋아요)
 
 ### ✅ 제약조건 설정
 - [ ] CHECK 제약조건 추가 (balance >= 0, current_members <= max_members 등)
@@ -195,4 +198,6 @@ CREATE INDEX idx_notifications_unread_created ON notifications(user_id, is_read,
 
 ---
 
-**최종 수정**: 2026-01-09
+**최종 수정**: 2026-01-13
+**기준 문서**: DB_Schema_1.0.0.md
+

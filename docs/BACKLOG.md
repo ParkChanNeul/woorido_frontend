@@ -4,6 +4,56 @@
 
 ---
 
+## DB_Schema_1.0.0.md 동기화 이력 (2026-01-13)
+
+> **목적**: DB_Schema_1.0.0.md를 기준 문서로 하여 ERD 및 유스케이스 문서 동기화
+
+### P0: ERD 문서 동기화
+
+| 파일 | 변경 내용 | 상태 |
+|------|----------|------|
+| `02_SCHEMA_CHALLENGE.md` | `gye`→`challenges`, `sub_leader_id` 제거, `leader_benefit_rate` 추가 | ✅ 완료 |
+| `04_SCHEMA_SNS.md` | `comment_likes` 테이블 추가, `is_notice`, `is_pinned`, `parent_id`, `deleted_at` 추가 | ✅ 완료 |
+| `00_ERD_OVERVIEW.md` | 테이블 참조 업데이트, 용어 변경 공지 추가 | ✅ 완료 |
+| `ERD_SPECIFICATION.md` | 헤더 업데이트, DB_Schema 참조 추가, 용어 공지 추가 | ✅ 완료 |
+
+### P1: 유스케이스 문서 동기화
+
+| 파일 | 변경 내용 | 상태 |
+|------|----------|------|
+| `00_USE_CASES_OVERVIEW.md` | `challenge_members` 참조, `currentMembers` 매핑 | ✅ 완료 |
+| `02_USE_CASE_CHALLENGE.md` | 테이블 참조 전체 변경 | ✅ 완료 |
+| `03_USE_CASE_MEETING.md` | 투표 테이블 구조 반영 | ✅ 완료 |
+| `04_USE_CASE_SNS.md` | `challenge_id`, `is_notice`, `is_pinned` 추가 | ✅ 완료 |
+| `05_USE_CASE_SYSTEM.md` | `leave_reason` 값 업데이트 | ✅ 완료 |
+| `USE_CASES.md` | 용어 매핑 테이블 업데이트 | ✅ 완료 |
+
+### P2: 기타 문서 동기화
+
+| 파일 | 변경 내용 | 상태 |
+|------|----------|------|
+| `PRODUCT_AGENDA.md` | 용어 정의 테이블 (멤버/팔로워 구분 추가) | ✅ 완료 |
+| `TERMINOLOGY.md` | 버전 v2.1, DB_Schema 참조 추가 | ✅ 완료 |
+| `POLICY_DEFINITION.md` | 관련 문서 링크 변경 | ✅ 완료 |
+
+### 핵심 변경 사항
+
+```diff
+- gye → challenges (테이블명)
+- gye_members → challenge_members
+- gye_id → challenge_id (FK)
+- deposit_paid (Y/N) → deposit_status (NONE/LOCKED/USED/UNLOCKED)
+- leave_reason: AUTO_LEAVE_DEPOSIT_NOT_RECHARGED → AUTO_LEAVE
+- currentFollowers → currentMembers (API 매핑)
++ comment_likes (신규 테이블)
++ posts.is_notice, is_pinned, deleted_at
++ comments.parent_id, like_count, deleted_at
++ challenges.leader_benefit_rate
++ challenge_members.entry_fee_amount
+```
+
+---
+
 ## 기능 백로그
 
 ### 챌린지 시스템

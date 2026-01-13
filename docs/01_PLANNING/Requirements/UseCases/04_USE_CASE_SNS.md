@@ -1,7 +1,8 @@
 # SNS 도메인 유스케이스
 
-> 관련 테이블: `posts`, `post_images`, `post_likes`, `comments`
+> 관련 테이블: `posts`, `post_images`, `post_likes`, `comments`, `comment_likes`
 > 개요 문서: [00_USE_CASES_OVERVIEW.md](./00_USE_CASES_OVERVIEW.md)
+> 기준 문서: [DB_Schema_1.0.0.md](../../../02_ENGINEERING/DB_Schema_1.0.0.md)
 
 ---
 
@@ -19,7 +20,9 @@
 3. "게시" 클릭
 4. 이미지 S3 업로드
 5. posts 레코드 생성
-   - gye_id: 챌린지 ID (NULL이면 공개 피드)
+   - challenge_id: 챌린지 ID (NULL이면 공개 피드)
+   - is_notice: 'N' (공지사항 여부)
+   - is_pinned: 'N' (상단 고정 여부)
    - like_count: 0
    - comment_count: 0
 6. post_images 레코드 생성 (이미지별)

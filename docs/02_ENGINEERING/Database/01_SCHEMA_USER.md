@@ -122,7 +122,7 @@ CREATE TABLE account_transactions (
   idempotency_key VARCHAR(100) UNIQUE,
 
   -- 관련 엔티티
-  related_gye_id UUID REFERENCES gye(id),
+  related_challenge_id UUID REFERENCES challenges(id),
   related_user_id UUID REFERENCES users(id),
 
   -- 메타데이터

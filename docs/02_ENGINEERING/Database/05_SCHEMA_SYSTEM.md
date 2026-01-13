@@ -35,7 +35,7 @@ CREATE INDEX idx_sessions_expires ON sessions(expires_at);  -- 만료 세션 정
 | 타입 | 설명 | 사용처 |
 |------|------|--------|
 | `CHARGE` | 충전 플로우 | `/charge` → 결제 게이트웨이 → `/charge/callback` |
-| `JOIN` | 모임 가입 | `/gye/:id` → 보증금 결제 → `/gye/:id/detail` |
+| `JOIN` | 모임 가입 | `/challenge/:id` → 보증금 결제 → `/challenge/:id/detail` |
 | `WITHDRAW` | 출금 요청 | `/account` → 인증 → `/account` |
 
 ---

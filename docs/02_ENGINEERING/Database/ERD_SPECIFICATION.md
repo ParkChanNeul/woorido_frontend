@@ -1,13 +1,31 @@
 # WOORIDO ERD Specification
 **백엔드 개발자용 데이터베이스 설계 명세서**
 
-**작성일**: 2026-01-09
+**작성일**: 2026-01-13
 **대상 DBMS**: Oracle 21c XE
 **ORM**: mybatis-spring-boot-starter 3.0.3
 **트랜잭션 관리**: Spring Boot 3.2.3 (@Transactional)
+**총 테이블**: 31개
 
 > 📖 정책 기준: [POLICY_DEFINITION.md](../../01_PLANNING/Product/POLICY_DEFINITION.md)
+> 📖 **기준 문서**: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
 > 📋 변경 이력: [BACKLOG.md](../../BACKLOG.md)
+
+---
+
+## 중요 공지
+
+> **용어 변경 1**: `gye` → `challenges`
+> - 테이블명 `gye`는 레거시 용어입니다.
+> - 실제 DB 스키마에서는 `challenges` 테이블명을 사용합니다.
+
+> **용어 정의 2**: `member` vs `follower` vs `leader`
+> - 멤버(member): 챌린지 내 전체 인원 (리더 + 팔로워)
+> - 리더(leader): 챌린지를 생성하고 관리하는 멤버
+> - 팔로워(follower): 리더가 아닌 일반 멤버
+> - 컬럼명: `current_members`, `min_members`, `max_members`는 전체 인원 수입니다.
+
+---
 
 ## 📋 목차
 
@@ -58,7 +76,7 @@ Django는 **순수 데이터 분석/알고리즘 실행 엔진**으로만 사용
 ```python
 # Django 서비스 예제 (DB 연결 없음)
 @api_view(['POST'])
-def recommend_gye(request):
+def recommend_challenge(request):
     user_data = request.data  # Spring Boot가 보낸 JSON
 
     # pandas/numpy로 분석
@@ -67,13 +85,13 @@ def recommend_gye(request):
     risk_score = calculate_risk(user_data['transactions'])
 
     return Response({
-        'recommended_gye_ids': recommendations,
+        'recommended_challenge_ids': recommendations,
         'risk_level': risk_score
     })
 ```
 
 **Django가 하는 것:**
-- ✅ 모임 추천 알고리즘 (협업 필터링)
+- ✅ 챌린지 추천 알고리즘 (협업 필터링)
 - ✅ 이상 거래 탐지 (통계 분석)
 - ✅ 위험도 계산 (ML 모델)
 - ✅ 데이터 집계/변환 (pandas)
@@ -115,7 +133,7 @@ CREATE TABLE sessions (
 
 **적용 대상:**
 - 충전 플로우 (`/charge` → 결제 게이트웨이 → `/charge/callback`)
-- 모임 가입 (`/gye/:id` → 보증금 결제 → `/gye/:id/detail`)
+- 모임 가입 (`/challenge/:id` → 보증금 결제 → `/challenge/:id/detail`)
 - 출금 요청 (`/account` → 인증 → `/account`)
 
 **의견 관련 (Option B - Frontend localStorage):**
@@ -142,31 +160,31 @@ navigate(savedUrl || '/feed');
 **404 처리 + 유저 목록에서 보기:**
 
 ```sql
-ALTER TABLE gye ADD deleted_at TIMESTAMP;
-ALTER TABLE gye ADD dissolution_reason VARCHAR(500);
+ALTER TABLE challenges ADD deleted_at TIMESTAMP;
+ALTER TABLE challenges ADD dissolution_reason VARCHAR(500);
 ```
 
 **API 동작:**
 
 1. **개별 조회 시 404 반환:**
 ```json
-GET /api/gye/abc123
+GET /api/challenges/abc123
 HTTP/1.1 404 Not Found
 {
-  "error": "GYE_DELETED",
-  "message": "이 모임은 2026년 1월 3일에 해산되었습니다.",
+  "error": "CHALLENGE_DELETED",
+  "message": "이 챌린지는 2026년 1월 3일에 해산되었습니다.",
   "deletedAt": "2026-01-03T10:30:00Z",
-  "dissolutionReason": "모임장 요청"
+  "dissolutionReason": "리더 요청"
 }
 ```
 
-2. **내 모임 목록에서는 표시:**
+2. **내 챌린지 목록에서는 표시:**
 ```json
-GET /api/gye/my-groups?includeDeleted=true
+GET /api/challenges/my-challenges?includeDeleted=true
 [
   {
     "id": "abc123",
-    "name": "강남 맛집 모임",
+    "name": "강남 맛집 챌린지",
     "status": "dissolved",
     "deletedAt": "2026-01-03T10:30:00Z"
   }
@@ -179,21 +197,21 @@ GET /api/gye/my-groups?includeDeleted=true
 
 ### 2.1 Race Condition (경쟁 조건)
 
-**문제:** 여러 유저가 동시에 모임 가입 시 `current_members` 카운트 오류
+**문제:** 여러 유저가 동시에 챌린지 가입 시 `current_members` 카운트 오류
 
 **해결:** Optimistic Locking + Version Column
 
 ```sql
-ALTER TABLE gye ADD version BIGINT DEFAULT 0 NOT NULL;
+ALTER TABLE challenges ADD version BIGINT DEFAULT 0 NOT NULL;
 ```
 
 ```xml
 <!-- MyBatis Mapper -->
 <update id="incrementMembers">
-  UPDATE gye
+  UPDATE challenges
   SET current_members = current_members + 1,
       version = version + 1
-  WHERE id = #{gyeId}
+  WHERE id = #{challengeId}
     AND version = #{version}
     AND current_members < max_members
 </update>
@@ -202,22 +220,22 @@ ALTER TABLE gye ADD version BIGINT DEFAULT 0 NOT NULL;
 ```java
 @Service
 @Transactional
-public class GyeService {
+public class ChallengeService {
 
     @Retryable(
         value = {OptimisticLockException.class},
         maxAttempts = 3,
         backoff = @Backoff(delay = 100)
     )
-    public void joinGye(String userId, String gyeId) {
-        Gye gye = gyeMapper.selectByIdWithVersion(gyeId);
+    public void joinChallenge(String userId, String challengeId) {
+        Challenge challenge = challengeMapper.selectByIdWithVersion(challengeId);
 
-        int updated = gyeMapper.incrementMembers(gyeId, gye.getVersion());
+        int updated = challengeMapper.incrementMembers(challengeId, challenge.getVersion());
         if (updated == 0) {
             throw new OptimisticLockException("동시 가입 발생");
         }
 
-        gyeMemberMapper.insert(new GyeMember(gyeId, userId));
+        challengeMemberMapper.insert(new ChallengeMember(challengeId, userId));
     }
 }
 ```
@@ -284,7 +302,7 @@ public void approveVote(String voteId) {
 
     // 2. 장부 기록 생성
     LedgerEntry ledger = LedgerEntry.builder()
-        .gyeId(vote.getGyeId())
+        .challengeId(vote.getChallengeId())
         .amount(vote.getAmount())
         .description(vote.getDescription())
         .type("EXPENSE")
@@ -298,9 +316,9 @@ public void approveVote(String voteId) {
     vote.setLedgerStatus("RECORDED");
     voteMapper.update(vote);
 
-    // 4. 모임 잔액 차감 (Pessimistic Lock)
-    Gye gye = gyeMapper.selectByIdForUpdate(vote.getGyeId());
-    gyeMapper.updateBalance(gye.getId(), gye.getBalance() - vote.getAmount());
+    // 4. 챌린지 잔액 차감 (Pessimistic Lock)
+    Challenge challenge = challengeMapper.selectByIdForUpdate(vote.getChallengeId());
+    challengeMapper.updateBalance(challenge.getId(), challenge.getBalance() - vote.getAmount());
 }
 ```
 
@@ -348,16 +366,16 @@ public void reconcileCounts() {
 **해결:** 명시적 CASCADE 정의
 
 ```sql
--- 모임 삭제 시 연관 데이터 처리
-CREATE TABLE gye_members (
+-- 챌린지 삭제 시 연관 데이터 처리
+CREATE TABLE challenge_members (
   ...
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE ledger_entries (
   ...
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE
 );
 
 -- 유저 삭제 시 연관 데이터 처리
@@ -478,7 +496,7 @@ CREATE TABLE account_transactions (
   idempotency_key VARCHAR(100) UNIQUE,  -- 중복 요청 검증
 
   -- 관련 엔티티
-  related_gye_id UUID REFERENCES gye(id),
+  related_challenge_id UUID REFERENCES challenges(id),
   related_user_id UUID REFERENCES users(id),
 
   -- 메타데이터
@@ -560,23 +578,23 @@ CREATE INDEX idx_user_scores_month ON user_scores(calculated_month);
 > **P-046 참조**: 완주 인증(is_verified) 추가, 용어 매핑 주석 추가
 
 ```sql
-CREATE TABLE gye (
+CREATE TABLE challenges (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
   name VARCHAR(100) NOT NULL,
   description VARCHAR(2000),
   category VARCHAR(50) NOT NULL,
 
-  -- 모임장 (creator_id → leaderId 용어 매핑)
+  -- 리더 (creator_id → leaderId 용어 매핑)
   creator_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 
-  -- P-033 ~ P-035: 부리더 및 리더 활동 추적 (리더 승계 시스템)
-  sub_leader_id UUID REFERENCES users(id),  -- 부리더 (점수 2위 자동 지정)
+  -- 리더 활동 추적
   leader_last_active_at TIMESTAMP DEFAULT SYSTIMESTAMP,  -- 리더 최근 활동일
+  leader_benefit_rate NUMBER(5,4) DEFAULT 0,  -- 리더 혜택 비율 (0.0500 = 5%)
 
-  -- 팔로워 관리 (동시성 제어) (members → followers 용어 매핑)
-  current_members NUMBER DEFAULT 1 NOT NULL,  -- → currentFollowers (리더 포함)
+  -- 멤버 관리 (동시성 제어) (멤버 = 리더 + 팔로워)
+  current_members NUMBER DEFAULT 1 NOT NULL,  -- → currentMembers (전체 인원)
   min_members NUMBER DEFAULT 3 NOT NULL,  -- P-046: 최소 인원 (기본 3명)
-  max_members NUMBER NOT NULL,  -- → maxFollowers
+  max_members NUMBER NOT NULL,  -- → maxMembers
   version BIGINT DEFAULT 0 NOT NULL,  -- Optimistic Lock
 
   -- P-046 ~ P-050: 챌린지 상태 (모집 중 → 진행 중 자동 전환)
@@ -584,13 +602,12 @@ CREATE TABLE gye (
   activated_at TIMESTAMP,  -- ACTIVE 상태 전환 시점
 
   -- 재무 정보 (용어 매핑)
-  balance BIGINT DEFAULT 0 NOT NULL,  -- → openBalance (오픈 잔액)
+  balance BIGINT DEFAULT 0 NOT NULL,  -- → challengeAccountBalance (챌린지 금고 잔액)
   monthly_fee BIGINT NOT NULL,  -- → supportAmount (월 서포트)
   deposit_amount BIGINT NOT NULL,  -- → depositLock (보증금 락)
 
-  -- 모임 설정
+  -- 챌린지 설정
   is_public CHAR(1) DEFAULT 'Y' CHECK (is_public IN ('Y', 'N')),
-  join_approval_required CHAR(1) DEFAULT 'N' CHECK (join_approval_required IN ('Y', 'N')),
 
   -- P-026 ~ P-028: 완주 인증 시스템 (1년 운영 시 부여)
   is_verified CHAR(1) DEFAULT 'N' CHECK (is_verified IN ('Y', 'N')),
@@ -610,80 +627,84 @@ CREATE TABLE gye (
 
   -- 제약조건
   CONSTRAINT chk_members_capacity CHECK (current_members <= max_members),
-  CONSTRAINT chk_gye_balance CHECK (balance >= 0),
+  CONSTRAINT chk_challenge_balance CHECK (balance >= 0),
   CONSTRAINT chk_monthly_fee CHECK (monthly_fee >= 0),
   CONSTRAINT chk_deposit CHECK (deposit_amount >= 0)
 );
 
 -- 인덱스
-CREATE INDEX idx_gye_creator ON gye(creator_id);
-CREATE INDEX idx_gye_category ON gye(category, created_at DESC);
-CREATE INDEX idx_gye_public ON gye(is_public, created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_gye_deleted ON gye(deleted_at DESC);
-CREATE INDEX idx_gye_verified ON gye(is_verified, created_at DESC);  -- 완주 인증 챌린지 조회용
-CREATE INDEX idx_gye_inactive_leader ON gye(leader_last_active_at) WHERE deleted_at IS NULL;  -- 리더 미활동 조회용
+CREATE INDEX idx_challenges_creator ON challenges(creator_id);
+CREATE INDEX idx_challenges_category ON challenges(category, created_at DESC);
+CREATE INDEX idx_challenges_public ON challenges(is_public, created_at DESC) WHERE deleted_at IS NULL;
+CREATE INDEX idx_challenges_deleted ON challenges(deleted_at DESC);
+CREATE INDEX idx_challenges_verified ON challenges(is_verified, created_at DESC);  -- 완주 인증 챌린지 조회용
+CREATE INDEX idx_challenges_inactive_leader ON challenges(leader_last_active_at) WHERE deleted_at IS NULL;  -- 리더 미활동 조회용
 ```
 
 **컬럼 용어 매핑:**
 | ERD 컬럼명 | 프론트엔드/API 용어 |
 |-----------|-------------------|
 | `creator_id` | `leaderId` (리더 ID) |
-| `sub_leader_id` | `subLeaderId` (부리더 ID, 점수 2위 자동 지정) |
 | `leader_last_active_at` | `leaderLastActiveAt` (리더 최근 활동일) |
-| `current_members` | `currentFollowers` (현재 팔로워 수) |
-| `balance` | `challengeAccountBalance` (챌린지 어카운트 잔액) |
+| `leader_benefit_rate` | `leaderBenefitRate` (리더 혜택 비율) |
+| `current_members` | `currentMembers` (현재 멤버 수, 리더+팔로워) |
+| `balance` | `challengeAccountBalance` (챌린지 금고 잔액) |
 | `monthly_fee` | `supportAmount` (월 서포트) |
 | `deposit_amount` | `depositLock` (보증금 락) |
 | `is_verified` | `isVerified` (완주 인증) |
 
-### 3.5 모임 회원 (gye_members)
+### 3.5 챌린지 멤버 (challenge_members)
 
 > **P-018 ~ P-021 참조**: 권한 박탈/복구 기능
 
 ```sql
-CREATE TABLE gye_members (
+CREATE TABLE challenge_members (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 
   -- 역할 (MEMBER → FOLLOWER 용어 변경)
-  role VARCHAR(20) DEFAULT 'FOLLOWER' CHECK (role IN ('LEADER', 'MANAGER', 'FOLLOWER')),
+  role VARCHAR(20) DEFAULT 'FOLLOWER' CHECK (role IN ('LEADER', 'FOLLOWER')),
 
-  -- 보증금 락 정보 (deposit → depositLock 용어 매핑)
-  deposit_paid CHAR(1) DEFAULT 'N' CHECK (deposit_paid IN ('Y', 'N')),
-  deposit_paid_at TIMESTAMP,
+  -- 보증금 상태
+  deposit_status VARCHAR(20) DEFAULT 'NONE' CHECK (deposit_status IN ('NONE', 'LOCKED', 'USED', 'UNLOCKED')),
   deposit_locked_at TIMESTAMP,  -- 보증금 락 시점
   deposit_unlocked_at TIMESTAMP,  -- 보증금 락 해제 시점
+
+  -- 입회비 정보
+  entry_fee_amount BIGINT DEFAULT 0,  -- 입회비 금액
+  entry_fee_paid_at TIMESTAMP,  -- 입회비 납부일
 
   -- P-018 ~ P-021: 권한 박탈 시스템 (보증금 충당 시)
   privilege_status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (privilege_status IN ('ACTIVE', 'REVOKED')),
   privilege_revoked_at TIMESTAMP,  -- 권한 박탈 시점 (자동 탈퇴 60일 카운트 기준)
 
-  -- 서포트 납부 상태 (fee → support 용어 매핑)
-  last_support_paid_at TIMESTAMP,  -- last_fee_paid_at → last_support_paid_at
-  total_support_paid BIGINT DEFAULT 0 NOT NULL,  -- total_fees_paid → total_support_paid
+  -- 서포트 납부 상태
+  last_support_paid_at TIMESTAMP,  -- 마지막 서포트 납입일
+  total_support_paid BIGINT DEFAULT 0 NOT NULL,  -- 총 서포트 납입액
 
   -- 타임스탬프
   joined_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   left_at TIMESTAMP,
-  leave_reason VARCHAR(50),  -- 탈퇴 사유 (NORMAL, AUTO_LEAVE_DEPOSIT_NOT_RECHARGED, KICKED)
+  leave_reason VARCHAR(50),  -- 탈퇴 사유 (NORMAL, KICKED, AUTO_LEAVE, CHALLENGE_CLOSED)
 
   -- 제약조건
-  CONSTRAINT uk_gye_user UNIQUE (gye_id, user_id)
+  CONSTRAINT uk_challenge_user UNIQUE (challenge_id, user_id)
 );
 
 -- 인덱스
-CREATE INDEX idx_members_gye ON gye_members(gye_id, joined_at DESC);
-CREATE INDEX idx_members_user ON gye_members(user_id, joined_at DESC);
-CREATE INDEX idx_members_active ON gye_members(gye_id) WHERE left_at IS NULL;
-CREATE INDEX idx_members_revoked ON gye_members(privilege_status, privilege_revoked_at) 
+CREATE INDEX idx_challenge_members_challenge ON challenge_members(challenge_id, joined_at DESC);
+CREATE INDEX idx_challenge_members_user ON challenge_members(user_id, joined_at DESC);
+CREATE INDEX idx_challenge_members_active ON challenge_members(challenge_id) WHERE left_at IS NULL;
+CREATE INDEX idx_challenge_members_revoked ON challenge_members(privilege_status, privilege_revoked_at) 
   WHERE privilege_status = 'REVOKED';  -- P-022: 자동 탈퇴 대상 조회용
 ```
 
 **컬럼 용어 매핑:**
 | ERD 컬럼명 | 프론트엔드/API 용어 |
 |-----------|-------------------|
-| `deposit_*` | `depositLock` (보증금 락) |
+| `deposit_status` | `depositStatus` (보증금 상태) |
+| `entry_fee_amount` | `entryFeeAmount` (입회비 금액) |
 | `last_support_paid_at` | `lastSupportPaidAt` (최근 서포트 납입) |
 | `privilege_status` | `privilegeStatus` (권한 상태) |
 
@@ -694,7 +715,7 @@ CREATE INDEX idx_members_revoked ON gye_members(privilege_status, privilege_revo
 ```sql
 CREATE TABLE ledger_entries (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
 
   -- 거래 정보
   type VARCHAR(20) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE', 'FEE_COLLECTION', 'DEPOSIT_LOCK', 'DEPOSIT_UNLOCK')),
@@ -727,7 +748,7 @@ CREATE TABLE ledger_entries (
   CONSTRAINT chk_ledger_amount CHECK (amount > 0)
 );
 
-CREATE INDEX idx_ledger_gye_created ON ledger_entries(gye_id, created_at DESC);
+CREATE INDEX idx_ledger_challenge_created ON ledger_entries(challenge_id, created_at DESC);
 CREATE INDEX idx_ledger_type ON ledger_entries(type, created_at DESC);
 CREATE INDEX idx_ledger_creator ON ledger_entries(created_by);
 CREATE INDEX idx_ledger_merchant ON ledger_entries(merchant_name);  -- 사용처 검색용
@@ -750,7 +771,7 @@ CREATE INDEX idx_ledger_merchant ON ledger_entries(merchant_name);  -- 사용처
 ```sql
 CREATE TABLE meetings (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 모임 정보 (예상 비용 없음 - 지출은 건별 별도 투표)
@@ -773,7 +794,7 @@ CREATE TABLE meetings (
   CONSTRAINT chk_meeting_date CHECK (meeting_date > created_at)
 );
 
-CREATE INDEX idx_meetings_gye_date ON meetings(gye_id, meeting_date DESC);
+CREATE INDEX idx_meetings_challenge_date ON meetings(challenge_id, meeting_date DESC);
 CREATE INDEX idx_meetings_vote ON meetings(vote_id);
 CREATE INDEX idx_meetings_status ON meetings(status, meeting_date);
 ```
@@ -808,7 +829,7 @@ CREATE INDEX idx_attendees_user ON meeting_attendees(user_id, registered_at DESC
 ```sql
 CREATE TABLE votes (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 투표 유형 (P-037 ~ P-041: RULE_CHANGE 제거 - MVP 범위 외)
@@ -857,7 +878,7 @@ CREATE TABLE votes (
   CONSTRAINT chk_approval_count CHECK (required_approval_count > 0)
 );
 
-CREATE INDEX idx_votes_gye_created ON votes(gye_id, created_at DESC);
+CREATE INDEX idx_votes_challenge_created ON votes(challenge_id, created_at DESC);
 CREATE INDEX idx_votes_status ON votes(status, created_at DESC);
 CREATE INDEX idx_votes_creator ON votes(created_by);
 CREATE INDEX idx_votes_ledger ON votes(ledger_entry_id);  -- 장부 연결 조회용
@@ -892,7 +913,7 @@ CREATE INDEX idx_vote_records_user ON vote_records(user_id, created_at DESC);
 ```sql
 CREATE TABLE posts (
   id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  gye_id UUID REFERENCES gye(id) ON DELETE CASCADE,  -- NULL이면 공개 피드
+  challenge_id UUID REFERENCES challenges(id) ON DELETE CASCADE,  -- NULL이면 공개 피드
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 내용
@@ -911,7 +932,7 @@ CREATE TABLE posts (
   CONSTRAINT chk_comment_count CHECK (comment_count >= 0)
 );
 
-CREATE INDEX idx_posts_gye_created ON posts(gye_id, created_at DESC);
+CREATE INDEX idx_posts_challenge_created ON posts(challenge_id, created_at DESC);
 CREATE INDEX idx_posts_creator ON posts(created_by, created_at DESC);
 CREATE INDEX idx_posts_created ON posts(created_at DESC);  -- 전체 피드용
 ```
@@ -1087,24 +1108,24 @@ ORDER BY r.created_at DESC;
 ### 4.1 Optimistic Lock 패턴
 
 ```xml
-<!-- GyeMapper.xml -->
-<mapper namespace="com.woorido.mapper.GyeMapper">
+<!-- ChallengeMapper.xml -->
+<mapper namespace="com.woorido.mapper.ChallengeMapper">
 
   <!-- Version과 함께 조회 -->
-  <select id="selectByIdWithVersion" resultType="Gye">
+  <select id="selectByIdWithVersion" resultType="Challenge">
     SELECT id, name, current_members, max_members, version, balance
-    FROM gye
+    FROM challenges
     WHERE id = #{id}
       AND deleted_at IS NULL
   </select>
 
   <!-- Version 검증하며 회원 수 증가 -->
   <update id="incrementMembers">
-    UPDATE gye
+    UPDATE challenges
     SET current_members = current_members + 1,
         version = version + 1,
         updated_at = SYSTIMESTAMP
-    WHERE id = #{gyeId}
+    WHERE id = #{challengeId}
       AND version = #{version}
       AND current_members < max_members
       AND deleted_at IS NULL
@@ -1117,9 +1138,9 @@ ORDER BY r.created_at DESC;
 
 ```java
 @Mapper
-public interface GyeMapper {
-    Gye selectByIdWithVersion(@Param("id") String id);
-    int incrementMembers(@Param("gyeId") String gyeId, @Param("version") Long version);
+public interface ChallengeMapper {
+    Challenge selectByIdWithVersion(@Param("id") String id);
+    int incrementMembers(@Param("challengeId") String challengeId, @Param("version") Long version);
 }
 ```
 
@@ -1233,44 +1254,44 @@ public interface GyeMapper {
 ### 4.5 Soft Delete 조회
 
 ```xml
-<!-- GyeMapper.xml -->
-<mapper namespace="com.woorido.mapper.GyeMapper">
+<!-- ChallengeMapper.xml -->
+<mapper namespace="com.woorido.mapper.ChallengeMapper">
 
-  <!-- 활성 모임만 조회 -->
-  <select id="selectActiveById" resultType="Gye">
-    SELECT * FROM gye
+  <!-- 활성 챌린지만 조회 -->
+  <select id="selectActiveById" resultType="Challenge">
+    SELECT * FROM challenges
     WHERE id = #{id}
       AND deleted_at IS NULL
   </select>
 
-  <!-- 삭제된 모임 정보 조회 (404 응답용) -->
-  <select id="selectDeletedInfo" resultType="DeletedGyeInfo">
+  <!-- 삭제된 챌린지 정보 조회 (404 응답용) -->
+  <select id="selectDeletedInfo" resultType="DeletedChallengeInfo">
     SELECT id, name, deleted_at, dissolution_reason
-    FROM gye
+    FROM challenges
     WHERE id = #{id}
       AND deleted_at IS NOT NULL
   </select>
 
-  <!-- 내 모임 목록 (삭제 포함 옵션) -->
-  <select id="selectMyGyeList" resultType="Gye">
-    SELECT g.*
-    FROM gye g
-    INNER JOIN gye_members gm ON g.id = gm.gye_id
-    WHERE gm.user_id = #{userId}
-      AND gm.left_at IS NULL
+  <!-- 내 챌린지 목록 (삭제 포함 옵션) -->
+  <select id="selectMyChallengeList" resultType="Challenge">
+    SELECT c.*
+    FROM challenges c
+    INNER JOIN challenge_members cm ON c.id = cm.challenge_id
+    WHERE cm.user_id = #{userId}
+      AND cm.left_at IS NULL
       <if test="includeDeleted == false">
-        AND g.deleted_at IS NULL
+        AND c.deleted_at IS NULL
       </if>
-    ORDER BY g.created_at DESC
+    ORDER BY c.created_at DESC
   </select>
 
   <!-- Soft Delete 실행 -->
   <update id="softDelete">
-    UPDATE gye
+    UPDATE challenges
     SET deleted_at = SYSTIMESTAMP,
         dissolution_reason = #{reason},
         updated_at = SYSTIMESTAMP
-    WHERE id = #{gyeId}
+    WHERE id = #{challengeId}
       AND deleted_at IS NULL
   </update>
 
@@ -1286,10 +1307,10 @@ public interface GyeMapper {
 ```java
 @Service
 @RequiredArgsConstructor
-public class GyeService {
+public class ChallengeService {
 
-    private final GyeMapper gyeMapper;
-    private final GyeMemberMapper gyeMemberMapper;
+    private final ChallengeMapper challengeMapper;
+    private final ChallengeMemberMapper challengeMemberMapper;
     private final AccountService accountService;
 
     @Transactional
@@ -1298,24 +1319,24 @@ public class GyeService {
         maxAttempts = 3,
         backoff = @Backoff(delay = 100, multiplier = 2)
     )
-    public void joinGye(String userId, String gyeId) {
-        // 1. Version과 함께 모임 조회
-        Gye gye = gyeMapper.selectByIdWithVersion(gyeId);
+    public void joinChallenge(String userId, String challengeId) {
+        // 1. Version과 함께 챌린지 조회
+        Challenge challenge = challengeMapper.selectByIdWithVersion(challengeId);
 
-        if (gye == null) {
-            throw new GyeNotFoundException("모임을 찾을 수 없습니다.");
+        if (challenge == null) {
+            throw new ChallengeNotFoundException("챌린지를 찾을 수 없습니다.");
         }
 
         // 2. 이미 가입했는지 확인
-        if (gyeMemberMapper.existsByGyeAndUser(gyeId, userId)) {
-            throw new AlreadyJoinedException("이미 가입한 모임입니다.");
+        if (challengeMemberMapper.existsByChallengeAndUser(challengeId, userId)) {
+            throw new AlreadyJoinedException("이미 가입한 챌린지입니다.");
         }
 
         // 3. 보증금 차감 (Pessimistic Lock)
-        accountService.lockDeposit(userId, gye.getDepositAmount());
+        accountService.lockDeposit(userId, challenge.getDepositAmount());
 
-        // 4. 모임 회원 수 증가 (Optimistic Lock)
-        int updated = gyeMapper.incrementMembers(gyeId, gye.getVersion());
+        // 4. 챌린지 회원 수 증가 (Optimistic Lock)
+        int updated = challengeMapper.incrementMembers(challengeId, challenge.getVersion());
 
         if (updated == 0) {
             // Version 충돌 발생 → 재시도
@@ -1323,15 +1344,15 @@ public class GyeService {
         }
 
         // 5. 회원 추가
-        GyeMember member = GyeMember.builder()
-            .gyeId(gyeId)
+        ChallengeMember member = ChallengeMember.builder()
+            .challengeId(challengeId)
             .userId(userId)
-            .role("MEMBER")
-            .depositPaid(true)
-            .depositPaidAt(LocalDateTime.now())
+            .role("FOLLOWER")
+            .depositStatus("LOCKED")
+            .depositLockedAt(LocalDateTime.now())
             .build();
 
-        gyeMemberMapper.insert(member);
+        challengeMemberMapper.insert(member);
     }
 }
 ```
@@ -1430,7 +1451,7 @@ public class VoteService {
 
     private final VoteMapper voteMapper;
     private final LedgerEntryMapper ledgerEntryMapper;
-    private final GyeMapper gyeMapper;
+    private final ChallengeMapper challengeMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public void approveVote(String voteId, String approverId) {
@@ -1461,7 +1482,7 @@ public class VoteService {
 
             // 4. 장부 기록 생성
             LedgerEntry ledger = LedgerEntry.builder()
-                .gyeId(vote.getGyeId())
+                .challengeId(vote.getChallengeId())
                 .type("EXPENSE")
                 .amount(vote.getAmount())
                 .description(vote.getTitle())
@@ -1477,15 +1498,15 @@ public class VoteService {
             vote.setLedgerStatus("RECORDED");
             voteMapper.update(vote);
 
-            // 6. 모임 잔액 차감 (Pessimistic Lock)
-            Gye gye = gyeMapper.selectByIdForUpdate(vote.getGyeId());
+            // 6. 챌린지 잔액 차감 (Pessimistic Lock)
+            Challenge challenge = challengeMapper.selectByIdForUpdate(vote.getChallengeId());
 
-            if (gye.getBalance() < vote.getAmount()) {
-                throw new InsufficientGyeBalanceException("모임 잔액이 부족합니다.");
+            if (challenge.getBalance() < vote.getAmount()) {
+                throw new InsufficientChallengeBalanceException("챌린지 잔액이 부족합니다.");
             }
 
-            long newBalance = gye.getBalance() - vote.getAmount();
-            gyeMapper.updateBalance(gye.getId(), newBalance);
+            long newBalance = challenge.getBalance() - vote.getAmount();
+            challengeMapper.updateBalance(challenge.getId(), newBalance);
 
         } catch (Exception e) {
             // 예외 발생 시 전체 롤백
@@ -1579,55 +1600,55 @@ public class CounterReconciliationJob {
 ```java
 @Service
 @RequiredArgsConstructor
-public class GyeService {
+public class ChallengeService {
 
-    private final GyeMapper gyeMapper;
+    private final ChallengeMapper challengeMapper;
 
-    public GyeDetailResponse getGyeDetail(String gyeId) {
-        // 1. 활성 모임 조회
-        Gye gye = gyeMapper.selectActiveById(gyeId);
+    public ChallengeDetailResponse getChallengeDetail(String challengeId) {
+        // 1. 활성 챌린지 조회
+        Challenge challenge = challengeMapper.selectActiveById(challengeId);
 
-        if (gye != null) {
-            return GyeDetailResponse.from(gye);
+        if (challenge != null) {
+            return ChallengeDetailResponse.from(challenge);
         }
 
-        // 2. 삭제된 모임인지 확인
-        DeletedGyeInfo deletedInfo = gyeMapper.selectDeletedInfo(gyeId);
+        // 2. 삭제된 챌린지인지 확인
+        DeletedChallengeInfo deletedInfo = challengeMapper.selectDeletedInfo(challengeId);
 
         if (deletedInfo != null) {
             // HTTP 404 + 삭제 정보 반환
-            throw new GyeDeletedException(
-                "이 모임은 " + deletedInfo.getDeletedAt() + "에 해산되었습니다.",
+            throw new ChallengeDeletedException(
+                "이 챌린지는 " + deletedInfo.getDeletedAt() + "에 해산되었습니다.",
                 deletedInfo
             );
         }
 
-        // 3. 존재하지 않는 모임
-        throw new GyeNotFoundException("모임을 찾을 수 없습니다.");
+        // 3. 존재하지 않는 챌린지
+        throw new ChallengeNotFoundException("챌린지를 찾을 수 없습니다.");
     }
 
-    public List<GyeListItem> getMyGyeList(String userId, boolean includeDeleted) {
-        return gyeMapper.selectMyGyeList(userId, includeDeleted)
+    public List<ChallengeListItem> getMyChallengeList(String userId, boolean includeDeleted) {
+        return challengeMapper.selectMyChallengeList(userId, includeDeleted)
             .stream()
-            .map(gye -> GyeListItem.builder()
-                .id(gye.getId())
-                .name(gye.getName())
-                .status(gye.getDeletedAt() != null ? "dissolved" : "active")
-                .deletedAt(gye.getDeletedAt())
+            .map(challenge -> ChallengeListItem.builder()
+                .id(challenge.getId())
+                .name(challenge.getName())
+                .status(challenge.getDeletedAt() != null ? "dissolved" : "active")
+                .deletedAt(challenge.getDeletedAt())
                 .build())
             .collect(Collectors.toList());
     }
 
     @Transactional
-    public void dissolveGye(String gyeId, String reason) {
-        Gye gye = gyeMapper.selectActiveById(gyeId);
+    public void dissolveChallenge(String challengeId, String reason) {
+        Challenge challenge = challengeMapper.selectActiveById(challengeId);
 
-        if (gye == null) {
-            throw new GyeNotFoundException("모임을 찾을 수 없습니다.");
+        if (challenge == null) {
+            throw new ChallengeNotFoundException("챌린지를 찾을 수 없습니다.");
         }
 
         // Soft Delete 실행
-        gyeMapper.softDelete(gyeId, reason);
+        challengeMapper.softDelete(challengeId, reason);
     }
 }
 
@@ -1635,12 +1656,12 @@ public class GyeService {
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(GyeDeletedException.class)
-    public ResponseEntity<ErrorResponse> handleGyeDeleted(GyeDeletedException e) {
+    @ExceptionHandler(ChallengeDeletedException.class)
+    public ResponseEntity<ErrorResponse> handleChallengeDeleted(ChallengeDeletedException e) {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.builder()
-                .error("GYE_DELETED")
+                .error("CHALLENGE_DELETED")
                 .message(e.getMessage())
                 .deletedAt(e.getDeletedInfo().getDeletedAt())
                 .dissolutionReason(e.getDeletedInfo().getDissolutionReason())
@@ -1669,28 +1690,28 @@ CREATE INDEX idx_acct_tx_account_created ON account_transactions(account_id, cre
 CREATE INDEX idx_acct_tx_type ON account_transactions(type, created_at DESC);
 CREATE INDEX idx_acct_tx_idempotency ON account_transactions(idempotency_key);
 
--- 모임 조회
-CREATE INDEX idx_gye_creator ON gye(creator_id);
-CREATE INDEX idx_gye_category ON gye(category, created_at DESC);
-CREATE INDEX idx_gye_public ON gye(is_public, created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_gye_deleted ON gye(deleted_at DESC);
+-- 챌린지 조회
+CREATE INDEX idx_challenges_creator ON challenges(creator_id);
+CREATE INDEX idx_challenges_category ON challenges(category, created_at DESC);
+CREATE INDEX idx_challenges_public ON challenges(is_public, created_at DESC) WHERE deleted_at IS NULL;
+CREATE INDEX idx_challenges_deleted ON challenges(deleted_at DESC);
 
--- 모임 회원 조회
-CREATE INDEX idx_members_gye ON gye_members(gye_id, joined_at DESC);
-CREATE INDEX idx_members_user ON gye_members(user_id, joined_at DESC);
-CREATE INDEX idx_members_active ON gye_members(gye_id) WHERE left_at IS NULL;
+-- 챌린지 멤버 조회
+CREATE INDEX idx_challenge_members_challenge ON challenge_members(challenge_id, joined_at DESC);
+CREATE INDEX idx_challenge_members_user ON challenge_members(user_id, joined_at DESC);
+CREATE INDEX idx_challenge_members_active ON challenge_members(challenge_id) WHERE left_at IS NULL;
 
 -- 장부 조회
-CREATE INDEX idx_ledger_gye_created ON ledger_entries(gye_id, created_at DESC);
+CREATE INDEX idx_ledger_challenge_created ON ledger_entries(challenge_id, created_at DESC);
 CREATE INDEX idx_ledger_type ON ledger_entries(type, created_at DESC);
 
 -- 투표 조회
-CREATE INDEX idx_votes_gye_created ON votes(gye_id, created_at DESC);
+CREATE INDEX idx_votes_challenge_created ON votes(challenge_id, created_at DESC);
 CREATE INDEX idx_votes_status ON votes(status, created_at DESC);
 CREATE INDEX idx_votes_ledger ON votes(ledger_entry_id);
 
 -- 게시글 조회
-CREATE INDEX idx_posts_gye_created ON posts(gye_id, created_at DESC);
+CREATE INDEX idx_posts_challenge_created ON posts(challenge_id, created_at DESC);
 CREATE INDEX idx_posts_creator ON posts(created_by, created_at DESC);
 CREATE INDEX idx_posts_created ON posts(created_at DESC);
 
@@ -1713,11 +1734,11 @@ CREATE INDEX idx_sessions_expires ON sessions(expires_at);  -- Cleanup job용
 ### 6.2 복합 인덱스 활용
 
 ```sql
--- 활성 공개 모임 검색
-CREATE INDEX idx_gye_public_active ON gye(is_public, deleted_at, created_at DESC);
+-- 활성 공개 챌린지 검색
+CREATE INDEX idx_challenges_public_active ON challenges(is_public, deleted_at, created_at DESC);
 
--- 내 활성 모임 목록
-CREATE INDEX idx_members_user_active ON gye_members(user_id, left_at, joined_at DESC);
+-- 내 활성 챌린지 목록
+CREATE INDEX idx_challenge_members_user_active ON challenge_members(user_id, left_at, joined_at DESC);
 
 -- 미읽은 알림 조회
 CREATE INDEX idx_notifications_unread_created ON notifications(user_id, is_read, created_at DESC);
@@ -1730,9 +1751,9 @@ CREATE INDEX idx_notifications_unread_created ON notifications(user_id, is_read,
 ### 백엔드 개발자가 확인해야 할 사항:
 
 #### ✅ 스키마 생성
-- [ ] 모든 테이블 생성 (users, accounts, gye, posts 등)
-- [ ] `version` 컬럼 추가 (gye, accounts)
-- [ ] `deleted_at` 컬럼 추가 (gye - Soft Delete)
+- [ ] 모든 테이블 생성 (users, accounts, challenges, posts 등)
+- [ ] `version` 컬럼 추가 (challenges, accounts)
+- [ ] `deleted_at` 컬럼 추가 (challenges - Soft Delete)
 - [ ] `account_transactions` 테이블 생성 (idempotency_key 포함)
 - [ ] `sessions` 테이블 생성 (returnUrl 저장용)
 - [ ] `ledger_entry_id`, `ledger_status` 컬럼 추가 (votes)
@@ -1782,22 +1803,22 @@ CREATE INDEX idx_notifications_unread_created ON notifications(user_id, is_read,
 public class RecommendationService {
 
     private final RestTemplate restTemplate;
-    private final GyeMapper gyeMapper;
+    private final ChallengeMapper challengeMapper;
     private final UserMapper userMapper;
 
-    public List<String> getRecommendedGye(String userId) {
+    public List<String> getRecommendedChallenges(String userId) {
         // 1. Spring Boot가 Oracle DB에서 데이터 조회
         User user = userMapper.selectById(userId);
-        List<Gye> userHistory = gyeMapper.selectUserHistory(userId);
+        List<Challenge> userHistory = challengeMapper.selectUserHistory(userId);
 
         // 2. Django로 전송할 JSON 생성
         Map<String, Object> requestData = Map.of(
             "user_id", userId,
             "user_history", userHistory.stream()
-                .map(gye -> Map.of(
-                    "gye_id", gye.getId(),
-                    "category", gye.getCategory(),
-                    "monthly_fee", gye.getMonthlyFee()
+                .map(challenge -> Map.of(
+                    "challenge_id", challenge.getId(),
+                    "category", challenge.getCategory(),
+                    "monthly_fee", challenge.getMonthlyFee()
                 ))
                 .collect(Collectors.toList())
         );
@@ -1810,7 +1831,7 @@ public class RecommendationService {
         );
 
         // 4. Django 분석 결과 반환
-        return response.getRecommendedGyeIds();
+        return response.getRecommendedChallengeIds();
     }
 }
 ```
@@ -1825,9 +1846,9 @@ import pandas as pd
 import numpy as np
 
 @api_view(['POST'])
-def recommend_gye(request):
+def recommend_challenge(request):
     """
-    모임 추천 알고리즘 (DB 연결 없음)
+    챌린지 추천 알고리즘 (DB 연결 없음)
     Spring Boot가 보낸 JSON 데이터만 처리
     """
     user_data = request.data
@@ -1840,7 +1861,7 @@ def recommend_gye(request):
 
     # Spring Boot로 결과 반환
     return Response({
-        'recommended_gye_ids': recommendations.tolist(),
+        'recommended_challenge_ids': recommendations.tolist(),
         'confidence_score': 0.85
     })
 
@@ -1871,11 +1892,11 @@ def detect_anomaly(request):
 
 ### 핵심 변경사항
 
-1. **Optimistic Locking**: `gye.version`, `accounts.version` 추가
+1. **Optimistic Locking**: `challenges.version`, `accounts.version` 추가
 2. **Pessimistic Locking**: `FOR UPDATE WAIT 3` 적용
 3. **Idempotency**: `account_transactions.idempotency_key` 추가
 4. **Atomic Counters**: `like_count`, `comment_count` 직접 증감
-5. **Soft Delete**: `gye.deleted_at` 추가 + 404 처리
+5. **Soft Delete**: `challenges.deleted_at` 추가 + 404 처리
 6. **CASCADE 정책**: 명시적 정의
 7. **Hybrid returnUrl**: 돈은 DB Session, 의견은 Frontend
 8. **Django 역할**: 순수 분석 엔진 (DB 연결 없음)
@@ -1884,7 +1905,7 @@ def detect_anomaly(request):
 
 | 오류 유형 | 해결 방법 | 적용 테이블 |
 |----------|----------|-----------|
-| Race Condition | Optimistic Lock | gye, accounts |
+| Race Condition | Optimistic Lock | challenges, accounts |
 | Lost Update | Pessimistic Lock | accounts |
 | Atomicity Violation | Single @Transactional | votes, ledger_entries |
 | Counter Drift | Atomic Operations | posts |
@@ -1970,7 +1991,7 @@ CREATE TABLE reports (
   reporter_id UUID REFERENCES users(id) ON DELETE SET NULL,
   
   -- 신고 대상
-  target_type VARCHAR(20) NOT NULL CHECK (target_type IN ('USER', 'GYE', 'POST', 'COMMENT')),
+  target_type VARCHAR(20) NOT NULL CHECK (target_type IN ('USER', 'CHALLENGE', 'POST', 'COMMENT')),
   target_id UUID NOT NULL,
   
   -- 신고 내용
@@ -2006,7 +2027,7 @@ CREATE TABLE admin_logs (
   admin_id UUID REFERENCES admins(id) ON DELETE SET NULL,
   
   -- 활동 정보
-  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_GYE 등
+  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_CHALLENGE 등
   target_type VARCHAR(20),
   target_id UUID,
   
@@ -2036,7 +2057,7 @@ CREATE INDEX idx_admin_logs_created ON admin_logs(created_at DESC);
 2. **Django**: 분석 전용 (DB 연결 없음)
 3. **동시성 제어**: Optimistic + Pessimistic Lock 조합
 4. **Idempotency**: 모든 금융 트랜잭션에 적용
-5. **Soft Delete**: 모임(gye) 테이블에 적용
+5. **Soft Delete**: 챌린지(challenges) 테이블에 적용
 6. **CASCADE 정책**: 명시적 정의
 7. **Hybrid returnUrl**: 돈은 DB Session, 의견은 Frontend
 8. **Django 역할**: 순수 분석 엔진 (DB 연결 없음)
@@ -2045,13 +2066,13 @@ CREATE INDEX idx_admin_logs_created ON admin_logs(created_at DESC);
 
 | 오류 유형 | 해결 방법 | 적용 테이블 |
 |----------|----------|-----------|
-| Race Condition | Optimistic Lock | gye, accounts |
+| Race Condition | Optimistic Lock | challenges, accounts |
 | Lost Update | Pessimistic Lock | accounts |
 | Atomicity Violation | Single @Transactional | votes, ledger_entries |
 | Counter Drift | Atomic Operations | posts |
 | Missing CASCADE | Explicit ON DELETE | 모든 FK |
 
 
-**최종 수정**: 2026-01-09
+**최종 수정**: 2026-01-13
 **작성자**: AI-Assisted Development Team
 **검토 필요**: Spring Boot 팀, Oracle DBA

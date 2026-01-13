@@ -2,6 +2,7 @@
 **트랜잭션 전략, MyBatis, Spring Boot 서비스 패턴**
 
 > 📖 상위 문서: [00_ERD_OVERVIEW.md](./00_ERD_OVERVIEW.md)
+> 📖 기준 문서: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
 
 ---
 
@@ -9,21 +10,21 @@
 
 ### 1.1 Race Condition (경쟁 조건)
 
-**문제:** 여러 유저가 동시에 모임 가입 시 `current_members` 카운트 오류
+**문제:** 여러 유저가 동시에 챌린지 가입 시 `current_members` 카운트 오류
 
 **해결:** Optimistic Locking + Version Column
 
 ```sql
-ALTER TABLE gye ADD version BIGINT DEFAULT 0 NOT NULL;
+ALTER TABLE challenges ADD version BIGINT DEFAULT 0 NOT NULL;
 ```
 
 ```xml
 <!-- MyBatis Mapper -->
 <update id="incrementMembers">
-  UPDATE gye
+  UPDATE challenges
   SET current_members = current_members + 1,
       version = version + 1
-  WHERE id = #{gyeId}
+  WHERE id = #{challengeId}
     AND version = #{version}
     AND current_members < max_members
 </update>
@@ -32,22 +33,22 @@ ALTER TABLE gye ADD version BIGINT DEFAULT 0 NOT NULL;
 ```java
 @Service
 @Transactional
-public class GyeService {
+public class ChallengeService {
 
     @Retryable(
         value = {OptimisticLockException.class},
         maxAttempts = 3,
         backoff = @Backoff(delay = 100)
     )
-    public void joinGye(String userId, String gyeId) {
-        Gye gye = gyeMapper.selectByIdWithVersion(gyeId);
+    public void joinChallenge(String userId, String challengeId) {
+        Challenge challenge = challengeMapper.selectByIdWithVersion(challengeId);
 
-        int updated = gyeMapper.incrementMembers(gyeId, gye.getVersion());
+        int updated = challengeMapper.incrementMembers(challengeId, challenge.getVersion());
         if (updated == 0) {
             throw new OptimisticLockException("동시 가입 발생");
         }
 
-        gyeMemberMapper.insert(new GyeMember(gyeId, userId));
+        challengeMemberMapper.insert(new ChallengeMember(challengeId, userId));
     }
 }
 ```
@@ -118,7 +119,7 @@ public void approveVote(String voteId) {
 
     // 2. 장부 기록 생성
     LedgerEntry ledger = LedgerEntry.builder()
-        .gyeId(vote.getGyeId())
+        .challengeId(vote.getChallengeId())
         .amount(vote.getAmount())
         .description(vote.getDescription())
         .type("EXPENSE")
@@ -132,9 +133,9 @@ public void approveVote(String voteId) {
     vote.setLedgerStatus("RECORDED");
     voteMapper.update(vote);
 
-    // 4. 모임 잔액 차감 (Pessimistic Lock)
-    Gye gye = gyeMapper.selectByIdForUpdate(vote.getGyeId());
-    gyeMapper.updateBalance(gye.getId(), gye.getBalance() - vote.getAmount());
+    // 4. 챌린지 잔액 차감 (Pessimistic Lock)
+    Challenge challenge = challengeMapper.selectByIdForUpdate(vote.getChallengeId());
+    challengeMapper.updateBalance(challenge.getId(), challenge.getBalance() - vote.getAmount());
 }
 ```
 
@@ -186,16 +187,16 @@ public void reconcileCounts() {
 **해결:** 명시적 CASCADE 정의
 
 ```sql
--- 모임 삭제 시 연관 데이터 처리
-CREATE TABLE gye_members (
+-- 챌린지 삭제 시 연관 데이터 처리
+CREATE TABLE challenge_members (
   ...
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE ledger_entries (
   ...
-  gye_id UUID NOT NULL REFERENCES gye(id) ON DELETE CASCADE
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE
 );
 
 -- 유저 삭제 시 연관 데이터 처리
@@ -212,24 +213,24 @@ CREATE TABLE posts (
 ### 2.1 Optimistic Lock 패턴
 
 ```xml
-<!-- GyeMapper.xml -->
-<mapper namespace="com.woorido.mapper.GyeMapper">
+<!-- ChallengeMapper.xml -->
+<mapper namespace="com.woorido.mapper.ChallengeMapper">
 
   <!-- Version과 함께 조회 -->
-  <select id="selectByIdWithVersion" resultType="Gye">
+  <select id="selectByIdWithVersion" resultType="Challenge">
     SELECT id, name, current_members, max_members, version, balance
-    FROM gye
+    FROM challenges
     WHERE id = #{id}
       AND deleted_at IS NULL
   </select>
 
   <!-- Version 검증하며 회원 수 증가 -->
   <update id="incrementMembers">
-    UPDATE gye
+    UPDATE challenges
     SET current_members = current_members + 1,
         version = version + 1,
         updated_at = SYSTIMESTAMP
-    WHERE id = #{gyeId}
+    WHERE id = #{challengeId}
       AND version = #{version}
       AND current_members < max_members
       AND deleted_at IS NULL
@@ -242,9 +243,9 @@ CREATE TABLE posts (
 
 ```java
 @Mapper
-public interface GyeMapper {
-    Gye selectByIdWithVersion(@Param("id") String id);
-    int incrementMembers(@Param("gyeId") String gyeId, @Param("version") Long version);
+public interface ChallengeMapper {
+    Challenge selectByIdWithVersion(@Param("id") String id);
+    int incrementMembers(@Param("challengeId") String challengeId, @Param("version") Long version);
 }
 ```
 
@@ -321,44 +322,44 @@ public interface GyeMapper {
 ### 2.4 Soft Delete 조회
 
 ```xml
-<!-- GyeMapper.xml -->
-<mapper namespace="com.woorido.mapper.GyeMapper">
+<!-- ChallengeMapper.xml -->
+<mapper namespace="com.woorido.mapper.ChallengeMapper">
 
-  <!-- 활성 모임만 조회 -->
-  <select id="selectActiveById" resultType="Gye">
-    SELECT * FROM gye
+  <!-- 활성 챌린지만 조회 -->
+  <select id="selectActiveById" resultType="Challenge">
+    SELECT * FROM challenges
     WHERE id = #{id}
       AND deleted_at IS NULL
   </select>
 
-  <!-- 삭제된 모임 정보 조회 (404 응답용) -->
-  <select id="selectDeletedInfo" resultType="DeletedGyeInfo">
+  <!-- 삭제된 챌린지 정보 조회 (404 응답용) -->
+  <select id="selectDeletedInfo" resultType="DeletedChallengeInfo">
     SELECT id, name, deleted_at, dissolution_reason
-    FROM gye
+    FROM challenges
     WHERE id = #{id}
       AND deleted_at IS NOT NULL
   </select>
 
-  <!-- 내 모임 목록 (삭제 포함 옵션) -->
-  <select id="selectMyGyeList" resultType="Gye">
-    SELECT g.*
-    FROM gye g
-    INNER JOIN gye_members gm ON g.id = gm.gye_id
-    WHERE gm.user_id = #{userId}
-      AND gm.left_at IS NULL
+  <!-- 내 챌린지 목록 (삭제 포함 옵션) -->
+  <select id="selectMyChallengeList" resultType="Challenge">
+    SELECT c.*
+    FROM challenges c
+    INNER JOIN challenge_members cm ON c.id = cm.challenge_id
+    WHERE cm.user_id = #{userId}
+      AND cm.left_at IS NULL
       <if test="includeDeleted == false">
-        AND g.deleted_at IS NULL
+        AND c.deleted_at IS NULL
       </if>
-    ORDER BY g.created_at DESC
+    ORDER BY c.created_at DESC
   </select>
 
   <!-- Soft Delete 실행 -->
   <update id="softDelete">
-    UPDATE gye
+    UPDATE challenges
     SET deleted_at = SYSTIMESTAMP,
         dissolution_reason = #{reason},
         updated_at = SYSTIMESTAMP
-    WHERE id = #{gyeId}
+    WHERE id = #{challengeId}
       AND deleted_at IS NULL
   </update>
 
@@ -374,10 +375,10 @@ public interface GyeMapper {
 ```java
 @Service
 @RequiredArgsConstructor
-public class GyeService {
+public class ChallengeService {
 
-    private final GyeMapper gyeMapper;
-    private final GyeMemberMapper gyeMemberMapper;
+    private final ChallengeMapper challengeMapper;
+    private final ChallengeMemberMapper challengeMemberMapper;
     private final AccountService accountService;
 
     @Transactional
@@ -386,24 +387,24 @@ public class GyeService {
         maxAttempts = 3,
         backoff = @Backoff(delay = 100, multiplier = 2)
     )
-    public void joinGye(String userId, String gyeId) {
-        // 1. Version과 함께 모임 조회
-        Gye gye = gyeMapper.selectByIdWithVersion(gyeId);
+    public void joinChallenge(String userId, String challengeId) {
+        // 1. Version과 함께 챌린지 조회
+        Challenge challenge = challengeMapper.selectByIdWithVersion(challengeId);
 
-        if (gye == null) {
-            throw new GyeNotFoundException("모임을 찾을 수 없습니다.");
+        if (challenge == null) {
+            throw new ChallengeNotFoundException("챌린지를 찾을 수 없습니다.");
         }
 
         // 2. 이미 가입했는지 확인
-        if (gyeMemberMapper.existsByGyeAndUser(gyeId, userId)) {
-            throw new AlreadyJoinedException("이미 가입한 모임입니다.");
+        if (challengeMemberMapper.existsByChallengeAndUser(challengeId, userId)) {
+            throw new AlreadyJoinedException("이미 가입한 챌린지입니다.");
         }
 
         // 3. 보증금 차감 (Pessimistic Lock)
-        accountService.lockDeposit(userId, gye.getDepositAmount());
+        accountService.lockDeposit(userId, challenge.getDepositAmount());
 
-        // 4. 모임 회원 수 증가 (Optimistic Lock)
-        int updated = gyeMapper.incrementMembers(gyeId, gye.getVersion());
+        // 4. 챌린지 회원 수 증가 (Optimistic Lock)
+        int updated = challengeMapper.incrementMembers(challengeId, challenge.getVersion());
 
         if (updated == 0) {
             // Version 충돌 발생 → 재시도
@@ -411,15 +412,15 @@ public class GyeService {
         }
 
         // 5. 회원 추가
-        GyeMember member = GyeMember.builder()
-            .gyeId(gyeId)
+        ChallengeMember member = ChallengeMember.builder()
+            .challengeId(challengeId)
             .userId(userId)
             .role("FOLLOWER")
-            .depositPaid(true)
-            .depositPaidAt(LocalDateTime.now())
+            .depositStatus("LOCKED")
+            .depositLockedAt(LocalDateTime.now())
             .build();
 
-        gyeMemberMapper.insert(member);
+        challengeMemberMapper.insert(member);
     }
 }
 ```
@@ -460,31 +461,31 @@ public class PostService {
 ```java
 @Service
 @RequiredArgsConstructor
-public class GyeService {
+public class ChallengeService {
 
-    private final GyeMapper gyeMapper;
+    private final ChallengeMapper challengeMapper;
 
-    public GyeDetailResponse getGyeDetail(String gyeId) {
-        // 1. 활성 모임 조회
-        Gye gye = gyeMapper.selectActiveById(gyeId);
+    public ChallengeDetailResponse getChallengeDetail(String challengeId) {
+        // 1. 활성 챌린지 조회
+        Challenge challenge = challengeMapper.selectActiveById(challengeId);
 
-        if (gye != null) {
-            return GyeDetailResponse.from(gye);
+        if (challenge != null) {
+            return ChallengeDetailResponse.from(challenge);
         }
 
-        // 2. 삭제된 모임인지 확인
-        DeletedGyeInfo deletedInfo = gyeMapper.selectDeletedInfo(gyeId);
+        // 2. 삭제된 챌린지인지 확인
+        DeletedChallengeInfo deletedInfo = challengeMapper.selectDeletedInfo(challengeId);
 
         if (deletedInfo != null) {
             // HTTP 404 + 삭제 정보 반환
-            throw new GyeDeletedException(
-                "이 모임은 " + deletedInfo.getDeletedAt() + "에 해산되었습니다.",
+            throw new ChallengeDeletedException(
+                "이 챌린지는 " + deletedInfo.getDeletedAt() + "에 해산되었습니다.",
                 deletedInfo
             );
         }
 
-        // 3. 존재하지 않는 모임
-        throw new GyeNotFoundException("모임을 찾을 수 없습니다.");
+        // 3. 존재하지 않는 챌린지
+        throw new ChallengeNotFoundException("챌린지를 찾을 수 없습니다.");
     }
 }
 
@@ -492,12 +493,12 @@ public class GyeService {
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(GyeDeletedException.class)
-    public ResponseEntity<ErrorResponse> handleGyeDeleted(GyeDeletedException e) {
+    @ExceptionHandler(ChallengeDeletedException.class)
+    public ResponseEntity<ErrorResponse> handleChallengeDeleted(ChallengeDeletedException e) {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.builder()
-                .error("GYE_DELETED")
+                .error("CHALLENGE_DELETED")
                 .message(e.getMessage())
                 .deletedAt(e.getDeletedInfo().getDeletedAt())
                 .dissolutionReason(e.getDeletedInfo().getDissolutionReason())
@@ -518,22 +519,22 @@ public class GlobalExceptionHandler {
 public class RecommendationService {
 
     private final RestTemplate restTemplate;
-    private final GyeMapper gyeMapper;
+    private final ChallengeMapper challengeMapper;
     private final UserMapper userMapper;
 
-    public List<String> getRecommendedGye(String userId) {
+    public List<String> getRecommendedChallenge(String userId) {
         // 1. Spring Boot가 Oracle DB에서 데이터 조회
         User user = userMapper.selectById(userId);
-        List<Gye> userHistory = gyeMapper.selectUserHistory(userId);
+        List<Challenge> userHistory = challengeMapper.selectUserHistory(userId);
 
         // 2. Django로 전송할 JSON 생성
         Map<String, Object> requestData = Map.of(
             "user_id", userId,
             "user_history", userHistory.stream()
-                .map(gye -> Map.of(
-                    "gye_id", gye.getId(),
-                    "category", gye.getCategory(),
-                    "monthly_fee", gye.getMonthlyFee()
+                .map(challenge -> Map.of(
+                    "challenge_id", challenge.getId(),
+                    "category", challenge.getCategory(),
+                    "monthly_fee", challenge.getMonthlyFee()
                 ))
                 .collect(Collectors.toList())
         );
@@ -546,7 +547,7 @@ public class RecommendationService {
         );
 
         // 4. Django 분석 결과 반환
-        return response.getRecommendedGyeIds();
+        return response.getRecommendedChallengeIds();
     }
 }
 ```
@@ -561,9 +562,9 @@ import pandas as pd
 import numpy as np
 
 @api_view(['POST'])
-def recommend_gye(request):
+def recommend_challenge(request):
     """
-    모임 추천 알고리즘 (DB 연결 없음)
+    챌린지 추천 알고리즘 (DB 연결 없음)
     Spring Boot가 보낸 JSON 데이터만 처리
     """
     user_data = request.data
@@ -576,7 +577,7 @@ def recommend_gye(request):
 
     # Spring Boot로 결과 반환
     return Response({
-        'recommended_gye_ids': recommendations.tolist(),
+        'recommended_challenge_ids': recommendations.tolist(),
         'confidence_score': 0.85
     })
 
@@ -603,4 +604,6 @@ def detect_anomaly(request):
 
 ---
 
-**최종 수정**: 2026-01-09
+**최종 수정**: 2026-01-13
+**기준 문서**: DB_Schema_1.0.0.md
+
