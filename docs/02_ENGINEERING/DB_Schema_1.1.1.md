@@ -2,12 +2,12 @@
 WOORIDO Database Schema Document (Oracle)
 ================================================================================
 
-Version         : 1.1.0
-Last Updated    : 2026-01-09
+Version         : 1.1.1
+Last Updated    : 2026-01-13
 Database        : Oracle 21c XE
 ORM             : MyBatis 3.0.3
 Transaction     : Spring Boot 3.2.3 (@Transactional)
-Total Tables    : 30
+Total Tables    : 31
 
 ================================================================================
 목차
@@ -34,12 +34,12 @@ Total Tables    : 30
   - View 별칭 없이 실제 테이블명이 "challenges"입니다.
 
 ※ 용어 정의 2: "member" vs "follower" vs "leader"
-  - 멤버(member): 챌린지 내 전체 인원 (리더 + 팔로워)
-  - 리더(leader): 챌린지를 생성하고 관리하는 멤버
-  - 팔로워(follower): 리더가 아닌 일반 멤버
+  - 멤버(member): 챌린지(계) 내 전체 인원 (계주 + 계원)
+  - 리더(leader): 계주 - 챌린지를 생성하고 관리하는 멤버
+  - 팔로워(follower): 계원 - 리더가 아닌 일반 멤버
   - 테이블명 "challenge_members"는 전체 멤버(리더 포함)를 저장합니다.
   - 컬럼명: current_members, min_members, max_members는 전체 인원 수입니다.
-  - role 컬럼으로 LEADER/FOLLOWER를 구분합니다.
+  - role 컬럼으로 LEADER(계주)/FOLLOWER(계원)를 구분합니다.
 
 
 ################################################################################
@@ -86,7 +86,7 @@ last_login_at                TIMESTAMP                                  마지�
 [컬럼값 정의]
   - gender          : M(남성), F(여성), O(기타)
   - social_provider : GOOGLE, KAKAO, NAVER
-  - account_status  : ACTIVE(활성), SUSPENDED(정지), BANNED(차단)
+  - account_status  : ACTIVE(활성), SUSPENDED(정지), BANNED(차단), WITHDRAWN(탈퇴)
   - is_verified     : Y(인증완료), N(미인증)
 
 [Indexes]
@@ -216,8 +216,8 @@ name                   VARCHAR2(100)    NN                           챌린지�
 description            VARCHAR2(2000)                                설명
 category               VARCHAR2(50)     NN                           카테고리
 creator_id             VARCHAR2(36)     FK, NN                       리더 ID
-sub_leader_id          VARCHAR2(36)     FK                           부리더 ID
 leader_last_active_at  TIMESTAMP                                     리더 마지막 활동일
+leader_benefit_rate    NUMBER(5,4)                    0              리더 혜택 비율 (0.0500 = 5%)
 current_members        NUMBER(10)       NN            1              현재 멤버 수
 min_members            NUMBER(10)       NN            3              최소 멤버 수
 max_members            NUMBER(10)       NN                           최대 멤버 수
@@ -238,6 +238,8 @@ created_at             TIMESTAMP        NN                           생성일
 updated_at             TIMESTAMP        NN                           수정일
 
 [컬럼값 정의]
+  - category    : HOBBY(취미), STUDY(학습), EXERCISE(운동), SAVINGS(저축),
+                  TRAVEL(여행), FOOD(음식), CULTURE(문화), OTHER(기타)
   - status      : RECRUITING(모집중), ACTIVE(활성), PAUSED(일시정지), CLOSED(종료)
   - is_verified : Y(인증완료), N(미인증)
   - is_public   : Y(공개), N(비공개)
@@ -250,7 +252,6 @@ updated_at             TIMESTAMP        NN                           수정일
 
 [Foreign Keys]
   - creator_id → users.id
-  - sub_leader_id → users.id
 
 
 --------------------------------------------------------------------------------
@@ -684,15 +685,24 @@ id            VARCHAR2(36)     PK                     피드 ID (UUID)
 challenge_id        VARCHAR2(36)     FK                     챌린지 ID (NULL이면 공개)
 created_by    VARCHAR2(36)     FK, NN                 작성자 ID
 content       VARCHAR2(4000)   NN                     내용
+is_notice     CHAR(1)                       'N'       공지사항 여부
+is_pinned     CHAR(1)                       'N'       상단 고정 여부
 like_count    NUMBER(10)                    0         좋아요 수
 comment_count NUMBER(10)                    0         댓글 수
 created_at    TIMESTAMP        NN                     생성일
 updated_at    TIMESTAMP        NN                     수정일
+deleted_at    TIMESTAMP                               삭제일 (Soft Delete)
+
+[컬럼값 정의]
+  - is_notice : Y(공지사항), N(일반 피드)
+  - is_pinned : Y(상단고정), N(일반)
 
 [Indexes]
   - IDX_posts_challenge_id (challenge_id)
   - IDX_posts_created_by (created_by)
   - IDX_posts_created_at (created_at)
+  - IDX_posts_is_notice (is_notice)
+  - IDX_posts_is_pinned (is_pinned)
 
 [Foreign Keys]
   - challenge_id → challenges.id
@@ -746,18 +756,43 @@ created_at  TIMESTAMP        NN                     생성일
 ------------------------------------------------------------------------------------------
 id          VARCHAR2(36)     PK                     댓글 ID (UUID)
 post_id     VARCHAR2(36)     FK, NN                 피드 ID
+parent_id   VARCHAR2(36)     FK                     부모 댓글 ID (대댓글용)
 created_by  VARCHAR2(36)     FK, NN                 작성자 ID
 content     VARCHAR2(1000)   NN                     내용
+like_count  NUMBER(10)                    0         좋아요 수
 created_at  TIMESTAMP        NN                     생성일
 updated_at  TIMESTAMP        NN                     수정일
+deleted_at  TIMESTAMP                               삭제일 (Soft Delete)
 
 [Indexes]
   - IDX_comments_post_id (post_id)
+  - IDX_comments_parent_id (parent_id)
   - IDX_comments_created_by (created_by)
 
 [Foreign Keys]
   - post_id → posts.id
+  - parent_id → comments.id
   - created_by → users.id
+
+
+--------------------------------------------------------------------------------
+6.5 comment_likes (댓글 좋아요)
+--------------------------------------------------------------------------------
+
+컬럼명       데이터타입        제약조건      기본값    설명
+------------------------------------------------------------------------------------------
+id          VARCHAR2(36)     PK                     좋아요 ID (UUID)
+comment_id  VARCHAR2(36)     FK, NN                 댓글 ID
+user_id     VARCHAR2(36)     FK, NN                 사용자 ID
+created_at  TIMESTAMP        NN                     생성일
+
+[Indexes]
+  - UK_comment_likes_comment_user (comment_id, user_id)
+  - IDX_comment_likes_user_id (user_id)
+
+[Foreign Keys]
+  - comment_id → comments.id
+  - user_id → users.id
 
 
 ################################################################################
@@ -788,10 +823,34 @@ read_at             TIMESTAMP                               읽은 시간
 created_at          TIMESTAMP        NN                     생성일
 
 [컬럼값 정의]
+  - type :
+    [챌린지 관련]
+    CHALLENGE_JOINED(챌린지 가입 완료), CHALLENGE_LEFT(챌린지 탈퇴),
+    CHALLENGE_ACTIVATED(챌린지 활성화), CHALLENGE_CLOSED(챌린지 종료),
+    [서포트/납입 관련]
+    SUPPORT_REMINDER(서포트 납입 알림), SUPPORT_PAID(서포트 납입 완료),
+    SUPPORT_OVERDUE(서포트 연체 알림),
+    [모임 관련]
+    MEETING_CREATED(모임 생성), MEETING_VOTE_STARTED(모임 투표 시작),
+    MEETING_CONFIRMED(모임 확정), MEETING_CANCELLED(모임 취소),
+    MEETING_REMINDER(모임 일정 알림),
+    [지출 관련]
+    EXPENSE_VOTE_STARTED(지출 투표 시작), EXPENSE_APPROVED(지출 승인),
+    EXPENSE_REJECTED(지출 거절), BARCODE_ISSUED(바코드 발급),
+    [투표 관련]
+    VOTE_STARTED(일반 투표 시작), VOTE_CLOSED(투표 종료),
+    KICK_APPROVED(강퇴 승인), LEADER_KICKED(리더 탄핵),
+    [SNS 관련]
+    POST_LIKED(피드 좋아요), POST_COMMENTED(피드 댓글),
+    COMMENT_LIKED(댓글 좋아요), COMMENT_REPLIED(대댓글),
+    [시스템 관련]
+    SYSTEM_NOTICE(시스템 공지), ACCOUNT_CHARGED(계좌 충전),
+    ACCOUNT_WITHDRAWN(계좌 출금), REPORT_RESULT(신고 처리 결과)
   - is_read : Y(읽음), N(안읽음)
 
 [Indexes]
   - IDX_notifications_user_id (user_id)
+  - IDX_notifications_type (type)
   - IDX_notifications_is_read (is_read)
   - IDX_notifications_created_at (created_at)
 
@@ -819,8 +878,10 @@ admin_note           VARCHAR2(500)                             관리자 메모
 created_at           TIMESTAMP        NN                       생성일
 
 [컬럼값 정의]
-  - reported_entity_type : USER(사용자), POST(피드), COMMENT(댓글)
-  - status               : PENDING(대기중), CONFIRMED(확인됨), 
+  - reported_entity_type : USER(사용자), POST(피드), COMMENT(댓글), CHALLENGE(챌린지)
+  - reason_category      : SPAM(스팸/광고), ABUSE(욕설/비방), FRAUD(사기/허위정보),
+                           INAPPROPRIATE(부적절한 콘텐츠), OTHER(기타)
+  - status               : PENDING(대기중), CONFIRMED(확인됨),
                            REJECTED(기각), FALSE_REPORT(허위신고)
 
 [Indexes]
@@ -850,7 +911,7 @@ created_at   TIMESTAMP        NN                     생성일
 expires_at   TIMESTAMP        NN                     만료 시간
 
 [컬럼값 정의]
-  - session_type : CHARGE(충전), JOIN(가입), WITHDRAW(출금)
+  - session_type : LOGIN(로그인), CHARGE(충전), JOIN(가입), WITHDRAW(출금)
   - is_used      : Y(사용됨), N(미사용)
 
 [Indexes]
@@ -966,6 +1027,25 @@ details     CLOB                                    상세 정보 (JSON)
 ip_address  VARCHAR2(50)                            IP 주소
 user_agent  VARCHAR2(500)                           User Agent
 created_at  TIMESTAMP        NN                     생성일
+
+[컬럼값 정의]
+  - action      :
+    [사용자 관리]
+    USER_SUSPEND(사용자 정지), USER_BAN(사용자 차단), USER_RESTORE(사용자 복구),
+    [챌린지 관리]
+    CHALLENGE_CLOSE(챌린지 강제 종료), CHALLENGE_RESTORE(챌린지 복구),
+    [신고 처리]
+    REPORT_CONFIRM(신고 확인), REPORT_REJECT(신고 기각),
+    [환불 처리]
+    REFUND_APPROVE(환불 승인), REFUND_REJECT(환불 거절),
+    [정산 처리]
+    SETTLEMENT_PROCESS(정산 처리), SETTLEMENT_COMPLETE(정산 완료),
+    [정책 관리]
+    FEE_POLICY_CREATE(수수료 정책 생성), FEE_POLICY_UPDATE(수수료 정책 수정),
+    [시스템]
+    SYSTEM_CONFIG_UPDATE(시스템 설정 변경), ADMIN_LOGIN(관리자 로그인)
+  - target_type : USER(사용자), CHALLENGE(챌린지), REPORT(신고),
+                  REFUND(환불), SETTLEMENT(정산), FEE_POLICY(수수료정책)
 
 [Indexes]
   - IDX_admin_logs_admin_id (admin_id)
@@ -1098,10 +1178,11 @@ NN      Not Null
 일반 투표 (2)       general_votes        일반 투표
                     general_vote_records 일반 투표 기록
 
-SNS (4)             posts                피드
+SNS (5)             posts                피드
                     post_images          피드 이미지
-                    post_likes           좋아요
+                    post_likes           피드 좋아요
                     comments             댓글
+                    comment_likes        댓글 좋아요
 
 시스템 (4)          notifications        알림
                     reports              신고
@@ -1127,58 +1208,60 @@ SNS (4)             posts                피드
 4   account_transactions.related_user_id      users.id
 5   user_scores.user_id                       users.id
 6   challenges.creator_id                            users.id
-7   challenges.sub_leader_id                         users.id
-8   challenge_members.challenge_id                   challenges.id
-9   challenge_members.user_id                        users.id
-10  meetings.challenge_id                           challenges.id
-11  meetings.created_by                       users.id
-12  meeting_votes.meeting_id                  meetings.id
-13  meeting_vote_records.meeting_vote_id      meeting_votes.id
-14  meeting_vote_records.user_id              users.id
-15  expense_requests.meeting_id               meetings.id
-16  expense_requests.created_by               users.id
-17  expense_votes.expense_request_id          expense_requests.id
-18  expense_vote_records.expense_vote_id      expense_votes.id
-19  expense_vote_records.user_id              users.id
-20  payment_barcodes.expense_request_id       expense_requests.id
-21  payment_barcodes.challenge_id                   challenges.id
-22  ledger_entries.challenge_id                     challenges.id
-23  ledger_entries.related_user_id            users.id
-24  ledger_entries.related_meeting_id         meetings.id
-25  ledger_entries.related_expense_request_id expense_requests.id
-26  ledger_entries.related_barcode_id         payment_barcodes.id
-27  ledger_entries.memo_updated_by            users.id
-28  general_votes.challenge_id                      challenges.id
-29  general_votes.created_by                  users.id
-30  general_votes.target_user_id              users.id
-31  general_vote_records.general_vote_id      general_votes.id
-32  general_vote_records.user_id              users.id
-33  posts.challenge_id                              challenges.id
-34  posts.created_by                          users.id
-35  post_images.post_id                       posts.id
-36  post_likes.post_id                        posts.id
-37  post_likes.user_id                        users.id
-38  comments.post_id                          posts.id
+7   challenge_members.challenge_id            challenges.id
+8   challenge_members.user_id                 users.id
+9   meetings.challenge_id                     challenges.id
+10  meetings.created_by                       users.id
+11  meeting_votes.meeting_id                  meetings.id
+12  meeting_vote_records.meeting_vote_id      meeting_votes.id
+13  meeting_vote_records.user_id              users.id
+14  expense_requests.meeting_id               meetings.id
+15  expense_requests.created_by               users.id
+16  expense_votes.expense_request_id          expense_requests.id
+17  expense_vote_records.expense_vote_id      expense_votes.id
+18  expense_vote_records.user_id              users.id
+19  payment_barcodes.expense_request_id       expense_requests.id
+20  payment_barcodes.challenge_id             challenges.id
+21  ledger_entries.challenge_id               challenges.id
+22  ledger_entries.related_user_id            users.id
+23  ledger_entries.related_meeting_id         meetings.id
+24  ledger_entries.related_expense_request_id expense_requests.id
+25  ledger_entries.related_barcode_id         payment_barcodes.id
+26  ledger_entries.memo_updated_by            users.id
+27  general_votes.challenge_id                challenges.id
+28  general_votes.created_by                  users.id
+29  general_votes.target_user_id              users.id
+30  general_vote_records.general_vote_id      general_votes.id
+31  general_vote_records.user_id              users.id
+32  posts.challenge_id                        challenges.id
+33  posts.created_by                          users.id
+34  post_images.post_id                       posts.id
+35  post_likes.post_id                        posts.id
+36  post_likes.user_id                        users.id
+37  comments.post_id                          posts.id
+38  comments.parent_id                        comments.id
 39  comments.created_by                       users.id
-40  notifications.user_id                     users.id
-41  reports.reporter_user_id                  users.id
-42  reports.reported_user_id                  users.id
-43  reports.reviewed_by                       admins.id
-44  sessions.user_id                          users.id
-45  fee_policies.created_by                   admins.id
-46  admin_logs.admin_id                       admins.id
-47	payment_logs.payment_barcode_id           payment_barcodes.id
-48	settlements.challenge_id	                      challenges.id
-49	settlements.settled_by	                  admins.id
-50	refunds.account_id	                      accounts.id
-51	refunds.original_tx_id	                  account_transactions.id
-52	refunds.requested_by	                    users.id
-53	refunds.approved_by	                      admins.id
-54	refunds.rejected_by	                      admins.id
+40  comment_likes.comment_id                  comments.id
+41  comment_likes.user_id                     users.id
+42  notifications.user_id                     users.id
+43  reports.reporter_user_id                  users.id
+44  reports.reported_user_id                  users.id
+45  reports.reviewed_by                       admins.id
+46  sessions.user_id                          users.id
+47  fee_policies.created_by                   admins.id
+48  admin_logs.admin_id                       admins.id
+49  payment_logs.payment_barcode_id           payment_barcodes.id
+50  settlements.challenge_id                  challenges.id
+51  settlements.settled_by                    admins.id
+52  refunds.account_id                        accounts.id
+53  refunds.original_tx_id                    account_transactions.id
+54  refunds.requested_by                      users.id
+55  refunds.approved_by                       admins.id
+56  refunds.rejected_by                       admins.id
 
 
 ================================================================================
 END OF DOCUMENT
 ================================================================================
 
-총 30개 테이블 | 54개 Foreign Keys | Oracle 21c XE
+총 31개 테이블 | 56개 Foreign Keys | Oracle 21c XE
