@@ -71,7 +71,7 @@ CREATE INDEX idx_challenges_is_public ON challenges(is_public);
 | 컬럼 | 값 |
 |------|-----|
 | `category` | HOBBY, STUDY, EXERCISE, SAVINGS, TRAVEL, FOOD, CULTURE, OTHER |
-| `status` | RECRUITING(모집중), ACTIVE(활성), PAUSED(일시정지), CLOSED(종료) |
+| `status` | RECRUITING(모집중), ACTIVE(활성), PAUSED(일시정지 - 리더 요청 또는 시스템 정지, 서포트 납입 중단, P-057), CLOSED(종료) |
 | `is_verified` | Y(인증완료), N(미인증) |
 | `is_public` | Y(공개), N(비공개) |
 

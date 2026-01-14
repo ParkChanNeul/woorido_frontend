@@ -504,7 +504,7 @@ used_at                TIMESTAMP                                  사용 시점
 used_merchant_name     VARCHAR2(100)                              사용 상호명
 used_merchant_category VARCHAR2(50)                               사용 업종
 pg_tx_id               VARCHAR2(100)                              PG 거래 ID
-expires_at             TIMESTAMP        NN                        만료 시간
+expires_at             TIMESTAMP        NN                        만료 시간 (발급 후 10분, P-053)
 created_at             TIMESTAMP        NN                        생성일
 
 [컬럼값 정의]

@@ -132,7 +132,7 @@ CREATE INDEX idx_reports_entity ON reports(reported_entity_type, reported_entity
 | `PENDING` | 검토 대기 |
 | `CONFIRMED` | 위반 확인됨 |
 | `REJECTED` | 신고 기각 |
-| `FALSE_REPORT` | 허위 신고 (신고자 경고) |
+| `FALSE_REPORT` | 허위 신고 (신고자 1회 경고, 3회 7일 정지, 5회 영구 정지, P-055) |
 
 **REST API 쿼리 예시:**
 ```sql

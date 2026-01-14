@@ -291,6 +291,77 @@
 
 ---
 
+## UC-MEETING-10: 바코드 결제 흐름 (EXPENSE 투표 승인 후)
+
+**액터**: 리더
+**전제조건**: votes.type = 'EXPENSE' 투표 승인 완료 (status = 'APPROVED')
+**관련 테이블**: `payment_barcodes`, `votes`, `ledger_entries`, `challenges`, `account_transactions`
+
+**성공 시나리오**:
+1. 리더가 승인된 지출 항목 클릭
+2. "바코드 발급" 버튼 클릭
+3. 시스템이 payment_barcodes 생성 (@Transactional)
+   - barcode_number: UUID 기반 고유 번호
+   - amount: 투표 승인 금액 (votes.amount)
+   - status: 'ACTIVE'
+   - expires_at: NOW + 10분 (P-053)
+   - expense_request_id: 연결
+   - challenge_id: 챌린지 ID
+4. 바코드 화면 표시
+   - QR 코드 / 바코드 이미지
+   - 금액, 만료 시간 표시
+   - "10분 내 결제 완료해주세요" 안내
+5. 가맹점에서 바코드 스캔
+6. PG 결제 처리 (토스페이)
+7. 시스템이 PG Webhook 수신 (@Transactional)
+   - payment_barcodes.status → 'USED'
+   - payment_barcodes.used_at 기록
+   - payment_barcodes.used_merchant_name 자동 파싱 (P-029)
+   - payment_barcodes.used_merchant_category 자동 파싱
+   - ledger_entries 자동 생성
+     - type: 'EXPENSE'
+     - amount: payment_barcodes.amount
+     - merchant_name: PG에서 파싱
+     - merchant_category: 업종 자동 분류
+   - challenges.balance 차감 (Optimistic Lock)
+8. 리더에게 결제 완료 알림
+
+**사후조건**:
+- `payment_barcodes.status = 'USED'`
+- `ledger_entries` 거래 기록 생성
+- `challenges.balance` 감소
+- PG 결제 내역 연동 완료
+
+**대안 시나리오**:
+- 5a. 10분 경과 → status = 'EXPIRED'
+  - 배치가 만료된 바코드 자동 처리
+  - "바코드가 만료되었습니다. 재발급해주세요" 메시지
+- 5b. 재발급 요청
+  - 기존 바코드 status = 'CANCELLED'
+  - 새 바코드 생성 (Step 3 반복)
+- 7a. PG 결제 실패
+  - payment_barcodes.status = 'ACTIVE' 유지
+  - payment_logs 실패 기록
+  - 재시도 가능
+
+**바코드 상태 전환**:
+```
+[ACTIVE] 발급 후 10분
+   ↓
+   ├→ [USED] 결제 완료
+   ├→ [EXPIRED] 10분 경과
+   └→ [CANCELLED] 재발급 시 취소
+```
+
+**관련 정책**:
+- P-053: 바코드 유효 기간 정책 (10분)
+- P-029: 장부 정책 (사용처 자동 기록)
+- P-037: 지출 투표 정책 (전제 조건)
+
+---
+
 **관련 문서**:
 - [00_USE_CASES_OVERVIEW.md](./00_USE_CASES_OVERVIEW.md) - 개요
 - [03_SCHEMA_MEETING.md](../../../02_ENGINEERING/Database/03_SCHEMA_MEETING.md) - ERD
+
+**최종 수정**: 2026-01-13 (UC-MEETING-10 바코드 흐름 추가)
