@@ -1,156 +1,138 @@
 # WOORIDO ERD - 시스템 도메인
-**sessions, notifications, reports**
+**notifications, notification_settings, reports, sessions, webhook_logs**
 
 > 📖 상위 문서: [00_ERD_OVERVIEW.md](./00_ERD_OVERVIEW.md)
+> 📖 기준 문서: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
 
 ---
 
-## 1. 세션 (sessions) - 돈 관련 returnUrl 저장
-
-```sql
-CREATE TABLE sessions (
-  id VARCHAR2(36) PRIMARY KEY,                    -- 세션 ID (UUID)
-  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-  -- 세션 정보
-  return_url VARCHAR2(500) NOT NULL,
-  session_type VARCHAR2(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
-
-  -- 상태 관리
-  is_used CHAR(1) DEFAULT 'N' CHECK (is_used IN ('Y', 'N')),
-
-  -- 타임스탬프
-  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
-
-  -- 인덱스
-  CONSTRAINT chk_expires_after_created CHECK (expires_at > created_at)
-);
-
-CREATE INDEX idx_sessions_user ON sessions(user_id, created_at DESC);
-CREATE INDEX idx_sessions_expires ON sessions(expires_at);  -- 만료 세션 정리용
-```
-
-**세션 타입:**
-| 타입 | 설명 | 사용처 |
-|------|------|--------|
-| `CHARGE` | 충전 플로우 | `/charge` → 결제 게이트웨이 → `/charge/callback` |
-| `JOIN` | 모임 가입 | `/challenge/:id` → 보증금 결제 → `/challenge/:id/detail` |
-| `WITHDRAW` | 출금 요청 | `/account` → 인증 → `/account` |
-
----
-
-## 2. 알림 (notifications)
+## 1. 알림 (notifications)
 
 ```sql
 CREATE TABLE notifications (
   id VARCHAR2(36) PRIMARY KEY,                    -- 알림 ID (UUID)
   user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-  -- 알림 내용
   type VARCHAR2(50) NOT NULL,
   title VARCHAR2(200) NOT NULL,
   content VARCHAR2(500) NOT NULL,
-
-  -- 링크
   link_url VARCHAR2(500),
-
-  -- 상태
+  related_entity_type VARCHAR2(20),
+  related_entity_id VARCHAR2(36),
   is_read CHAR(1) DEFAULT 'N' CHECK (is_read IN ('Y', 'N')),
   read_at TIMESTAMP,
-
-  -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
-CREATE INDEX idx_notifications_user_created ON notifications(user_id, created_at DESC);
-CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read, created_at DESC);
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_type ON notifications(type);
+CREATE INDEX idx_notifications_is_read ON notifications(is_read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at);
 ```
 
-**알림 타입 예시:**
-| 타입 | 설명 |
-|------|------|
-| `VOTE_CREATED` | 새 투표 생성됨 |
-| `VOTE_APPROVED` | 투표 승인됨 |
-| `SUPPORT_DUE` | 서포트 납입일 안내 |
-| `DEPOSIT_USED` | 보증금 충당됨 (권한 박탈) |
-| `MEETING_CONFIRMED` | 정기 모임 확정됨 |
+---
+
+## 2. 알림 설정 (notification_settings)
+
+> 사용자별 알림 수신 설정 관리
+
+```sql
+CREATE TABLE notification_settings (
+  id VARCHAR2(36) PRIMARY KEY,                    -- 설정 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- 알림 채널 설정
+  push_enabled CHAR(1) DEFAULT 'Y' CHECK (push_enabled IN ('Y', 'N')),
+  email_enabled CHAR(1) DEFAULT 'N' CHECK (email_enabled IN ('Y', 'N')),
+  sms_enabled CHAR(1) DEFAULT 'N' CHECK (sms_enabled IN ('Y', 'N')),
+  
+  -- 알림 유형별 설정
+  vote_notification CHAR(1) DEFAULT 'Y' CHECK (vote_notification IN ('Y', 'N')),
+  meeting_notification CHAR(1) DEFAULT 'Y' CHECK (meeting_notification IN ('Y', 'N')),
+  expense_notification CHAR(1) DEFAULT 'Y' CHECK (expense_notification IN ('Y', 'N')),
+  sns_notification CHAR(1) DEFAULT 'Y' CHECK (sns_notification IN ('Y', 'N')),
+  system_notification CHAR(1) DEFAULT 'Y' CHECK (system_notification IN ('Y', 'N')),
+  
+  -- 방해금지 시간
+  quiet_hours_enabled CHAR(1) DEFAULT 'N' CHECK (quiet_hours_enabled IN ('Y', 'N')),
+  quiet_hours_start VARCHAR2(5),                  -- HH:MM 형식
+  quiet_hours_end VARCHAR2(5),                    -- HH:MM 형식
+  
+  -- 타임스탬프
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_notification_settings_user_id ON notification_settings(user_id);
+```
 
 ---
 
 ## 3. 신고 (reports)
-
-> **P-031, P-032 정책 지원**: 신고 누적 시스템 및 허위 신고 처리
-> - 1계정 1회 카운팅 (uk_reporter_entity 제약조건)
-> - 20회 누적 시 자동 일시정지 (스프링 배치에서 처리)
 
 ```sql
 CREATE TABLE reports (
   id VARCHAR2(36) PRIMARY KEY,                    -- 신고 ID (UUID)
   reporter_user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   reported_user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-  -- 신고 대상 (다형성 참조)
-  reported_entity_type VARCHAR2(20) NOT NULL CHECK (reported_entity_type IN ('USER', 'POST', 'COMMENT')),
-  reported_entity_id VARCHAR2(36),  -- POST/COMMENT ID (USER 신고 시 NULL)
-
-  -- 신고 내용
-  reason_category VARCHAR2(50) NOT NULL,  -- SPAM, ABUSE, FRAUD, INAPPROPRIATE 등
+  reported_entity_type VARCHAR2(20) NOT NULL CHECK (reported_entity_type IN ('USER', 'POST', 'COMMENT', 'CHALLENGE')),
+  reported_entity_id VARCHAR2(36),
+  reason_category VARCHAR2(50) NOT NULL CHECK (reason_category IN ('SPAM', 'ABUSE', 'FRAUD', 'INAPPROPRIATE', 'OTHER')),
   reason_detail VARCHAR2(500),
-
-  -- 처리 상태
   status VARCHAR2(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED', 'FALSE_REPORT')),
   reviewed_at TIMESTAMP,
-  reviewed_by VARCHAR2(36) REFERENCES users(id),
+  reviewed_by VARCHAR2(36) REFERENCES admins(id) ON DELETE SET NULL,
   admin_note VARCHAR2(500),
-
-  -- 타임스탬프
-  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-
-  -- 제약조건: 동일 신고자가 동일 대상을 중복 신고 불가
-  CONSTRAINT uk_reporter_entity UNIQUE (reporter_user_id, reported_entity_type, COALESCE(reported_entity_id, reported_user_id))
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
--- 인덱스 (JOIN/GROUP BY 최적화)
-CREATE INDEX idx_reports_reporter ON reports(reporter_user_id, created_at DESC);
-CREATE INDEX idx_reports_reported_user ON reports(reported_user_id, status);
-CREATE INDEX idx_reports_status ON reports(status, created_at DESC);
-CREATE INDEX idx_reports_entity ON reports(reported_entity_type, reported_entity_id);
-```
-
-**신고 카테고리:**
-| 카테고리 | 설명 |
-|----------|------|
-| `SPAM` | 스팸/광고 |
-| `ABUSE` | 욕설/비방 |
-| `FRAUD` | 사기/허위 정보 |
-| `INAPPROPRIATE` | 부적절한 콘텐츠 |
-
-**신고 처리 상태:**
-| 상태 | 설명 |
-|------|------|
-| `PENDING` | 검토 대기 |
-| `CONFIRMED` | 위반 확인됨 |
-| `REJECTED` | 신고 기각 |
-| `FALSE_REPORT` | 허위 신고 (신고자 1회 경고, 3회 7일 정지, 5회 영구 정지, P-055) |
-
-**REST API 쿼리 예시:**
-```sql
--- 특정 유저에 대한 신고 횟수 (GROUP BY)
-SELECT reported_user_id, COUNT(*) as report_count
-FROM reports
-WHERE status = 'CONFIRMED'
-GROUP BY reported_user_id
-HAVING COUNT(*) >= 20;
-
--- 내가 한 신고 목록 (JOIN)
-SELECT r.*, u.name as reported_user_name
-FROM reports r
-JOIN users u ON r.reported_user_id = u.id
-WHERE r.reporter_user_id = #{userId}
-ORDER BY r.created_at DESC;
+CREATE INDEX idx_reports_reporter_user_id ON reports(reporter_user_id);
+CREATE INDEX idx_reports_reported_user_id ON reports(reported_user_id);
+CREATE INDEX idx_reports_status ON reports(status);
+CREATE INDEX idx_reports_created_at ON reports(created_at);
 ```
 
 ---
 
-**최종 수정**: 2026-01-09
+## 4. 세션 (sessions)
+
+```sql
+CREATE TABLE sessions (
+  id VARCHAR2(36) PRIMARY KEY,                    -- 세션 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  session_type VARCHAR2(20) NOT NULL CHECK (session_type IN ('LOGIN', 'CHARGE', 'JOIN', 'WITHDRAW')),
+  return_url VARCHAR2(500) NOT NULL,
+  is_used CHAR(1) DEFAULT 'N' CHECK (is_used IN ('Y', 'N')),
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  expires_at TIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_sessions_user_id ON sessions(user_id);
+CREATE INDEX idx_sessions_expires_at ON sessions(expires_at);
+```
+
+---
+
+## 5. Webhook 로그 (webhook_logs)
+
+```sql
+CREATE TABLE webhook_logs (
+  id VARCHAR2(36) PRIMARY KEY,                    -- 로그 ID (UUID)
+  source VARCHAR2(30) NOT NULL CHECK (source IN ('TOSS', 'KAKAO', 'NAVER')),
+  event_type VARCHAR2(50) NOT NULL,
+  event_id VARCHAR2(100) UNIQUE,
+  payload CLOB NOT NULL,
+  is_processed CHAR(1) DEFAULT 'N' CHECK (is_processed IN ('Y', 'N', 'F')),
+  processed_at TIMESTAMP,
+  error_message VARCHAR2(500),
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_webhook_logs_source ON webhook_logs(source);
+CREATE INDEX idx_webhook_logs_is_processed ON webhook_logs(is_processed);
+CREATE INDEX idx_webhook_logs_created_at ON webhook_logs(created_at);
+```
+
+---
+
+**최종 수정**: 2026-01-15
+**기준 문서**: DB_Schema_1.0.0.md

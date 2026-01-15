@@ -3,11 +3,11 @@ WOORIDO Database Schema Document (Oracle)
 ================================================================================
 
 Version         : 1.0.0
-Last Updated    : 2026-01-13
+Last Updated    : 2026-01-15
 Database        : Oracle 21c XE
 ORM             : MyBatis 3.0.3
 Transaction     : Spring Boot 3.2.3 (@Transactional)
-Total Tables    : 31
+Total Tables    : 32
 
 ================================================================================
 목차
@@ -689,6 +689,7 @@ is_notice     CHAR(1)                       'N'       공지사항 여부
 is_pinned     CHAR(1)                       'N'       상단 고정 여부
 like_count    NUMBER(10)                    0         좋아요 수
 comment_count NUMBER(10)                    0         댓글 수
+view_count    NUMBER(10)                    0         조회 수
 created_at    TIMESTAMP        NN                     생성일
 updated_at    TIMESTAMP        NN                     수정일
 deleted_at    TIMESTAMP                               삭제일 (Soft Delete)
@@ -859,7 +860,39 @@ created_at          TIMESTAMP        NN                     생성일
 
 
 --------------------------------------------------------------------------------
-7.2 reports (신고)
+7.2 notification_settings (알림 설정)
+--------------------------------------------------------------------------------
+
+컬럼명                  데이터타입        제약조건      기본값    설명
+------------------------------------------------------------------------------------------
+id                     VARCHAR2(36)     PK                     설정 ID (UUID)
+user_id                VARCHAR2(36)     FK, UK, NN             사용자 ID
+push_enabled           CHAR(1)                       'Y'       푸시 알림 사용
+email_enabled          CHAR(1)                       'N'       이메일 알림 사용
+sms_enabled            CHAR(1)                       'N'       SMS 알림 사용
+vote_notification      CHAR(1)                       'Y'       투표 알림
+meeting_notification   CHAR(1)                       'Y'       모임 알림
+expense_notification   CHAR(1)                       'Y'       지출 알림
+sns_notification       CHAR(1)                       'Y'       SNS 알림
+system_notification    CHAR(1)                       'Y'       시스템 알림
+quiet_hours_enabled    CHAR(1)                       'N'       방해금지 시간 사용
+quiet_hours_start      VARCHAR2(5)                             방해금지 시작(HH:MM)
+quiet_hours_end        VARCHAR2(5)                             방해금지 종료(HH:MM)
+created_at             TIMESTAMP        NN                     생성일
+updated_at             TIMESTAMP        NN                     수정일
+
+[컬럼값 정의]
+  - *_enabled : Y(사용), N(미사용)
+
+[Indexes]
+  - UK_notification_settings_user_id (user_id)
+
+[Foreign Keys]
+  - user_id → users.id
+
+
+--------------------------------------------------------------------------------
+7.3 reports (신고)
 --------------------------------------------------------------------------------
 
 컬럼명                데이터타입        제약조건      기본값      설명
@@ -897,7 +930,7 @@ created_at           TIMESTAMP        NN                       생성일
 
 
 --------------------------------------------------------------------------------
-7.3 sessions (세션)
+7.4 sessions (세션)
 --------------------------------------------------------------------------------
 
 컬럼명        데이터타입        제약조건      기본값    설명
@@ -923,7 +956,7 @@ expires_at   TIMESTAMP        NN                     만료 시간
 
 
 --------------------------------------------------------------------------------
-7.4 webhook_logs (Webhook 수신 로그)
+7.5 webhook_logs (Webhook 수신 로그)
 --------------------------------------------------------------------------------
 
 컬럼명         데이터타입        제약조건      기본값    설명
@@ -1184,7 +1217,8 @@ SNS (5)             posts                피드
                     comments             댓글
                     comment_likes        댓글 좋아요
 
-시스템 (4)          notifications        알림
+시스템 (5)          notifications        알림
+                    notification_settings 알림 설정
                     reports              신고
                     sessions             세션
                     webhook_logs         Webhook 수신 로그

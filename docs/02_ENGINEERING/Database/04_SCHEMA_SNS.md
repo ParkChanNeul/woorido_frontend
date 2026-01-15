@@ -24,6 +24,7 @@ CREATE TABLE posts (
   -- 비정규화 카운터 (Atomic Operations)
   like_count NUMBER(10) DEFAULT 0,
   comment_count NUMBER(10) DEFAULT 0,
+  view_count NUMBER(10) DEFAULT 0,
 
   -- 타임스탬프
   created_at TIMESTAMP NOT NULL,
@@ -133,5 +134,5 @@ CREATE INDEX idx_comment_likes_user_id ON comment_likes(user_id);
 
 ---
 
-**최종 수정**: 2026-01-13
+**최종 수정**: 2026-01-15
 **기준 문서**: DB_Schema_1.0.0.md
