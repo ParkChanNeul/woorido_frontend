@@ -159,7 +159,8 @@
 3. 미참석자 처리
    - meeting_attendees.status → 'NO_SHOW'
 4. 점수 반영 (다음 월 1일 배치)
-   - user_scores.total_attendance_count 증가
+   - meeting_attendees.status == 'ATTENDED': user_scores.total_attendance_count 증가
+   - meeting_attendees.status == 'NO_SHOW': **패널티 -0.09점 차감** (P-054)
 
 **사후조건**:
 - `meeting_attendees.status` 갱신

@@ -15,9 +15,11 @@
 1. 비회원이 "회원가입" 클릭
 2. 회원 정보 입력
    - 이메일 (email)
-   - 비밀번호 (password_hash)
+   - 비밀번호 (password)
    - 이름 (name)
    - 휴대폰 번호 (phone)
+   - 생년월일 (birthDate)
+   - 약관 동의 (agreedTerms, agreedPrivacy)
 3. 시스템이 유효성 검증
    - 이메일 중복 확인 (UNIQUE)
    - 비밀번호 규칙 검증
@@ -110,6 +112,7 @@
    - account_number
    - account_holder
 3. 출금 금액 입력 (가용 잔액 한도)
+   - **수수료**: 무료 (P-009)
 4. 시스템이 잔액 확인 (locked_balance 제외)
 5. 트랜잭션 처리
    - account_transactions 기록 생성 (type: 'WITHDRAW')

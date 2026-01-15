@@ -78,9 +78,12 @@
 1. 비회원이 "회원가입" 클릭
 2. 회원 정보 입력
    - 이메일 (email)
-   - 비밀번호 (password_hash)
+   - 비밀번호 (password)
    - 이름 (name)
+   - 닉네임 (nickname)
    - 휴대폰 번호 (phone)
+   - 생년월일 (birthDate)
+   - 약관 동의 (agreedTerms, agreedPrivacy)
 3. 시스템이 유효성 검증
    - 이메일 중복 확인 (UNIQUE)
    - 비밀번호 규칙 검증
@@ -173,6 +176,7 @@
    - account_number
    - account_holder
 3. 출금 금액 입력 (가용 잔액 한도)
+   - **수수료**: 무료 (P-009)
 4. 시스템이 잔액 확인 (locked_balance 제외)
 5. 트랜잭션 처리
    - account_transactions 기록 생성 (type: 'WITHDRAW')
@@ -237,6 +241,8 @@
    - deposit_amount: 보증금 (= monthly_fee)
    - max_members: 최대 인원 (최소 3명)
    - is_public: 공개 여부
+   - rules: 챌린지 규칙
+   - thumbnail_image: 썸네일 이미지 URL
 3. 시스템이 유효성 검증
 4. challenges 레코드 생성
    - status: 'RECRUITING' (모집 중)
@@ -569,7 +575,8 @@
 3. 미참석자 처리
    - meeting_attendees.status → 'NO_SHOW'
 4. 점수 반영 (다음 월 1일 배치)
-   - user_scores.total_attendance_count 증가
+   - meeting_attendees.status == 'ATTENDED': user_scores.total_attendance_count 증가
+   - meeting_attendees.status == 'NO_SHOW': **패널티 -0.09점 차감** (P-054)
 
 **사후조건**:
 - `meeting_attendees.status` 갱신
@@ -846,6 +853,32 @@
 **사후조건**:
 - `users.account_status` 변경
 - `admin_logs` 기록 생성
+
+---
+
+### UC-ADMIN-04: 챌린지 정산 실행 (강제/수동)
+
+**액터**: 관리자 (ADMIN)
+**관련 테이블**: `challenges`, `settlements`, `admin_logs`
+**참조 API**: `POST /challenges/{challengeId}/settlement/process` (079)
+
+**성공 시나리오**:
+1. 관리자가 "정산 대기" 챌린지 조회
+2. 정산 미리보기 확인 (예상 정산액)
+3. "정산 실행" 클릭
+4. 시스템이 정산 프로세스 수행 (@Transactional)
+   - 지출 차감 (순 적립금 산정)
+   - 멤버별 배분 계산
+   - 패널티 차감 (미납/결석)
+   - 수수료 차감 (P-021)
+   - 최종 입금 처리
+5. admin_logs 기록
+   - action: 'PROCESS_SETTLEMENT'
+
+**사후조건**:
+- `settlements` 레코드 생성
+- `accounts` 잔액 입금 완료
+- `challenges.status` = 'CLOSED' (정산 후 종료)
 
 ---
 

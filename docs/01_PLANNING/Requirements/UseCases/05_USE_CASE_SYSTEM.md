@@ -78,6 +78,9 @@
    - challenge_members.left_at 기록
    - challenge_members.leave_reason = 'AUTO_LEAVE'
    - challenges.current_members 감소
+   - **보증금 몰수 처리** (P-052):
+     - locked_balance 해제 없이 차감 (우리두 수익 귀속)
+     - ledger_entries (type: 'CONFISCATION')
 3. 리더에게만 알림
 
 **사후조건**:

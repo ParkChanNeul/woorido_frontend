@@ -73,6 +73,32 @@
 
 ---
 
+## UC-ADMIN-04: 챌린지 정산 실행 (강제/수동)
+
+**액터**: 관리자 (ADMIN)
+**관련 테이블**: `challenges`, `settlements`, `admin_logs`
+**참조 API**: `POST /challenges/{challengeId}/settlement/process` (079)
+
+**성공 시나리오**:
+1. 관리자가 "정산 대기" 챌린지 조회
+2. 정산 미리보기 확인 (예상 정산액)
+3. "정산 실행" 클릭
+4. 시스템이 정산 프로세스 수행 (@Transactional)
+   - 지출 차감 (순 적립금 산정)
+   - 멤버별 배분 계산
+   - 패널티 차감 (미납/결석)
+   - 수수료 차감 (P-021)
+   - 최종 입금 처리
+5. admin_logs 기록
+   - action: 'PROCESS_SETTLEMENT'
+
+**사후조건**:
+- `settlements` 레코드 생성
+- `accounts` 잔액 입금 완료
+- `challenges.status` = 'CLOSED' (정산 후 종료)
+
+---
+
 **관련 문서**:
 - [00_USE_CASES_OVERVIEW.md](./00_USE_CASES_OVERVIEW.md) - 개요
 - [06_SCHEMA_ADMIN.md](../../../02_ENGINEERING/Database/06_SCHEMA_ADMIN.md) - ERD

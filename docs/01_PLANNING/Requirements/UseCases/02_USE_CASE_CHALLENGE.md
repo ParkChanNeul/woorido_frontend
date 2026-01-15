@@ -23,6 +23,8 @@
    - deposit_amount: 보증금 (= monthly_fee)
    - max_members: 최대 인원 (최소 3명)
    - is_public: 공개 여부
+   - rules: 챌린지 규칙
+   - thumbnail_image: 썸네일 이미지 URL
 3. 시스템이 유효성 검증
 4. challenges 레코드 생성
    - status: 'RECRUITING' (모집 중)
