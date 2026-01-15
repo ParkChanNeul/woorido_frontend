@@ -2,7 +2,7 @@
 
 > **총 API**: 7개
 > **담당**: Spring Boot
-> **관련 테이블**: `accounts`, `transactions`, `challenge_accounts`
+> **관련 테이블**: `accounts`, `account_transactions`
 
 ---
 

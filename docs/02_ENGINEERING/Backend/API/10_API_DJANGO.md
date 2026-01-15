@@ -46,29 +46,29 @@ Django가 호출하는 Spring 내부 API:
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 080 | GET | /search | 통합 검색 | P1 | 필요 |
-| 081 | GET | /search/challenges | 챌린지 검색 | P1 | 필요 |
-| 082 | GET | /search/autocomplete | 검색어 자동완성 | P2 | 필요 |
+| 083 | GET | /search | 통합 검색 | P1 | 필요 |
+| 084 | GET | /search/challenges | 챌린지 검색 | P1 | 필요 |
+| 085 | GET | /search/autocomplete | 검색어 자동완성 | P2 | 필요 |
 
 ### 통계/분석 (ANALYTICS)
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 083 | GET | /analytics/user/activity | 사용자 활동 통계 | P2 | 필요 |
-| 084 | GET | /analytics/challenge/{challengeId} | 챌린지 분석 | P2 | 멤버 |
-| 085 | GET | /analytics/dashboard | 전체 통계 대시보드 | P2 | 필요 |
-| 086 | GET | /analytics/user/report | 개인 리포트 생성 | P3 | 필요 |
+| 086 | GET | /analytics/user/activity | 사용자 활동 통계 | P2 | 필요 |
+| 087 | GET | /analytics/challenge/{challengeId} | 챌린지 분석 | P2 | 멤버 |
+| 088 | GET | /analytics/dashboard | 전체 통계 대시보드 | P2 | 필요 |
+| 089 | GET | /analytics/user/report | 개인 리포트 생성 | P3 | 필요 |
 
 ### 추천 (RECOMMENDATION)
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 087 | GET | /recommendations/challenges | 챌린지 추천 | P2 | 필요 |
-| 088 | GET | /recommendations/savings-plan | 맞춤형 저축 플랜 추천 | P3 | 필요 |
+| 090 | GET | /recommendations/challenges | 챌린지 추천 | P2 | 필요 |
+| 091 | GET | /recommendations/savings-plan | 맞춤형 저축 플랜 추천 | P3 | 필요 |
 
 ---
 
-## 080. 통합 검색
+## 083. 통합 검색
 
 ### 기본 정보
 - **Endpoint**: `GET /search`
@@ -160,7 +160,7 @@ curl -X GET "https://api.woorido.com/api/v1/search?q=저축&type=ALL&page=0&size
 | 파라미터 | 타입 | 필수 | 기본값 | 설명 |
 |----------|------|------|--------|------|
 | q | String | Y | - | 검색어 |
-| category | String | N | - | SAVING/INVESTMENT/EXPENSE_CUT/CUSTOM |
+| category | String | N | - | HOBBY/STUDY/EXERCISE/SAVINGS/TRAVEL/FOOD/CULTURE/OTHER |
 | status | String | N | - | RECRUITING/IN_PROGRESS/COMPLETED |
 | minDeposit | Long | N | - | 최소 월 납입금 |
 | maxDeposit | Long | N | - | 최대 월 납입금 |

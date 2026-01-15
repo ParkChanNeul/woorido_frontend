@@ -1,7 +1,7 @@
 WOORIDO API 명세서 v1.0.0
 작성일      2026-01-15
 버전        1.0.0
-총 API      91개 (Spring 82 + Django 9)
+총 API      92개 (Spring 83 + Django 9)
 기준 문서   API_SCHEMA_1.0.0.md, POLICY_DEFINITION.md, DB_Schema_1.0.0.md
 
 ---

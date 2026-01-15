@@ -61,6 +61,7 @@ id                           VARCHAR2(36)     PK                        사용�
 email                        VARCHAR2(100)    UK, NN                    이메일
 password_hash                VARCHAR2(255)                              비밀번호 해시
 name                         VARCHAR2(50)     NN                        이름
+nickname                     VARCHAR2(50)                               닉네임 (표시명)
 phone                        VARCHAR2(20)                               전화번호
 profile_image_url            VARCHAR2(500)                              프로필 이미지 URL
 birth_date                   DATE                                       생년월일
@@ -91,6 +92,7 @@ last_login_at                TIMESTAMP                                  마지�
 
 [Indexes]
   - UK_users_email (email)
+  - UK_users_nickname (nickname)
   - IDX_users_social (social_provider, social_id)
   - IDX_users_account_status (account_status)
 
@@ -240,7 +242,7 @@ updated_at             TIMESTAMP        NN                           수정일
 [컬럼값 정의]
   - category    : HOBBY(취미), STUDY(학습), EXERCISE(운동), SAVINGS(저축),
                   TRAVEL(여행), FOOD(음식), CULTURE(문화), OTHER(기타)
-  - status      : RECRUITING(모집중), ACTIVE(활성), PAUSED(일시정지), CLOSED(종료)
+  - status      : RECRUITING(모집중), IN_PROGRESS(진행중), COMPLETED(완료)
   - is_verified : Y(인증완료), N(미인증)
   - is_public   : Y(공개), N(비공개)
 
@@ -276,6 +278,7 @@ privilege_status     VARCHAR2(20)                  'ACTIVE'     권한 상태
 privilege_revoked_at TIMESTAMP                                  권한 박탈 시점
 last_support_paid_at TIMESTAMP                                  마지막 서포트 납입일
 total_support_paid   NUMBER(19)                    0            총 서포트 납입액
+auto_pay_enabled     CHAR(1)                       'Y'          자동 납입 설정
 joined_at            TIMESTAMP        NN                        가입일
 left_at              TIMESTAMP                                  탈퇴일
 leave_reason         VARCHAR2(50)                               탈퇴 사유
@@ -382,7 +385,7 @@ attendance_confirmed_at TIMESTAMP                                 참석 확인 
 created_at              TIMESTAMP        NN                       생성일
 
 [컬럼값 정의]
-  - choice            : ATTEND(참석), ABSENT(불참)
+  - choice            : AGREE(참석), DISAGREE(불참)
   - actual_attendance : PENDING(대기중), ATTENDED(참석함), NO_SHOW(노쇼)
 
 [Indexes]
@@ -684,7 +687,9 @@ created_at       TIMESTAMP        NN                     생성일
 id            VARCHAR2(36)     PK                     피드 ID (UUID)
 challenge_id        VARCHAR2(36)     FK                     챌린지 ID (NULL이면 공개)
 created_by    VARCHAR2(36)     FK, NN                 작성자 ID
+title         VARCHAR2(100)                           제목
 content       VARCHAR2(4000)   NN                     내용
+category      VARCHAR2(20)                  'GENERAL' 카테고리
 is_notice     CHAR(1)                       'N'       공지사항 여부
 is_pinned     CHAR(1)                       'N'       상단 고정 여부
 like_count    NUMBER(10)                    0         좋아요 수
@@ -695,6 +700,7 @@ updated_at    TIMESTAMP        NN                     수정일
 deleted_at    TIMESTAMP                               삭제일 (Soft Delete)
 
 [컬럼값 정의]
+  - category  : NOTICE(공지), GENERAL(일반), QUESTION(질문)
   - is_notice : Y(공지사항), N(일반 피드)
   - is_pinned : Y(상단고정), N(일반)
 

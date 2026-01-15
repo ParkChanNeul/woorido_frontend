@@ -91,92 +91,92 @@ NO   METHOD   ENDPOINT                                 설명              우�
 050  DELETE   /expenses/{expenseId}                    지출 요청 취소     P1        Y
 051  POST     /expenses/{expenseId}/execute            지출 실행          P0        Y
 
-2.9 LEDGER (2개)
+2.9 LEDGER (5개)
 NO   METHOD   ENDPOINT                                 설명              우선순위  인증
 ───  ──────   ───────────────────────────────────────  ────────────────  ────────  ────
 052  GET      /challenges/{challengeId}/ledger         장부 조회          P0        Y
 053  GET      /challenges/{challengeId}/ledger/export  장부 내보내기      P2        Y
-089  GET      /challenges/{challengeId}/ledger/summary 장부 요약          P1        Y
-090  POST     /challenges/{challengeId}/ledger         장부 등록          P1        Y
-091  PUT      /ledger/{entryId}                        장부 수정          P1        Y
+054  GET      /challenges/{challengeId}/ledger/summary 장부 요약          P1        Y
+055  POST     /challenges/{challengeId}/ledger         장부 등록          P1        Y
+056  PUT      /ledger/{entryId}                        장부 수정          P1        Y
 
 2.10 POST (9개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-054  GET      /posts/feed                              피드 조회           P1        Y
-055  GET      /challenges/{challengeId}/posts          게시글 목록 조회    P1        Y
-056  GET      /posts/{postId}                          게시글 상세 조회    P1        Y
-057  POST     /challenges/{challengeId}/posts          게시글 작성         P1        Y
-058  PUT      /posts/{postId}                          게시글 수정         P1        Y
-059  DELETE   /posts/{postId}                          게시글 삭제         P1        Y
-060  POST     /posts/{postId}/like                     게시글 좋아요       P1        Y
-061  DELETE   /posts/{postId}/like                     게시글 좋아요 취소  P1        Y
-062  POST     /upload/image                            이미지 업로드       P0        Y
+057  GET      /posts/feed                              피드 조회           P1        Y
+058  GET      /challenges/{challengeId}/posts          게시글 목록 조회    P1        Y
+059  GET      /posts/{postId}                          게시글 상세 조회    P1        Y
+060  POST     /challenges/{challengeId}/posts          게시글 작성         P1        Y
+061  PUT      /posts/{postId}                          게시글 수정         P1        Y
+062  DELETE   /posts/{postId}                          게시글 삭제         P1        Y
+063  POST     /posts/{postId}/like                     게시글 좋아요       P1        Y
+064  DELETE   /posts/{postId}/like                     게시글 좋아요 취소  P1        Y
+065  POST     /upload/image                            이미지 업로드       P0        Y
 
 2.11 COMMENT (6개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-063  GET      /posts/{postId}/comments                 댓글 목록 조회      P1        Y
-064  POST     /posts/{postId}/comments                 댓글 작성           P1        Y
-065  PUT      /comments/{commentId}                    댓글 수정           P1        Y
-066  DELETE   /comments/{commentId}                    댓글 삭제           P1        Y
-067  POST     /comments/{commentId}/like               댓글 좋아요         P2        Y
-068  DELETE   /comments/{commentId}/like               댓글 좋아요 취소    P2        Y
+066  GET      /posts/{postId}/comments                 댓글 목록 조회      P1        Y
+067  POST     /posts/{postId}/comments                 댓글 작성           P1        Y
+068  PUT      /comments/{commentId}                    댓글 수정           P1        Y
+069  DELETE   /comments/{commentId}                    댓글 삭제           P1        Y
+070  POST     /comments/{commentId}/like               댓글 좋아요         P2        Y
+071  DELETE   /comments/{commentId}/like               댓글 좋아요 취소    P2        Y
 
 2.12 REPORT (2개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-069  POST     /reports                                 신고 접수           P1        Y
-070  GET      /reports/me                              내 신고 내역 조회   P2        Y
+072  POST     /reports                                 신고 접수           P1        Y
+073  GET      /reports/me                              내 신고 내역 조회   P2        Y
 
 2.13 NOTIFICATION (5개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-071  GET      /notifications                           알림 목록 조회      P0        Y
-072  PUT      /notifications/{notificationId}/read     알림 읽음 처리      P1        Y
-073  PUT      /notifications/read-all                  전체 읽음 처리      P1        Y
-074  GET      /notifications/settings                  알림 설정 조회      P1        Y
-075  PUT      /notifications/settings                  알림 설정 변경      P1        Y
+074  GET      /notifications                           알림 목록 조회      P0        Y
+075  PUT      /notifications/{notificationId}/read     알림 읽음 처리      P1        Y
+076  PUT      /notifications/read-all                  전체 읽음 처리      P1        Y
+077  GET      /notifications/settings                  알림 설정 조회      P1        Y
+078  PUT      /notifications/settings                  알림 설정 변경      P1        Y
 
 2.14 REFUND (2개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-076  POST     /refunds                                 환불 요청           P1        Y
-077  GET      /refunds/{refundId}                      환불 상태 조회      P1        Y
+079  POST     /refunds                                 환불 요청           P1        Y
+080  GET      /refunds/{refundId}                      환불 상태 조회      P1        Y
 
 2.15 SETTLEMENT (2개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-078  POST     /challenges/{challengeId}/settle         챌린지 정산         P0        Y
-079  GET      /challenges/{challengeId}/settlement     정산 내역 조회      P1        Y
+081  POST     /challenges/{challengeId}/settle         챌린지 정산         P0        Y
+082  GET      /challenges/{challengeId}/settlement     정산 내역 조회      P1        Y
 
 2.16 SEARCH - Django (3개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-080  GET      /search                                  통합 검색           P1        Y
-081  GET      /search/challenges                       챌린지 상세 검색    P2        Y
-082  GET      /search/autocomplete                     검색어 자동완성     P2        Y
+083  GET      /search                                  통합 검색           P1        Y
+084  GET      /search/challenges                       챌린지 상세 검색    P2        Y
+085  GET      /search/autocomplete                     검색어 자동완성     P2        Y
 
 2.17 ANALYTICS - Django (4개)
 NO   METHOD   ENDPOINT                                      설명               우선순위  인증
 ───  ──────   ────────────────────────────────────────────  ─────────────────  ────────  ────
-083  GET      /analytics/user/activity                      내 활동 통계        P1        Y
-084  GET      /analytics/challenge/{challengeId}            챌린지 분석         P1        Y
-085  GET      /analytics/dashboard                          대시보드 데이터     P2        Y
-086  GET      /analytics/user/report                        월간 리포트         P2        Y
+086  GET      /analytics/user/activity                      내 활동 통계        P1        Y
+087  GET      /analytics/challenge/{challengeId}            챌린지 분석         P1        Y
+088  GET      /analytics/dashboard                          대시보드 데이터     P2        Y
+089  GET      /analytics/user/report                        월간 리포트         P2        Y
 
 2.18 RECOMMENDATION - Django (2개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-087  GET      /recommendations/challenges              챌린지 추천         P1        Y
-088  GET      /recommendations/users                   유사 사용자 추천    P2        Y
+090  GET      /recommendations/challenges              챌린지 추천         P1        Y
+091  GET      /recommendations/users                   유사 사용자 추천    P2        Y
 
 ### 3. Enum 정의
 3.1 사용자
 UserStatus              ACTIVE | SUSPENDED | WITHDRAWN
 
 3.2 챌린지
-ChallengeStatus         RECRUITING | ACTIVE | PAUSED | CLOSED
+ChallengeStatus         RECRUITING | IN_PROGRESS | COMPLETED
 ChallengeCategory       HOBBY | STUDY | EXERCISE | SAVINGS | TRAVEL | FOOD | CULTURE | OTHER
 
 3.3 멤버
@@ -186,14 +186,16 @@ MemberStatus            ACTIVE | OVERDUE | GRACE_PERIOD | SUSPENDED | WITHDRAWN
 3.4 투표
 VoteType                EXPENSE | KICK | LEADER_KICK | DISSOLVE | MEETING_ATTENDANCE
 VoteStatus              IN_PROGRESS | APPROVED | REJECTED | EXPIRED
-VoteChoice              AGREE | DISAGREE | ABSTAIN
+MeetingVoteChoice       AGREE | DISAGREE
+ExpenseVoteChoice       APPROVE | REJECT
+GeneralVoteChoice       APPROVE | REJECT
 
 3.5 지출
 ExpenseStatus           PENDING | VOTING | APPROVED | REJECTED | EXECUTING | COMPLETED | CANCELLED
 ExpenseCategory         FOOD | TRANSPORT | SUPPLIES | EVENT | OTHER
 
 3.6 모임
-MeetingStatus           SCHEDULED | VOTING | CONFIRMED | COMPLETED | CANCELLED
+MeetingStatus           VOTING | CONFIRMED | COMPLETED | CANCELLED
 AttendanceStatus        CONFIRMED | DECLINED | PENDING
 
 3.7 거래
@@ -347,7 +349,7 @@ MEMBER           5         Spring
 MEETING          6         Spring
 VOTE             5         Spring
 EXPENSE          6         Spring
-LEDGER           2         Spring
+LEDGER           5         Spring
 POST             9         Spring
 COMMENT          6         Spring
 REPORT           2         Spring
@@ -360,7 +362,7 @@ RECOMMENDATION   2         Django
 ─────────────    ──────    ──────
 검색/분석/추천 3개 도메인 (Django)
 ─────────────    ──────    ──────
-합계             91        Spring 82 / Django 9
+합계             92        Spring 83 / Django 9
 
 ### 7. 인증 불필요 API
 NO    ENDPOINT                    설명
@@ -382,6 +384,6 @@ NO    ENDPOINT                    설명
 
 작성일          2026-01-15
 버전            1.0.0
-총 API 수       91개 (Spring 82 + Django 9)
+총 API 수       92개 (Spring 82 + Django 10)
 인증 불필요     9개
 인증 필요       82개

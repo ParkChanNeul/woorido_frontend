@@ -12,36 +12,36 @@
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 069 | POST | /reports | 신고하기 | P1 | 필요 |
-| 070 | GET | /reports/my | 내 신고 목록 조회 | P2 | 필요 |
+| 072 | POST | /reports | 신고하기 | P1 | 필요 |
+| 073 | GET | /reports/my | 내 신고 목록 조회 | P2 | 필요 |
 
 ### 알림 (NOTIFICATION)
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 071 | GET | /notifications | 알림 목록 조회 | P0 | 필요 |
-| 072 | GET | /notifications/{notificationId} | 알림 상세 조회 | P1 | 필요 |
-| 073 | PUT | /notifications/{notificationId}/read | 알림 읽음 처리 | P0 | 필요 |
-| 074 | PUT | /notifications/read-all | 전체 알림 읽음 처리 | P1 | 필요 |
-| 075 | GET/PUT | /notifications/settings | 알림 설정 조회/수정 | P2 | 필요 |
+| 074 | GET | /notifications | 알림 목록 조회 | P0 | 필요 |
+| 075 | GET | /notifications/{notificationId} | 알림 상세 조회 | P1 | 필요 |
+| 076 | PUT | /notifications/{notificationId}/read | 알림 읽음 처리 | P0 | 필요 |
+| 077 | PUT | /notifications/read-all | 전체 알림 읽음 처리 | P1 | 필요 |
+| 078 | GET/PUT | /notifications/settings | 알림 설정 조회/수정 | P2 | 필요 |
 
 ### 환불 (REFUND)
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 076 | POST | /refunds | 환불 요청 | P1 | 필요 |
-| 077 | GET | /refunds/{refundId} | 환불 상태 조회 | P2 | 필요 |
+| 079 | POST | /refunds | 환불 요청 | P1 | 필요 |
+| 080 | GET | /refunds/{refundId} | 환불 상태 조회 | P2 | 필요 |
 
 ### 정산 (SETTLEMENT)
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 078 | GET | /challenges/{challengeId}/settlement | 정산 내역 조회 | P1 | 멤버 |
-| 079 | POST | /challenges/{challengeId}/settlement/process | 정산 실행 | P1 | 관리자 |
+| 081 | GET | /challenges/{challengeId}/settlement | 정산 내역 조회 | P1 | 멤버 |
+| 082 | POST | /challenges/{challengeId}/settlement/process | 정산 실행 | P1 | 관리자 |
 
 ---
 
-## 069. 신고하기
+## 072. 신고하기
 
 ### 기본 정보
 - **Endpoint**: `POST /reports`
@@ -69,7 +69,7 @@ curl -X POST https://api.woorido.com/api/v1/reports \
 #### Request Body
 | 필드 | 타입 | 필수 | 제약조건 | 설명 |
 |------|------|------|----------|------|
-| targetType | String | Y | USER/POST/COMMENT | 신고 대상 유형 |
+| targetType | String | Y | USER/POST/COMMENT/CHALLENGE | 신고 대상 유형 |
 | targetId | Long | Y | - | 신고 대상 ID |
 | reason | String | Y | ReportReason Enum | 신고 사유 |
 | description | String | Y | 10~1000자 | 상세 설명 |

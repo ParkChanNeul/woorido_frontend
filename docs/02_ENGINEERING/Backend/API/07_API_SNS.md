@@ -12,26 +12,26 @@
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 054 | GET | /challenges/{challengeId}/posts | 게시글 목록 조회 | P0 | 멤버 |
-| 055 | GET | /challenges/{challengeId}/posts/{postId} | 게시글 상세 조회 | P0 | 멤버 |
-| 056 | POST | /challenges/{challengeId}/posts | 게시글 작성 | P0 | 멤버 |
-| 057 | PUT | /challenges/{challengeId}/posts/{postId} | 게시글 수정 | P1 | 작성자 |
-| 058 | DELETE | /challenges/{challengeId}/posts/{postId} | 게시글 삭제 | P1 | 작성자/리더 |
-| 059 | POST | /challenges/{challengeId}/posts/{postId}/like | 게시글 좋아요 | P1 | 멤버 |
-| 060 | PUT | /challenges/{challengeId}/posts/{postId}/pin | 게시글 상단 고정 | P2 | 리더 |
-| 061 | POST | /challenges/{challengeId}/posts/upload | 파일 업로드 | P1 | 멤버 |
-| 062 | GET | /posts/my | 내 게시글 목록 조회 | P2 | 필요 |
+| 057 | GET | /challenges/{challengeId}/posts | 게시글 목록 조회 | P0 | 멤버 |
+| 058 | GET | /challenges/{challengeId}/posts/{postId} | 게시글 상세 조회 | P0 | 멤버 |
+| 059 | POST | /challenges/{challengeId}/posts | 게시글 작성 | P0 | 멤버 |
+| 060 | PUT | /challenges/{challengeId}/posts/{postId} | 게시글 수정 | P1 | 작성자 |
+| 061 | DELETE | /challenges/{challengeId}/posts/{postId} | 게시글 삭제 | P1 | 작성자/리더 |
+| 062 | POST | /challenges/{challengeId}/posts/{postId}/like | 게시글 좋아요 | P1 | 멤버 |
+| 063 | PUT | /challenges/{challengeId}/posts/{postId}/pin | 게시글 상단 고정 | P2 | 리더 |
+| 064 | POST | /challenges/{challengeId}/posts/upload | 파일 업로드 | P1 | 멤버 |
+| 065 | GET | /posts/my | 내 게시글 목록 조회 | P2 | 필요 |
 
 ### 댓글 (COMMENT)
 
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
-| 063 | GET | /challenges/{challengeId}/posts/{postId}/comments | 댓글 목록 조회 | P0 | 멤버 |
-| 064 | POST | /challenges/{challengeId}/posts/{postId}/comments | 댓글 작성 | P0 | 멤버 |
-| 065 | PUT | /comments/{commentId} | 댓글 수정 | P1 | 작성자 |
-| 066 | DELETE | /comments/{commentId} | 댓글 삭제 | P1 | 작성자/리더 |
-| 067 | POST | /comments/{commentId}/like | 댓글 좋아요 | P2 | 멤버 |
-| 068 | POST | /comments/{commentId}/replies | 대댓글 작성 | P1 | 멤버 |
+| 066 | GET | /challenges/{challengeId}/posts/{postId}/comments | 댓글 목록 조회 | P0 | 멤버 |
+| 067 | POST | /challenges/{challengeId}/posts/{postId}/comments | 댓글 작성 | P0 | 멤버 |
+| 068 | PUT | /comments/{commentId} | 댓글 수정 | P1 | 작성자 |
+| 069 | DELETE | /comments/{commentId} | 댓글 삭제 | P1 | 작성자/리더 |
+| 070 | POST | /comments/{commentId}/like | 댓글 좋아요 | P2 | 멤버 |
+| 071 | POST | /comments/{commentId}/replies | 대댓글 작성 | P1 | 멤버 |
 
 ### 지출/장부 (EXPENSE/LEDGER)
 
@@ -42,7 +42,7 @@
 
 ---
 
-## 054. 게시글 목록 조회
+## 057. 게시글 목록 조회
 
 ### 기본 정보
 - **Endpoint**: `GET /challenges/{challengeId}/posts`
@@ -108,7 +108,7 @@ curl -X GET "https://api.woorido.com/api/v1/challenges/1/posts?category=NOTICE&p
 
 ---
 
-## 055. 게시글 상세 조회
+## 058. 게시글 상세 조회
 
 ### 기본 정보
 - **Endpoint**: `GET /challenges/{challengeId}/posts/{postId}`
@@ -153,7 +153,7 @@ curl -X GET "https://api.woorido.com/api/v1/challenges/1/posts?category=NOTICE&p
 
 ---
 
-## 056. 게시글 작성
+## 059. 게시글 작성
 
 ### 기본 정보
 - **Endpoint**: `POST /challenges/{challengeId}/posts`
@@ -213,7 +213,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/posts \
 
 ---
 
-## 059. 게시글 좋아요
+## 062. 게시글 좋아요
 
 ### 기본 정보
 - **Endpoint**: `POST /challenges/{challengeId}/posts/{postId}/like`
@@ -242,7 +242,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/posts \
 
 ---
 
-## 061. 파일 업로드
+## 064. 파일 업로드
 
 ### 기본 정보
 - **Endpoint**: `POST /challenges/{challengeId}/posts/upload`
@@ -289,7 +289,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/posts/upload \
 
 ---
 
-## 063. 댓글 목록 조회
+## 066. 댓글 목록 조회
 
 ### 기본 정보
 - **Endpoint**: `GET /challenges/{challengeId}/posts/{postId}/comments`
@@ -336,7 +336,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/posts/upload \
 
 ---
 
-## 064. 댓글 작성
+## 067. 댓글 작성
 
 ### 기본 정보
 - **Endpoint**: `POST /challenges/{challengeId}/posts/{postId}/comments`
@@ -382,7 +382,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/posts/1/comments \
 
 ---
 
-## 068. 대댓글 작성
+## 071. 대댓글 작성
 
 ### 기본 정보
 - **Endpoint**: `POST /comments/{commentId}/replies`

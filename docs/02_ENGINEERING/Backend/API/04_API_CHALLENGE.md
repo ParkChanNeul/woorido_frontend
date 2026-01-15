@@ -2,7 +2,7 @@
 
 > **총 API**: 13개 (챌린지 8개 + 멤버 5개)
 > **담당**: Spring Boot
-> **관련 테이블**: `challenges`, `challenge_members`, `challenge_accounts`
+> **관련 테이블**: `challenges`, `challenge_members`, `ledger_entries`
 
 ---
 
@@ -77,12 +77,14 @@ curl -X POST https://api.woorido.com/api/v1/challenges \
 
 #### ChallengeCategory Enum
 | 값 | 설명 |
-|----|------|
-| STUDY | 학습 |
-| FITNESS | 운동 |
+|----|
 | HOBBY | 취미 |
-| FINANCE | 재테크 |
-| LIFESTYLE | 생활습관 |
+| STUDY | 학습 |
+| EXERCISE | 운동 |
+| SAVINGS | 저축 |
+| TRAVEL | 여행 |
+| FOOD | 음식 |
+| CULTURE | 문화 |
 | OTHER | 기타 |
 
 ### Response
@@ -137,7 +139,7 @@ curl -X GET "https://api.woorido.com/api/v1/challenges?status=RECRUITING&page=0&
 #### Query Parameters
 | 파라미터 | 타입 | 필수 | 기본값 | 설명 |
 |----------|------|------|--------|------|
-| status | String | N | - | RECRUITING / ACTIVE / PAUSED / CLOSED |
+| status | String | N | - | RECRUITING / IN_PROGRESS / COMPLETED |
 | category | String | N | - | 카테고리 필터 |
 | sort | String | N | createdAt,desc | 정렬 기준 |
 | page | Integer | N | 0 | 페이지 번호 |
