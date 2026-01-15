@@ -4,6 +4,129 @@
 
 ---
 
+## 문서 정합성 해결 백로그 (2026-01-15)
+
+> **목적**: woorido_consistency.md에서 식별된 30개 문서 불일치 항목 전체 해결
+> **기준 문서**: DB_Schema_1.0.0.md, API_SCHEMA_1.0.0.md, POLICY_DEFINITION.md
+> **SSOT 원칙**: DB Schema > Policy > API Schema > 개별 도메인 문서
+
+### 해결 통계
+
+| 우선순위 | 이슈 수 | 상태 |
+|----------|---------|------|
+| Critical | 4 | ✅ 완료 |
+| High | 11 | ✅ 완료 |
+| Medium | 10 | ✅ 완료 |
+| Low | 5 | ✅ 완료 |
+| **합계** | **30** | **✅ 100%** |
+
+---
+
+### Critical Issues (4건)
+
+| # | 이슈 | 해결 내용 | 수정 파일 |
+|---|------|----------|----------|
+| 7 | 투표 테이블 구조 불일치 | B안 채택: 통합 API + 개별 DB 테이블 | API_SCHEMA_1.0.0.md |
+| 10 | posts 테이블 컬럼 누락 | `title`, `category` 컬럼 추가 | DB_Schema_1.0.0.md |
+| 15 | 출금 한도 정책 미정의 | B안: 설정값 관리 + 집계 방식 | DB_Schema_1.0.0.md |
+| 16 | autoPayEnabled 컬럼 누락 | `challenge_members.auto_pay_enabled` 추가 | DB_Schema_1.0.0.md |
+
+---
+
+### High Priority Issues (11건)
+
+| # | 이슈 | 해결 내용 | 수정 파일 |
+|---|------|----------|----------|
+| 3 | ChallengeCategory Enum | 8종 통일: HOBBY/STUDY/EXERCISE/SAVINGS/TRAVEL/FOOD/CULTURE/OTHER | API_SCHEMA, 04_API_CHALLENGE, 10_API_DJANGO |
+| 4 | ChallengeStatus Enum | 3종 통일: RECRUITING/IN_PROGRESS/COMPLETED | DB_Schema, API_SCHEMA, PRODUCT_AGENDA |
+| 5 | VoteChoice Enum | Meeting: AGREE/DISAGREE, Expense/General: APPROVE/REJECT | DB_Schema, API_SCHEMA |
+| 6 | MeetingStatus Enum | 4종 통일: VOTING/CONFIRMED/COMPLETED/CANCELLED | API_SCHEMA |
+| 8 | 알림 설정 필드 | DB 기준 확인 완료 | 08_API_SYSTEM |
+| 11 | nickname 필드 누락 | `users.nickname` 컬럼 + 인덱스 추가 | DB_Schema_1.0.0.md |
+| 12 | 모임 참석 테이블명 | 통일 완료 | ERD_SPECIFICATION |
+| 23 | Django 카테고리 | DB 기준 8종 통일 | 10_API_DJANGO |
+| 29 | EXPENSE API 상세 | 문서화 완료 | API_SPECIFICATION |
+| 30 | 참석 상태 Enum | AGREE/DISAGREE 통일 | API_SCHEMA |
+
+---
+
+### Medium Priority Issues (10건)
+
+| # | 이슈 | 해결 내용 | 수정 파일 |
+|---|------|----------|----------|
+| 1 | 비밀번호 정책 | 8자 이상, 영문+숫자 필수, 특수문자 허용 | POLICY_DEFINITION P-005 |
+| 9 | 신고 대상 | CHALLENGE 추가: USER/POST/COMMENT/CHALLENGE | 08_API_SYSTEM |
+| 13 | 수수료 정책 | 부록 C 정리 완료 | API_SPECIFICATION |
+| 14 | challenge_accounts 참조 | ledger_entries, account_transactions로 변경 | 03_API_ACCOUNT, 04_API_CHALLENGE |
+| 17 | TransactionType Enum | 정의 완료 | API_SCHEMA |
+| 18 | ledger_entries 테이블 | 상세 정의 확인 | DB_Schema |
+| 21 | CHALLENGE_CLOSED 탈퇴 | leave_reason 값 확인 | DB_Schema |
+| 22 | 점수 산정 로직 | P-061 추가: 매월 1일 00:00 배치, Django, Redis 일일 카운트 | POLICY_DEFINITION |
+| 24 | expense_requests 명칭 | 테이블명 확인 | DB_Schema |
+| 25 | account_transactions 명칭 | 테이블명 확인 | DB_Schema |
+
+---
+
+### Low Priority Issues (5건)
+
+| # | 이슈 | 해결 내용 | 수정 파일 |
+|---|------|----------|----------|
+| 2 | 테이블 수 | 32개 통일 | DB_Schema |
+| 19 | API 번호 재정렬 | 도메인별 연속 번호 재정렬 완료 | API_SCHEMA, 07_API_SNS, 08_API_SYSTEM, 10_API_DJANGO |
+| 20 | API 개수 | 92개 (Spring 83 + Django 9) | API_SCHEMA, API_SPECIFICATION |
+| 26 | session_type 문서화 | LOGIN/CHARGE/JOIN/WITHDRAW 용도 기술 | 05_SCHEMA_SYSTEM |
+| 27 | Webhook 실패 정책 | P-059 추가: 3회 재시도 (1분, 5분, 30분), 실패 시 관리자 알림 | POLICY_DEFINITION |
+| 28 | 최종 수정일 동기화 | 2026-01-15 통일 | 전체 문서 |
+
+---
+
+### API 번호 재정렬 상세 (#19)
+
+| 도메인 | 변경 전 | 변경 후 | 비고 |
+|-------|--------|--------|------|
+| LEDGER | 052-053, 089-091 | 052-056 | 불연속 → 연속 |
+| POST | 054-062 | 057-065 | +3 |
+| COMMENT | 063-068 | 066-071 | +3 |
+| REPORT | 069-070 | 072-073 | +3 |
+| NOTIFICATION | 071-075 | 074-078 | +3 |
+| REFUND | 076-077 | 079-080 | +3 |
+| SETTLEMENT | 078-079 | 081-082 | +3 |
+| SEARCH | 080-082 | 083-085 | +3 |
+| ANALYTICS | 083-086 | 086-089 | +3 |
+| RECOMMENDATION | 087-088 | 090-091 | +3 |
+
+---
+
+### 신규 추가 정책
+
+| 코드 | 정책명 | 내용 |
+|------|--------|------|
+| P-059 | Webhook 실패 재시도 | 3회 재시도 (1분, 5분, 30분), 최종 실패 시 관리자 알림, payment_logs 기록 |
+| P-061 | 당도 점수 배치 계산 | 매월 1일 00:00, Django 서버, Pessimistic Lock, Redis 일일 카운트 |
+
+---
+
+### 영향받은 문서 목록
+
+**Database:**
+- DB_Schema_1.0.0.md
+- 05_SCHEMA_SYSTEM.md
+
+**Backend API:**
+- API_SCHEMA_1.0.0.md
+- API_SPECIFICATION_1.0.0.md
+- 03_API_ACCOUNT.md
+- 04_API_CHALLENGE.md
+- 07_API_SNS.md
+- 08_API_SYSTEM.md
+- 10_API_DJANGO.md
+
+**Planning:**
+- PRODUCT_AGENDA.md
+- POLICY_DEFINITION.md
+
+---
+
 ## IA_SPECIFICATION.md 변경 이력 (2026-01-14)
 
 > **목적**: IA 문서 버전별 UI/UX 변경 추적
