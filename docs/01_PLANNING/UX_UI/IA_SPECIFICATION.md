@@ -602,7 +602,7 @@ WOORIDO
 |------|------|-------|------|
 | 모임 일정 목록 | Tab | `/groups/:id/meetings` | 예정/완료 모임 리스트 |
 | 모임 카드 | Component | `/groups/:id/meetings` | 제목/날짜/장소/참석자 |
-| 모임 상세 | Modal | `/groups/:id/meetings/:meetingId` | 참석자 목록, 관련 지출 |
+| 모임 상세 | Modal | `/groups/:id/meetings/:meetingId` | 참석자(Attend/NoShow), 지출 내역 |
 | 참석 투표 생성 | Modal | `/groups/:id/meetings/vote` | MEETING_ATTENDANCE 투표 (리더 전용) |
 | 참석/불참 투표 | Component | - | 참석/불참 버튼 |
 | 참석 신청 | Component | - | 모임 확정 후 등록 |
@@ -917,6 +917,30 @@ WOORIDO
 
 ---
 
+### 4.12 관리자 콘솔 (Admin) ⭐ NEW (UC-ADMIN 동기화)
+
+> 💡 **접근 권한**: `ROLE_ADMIN` 전용
+> **진입 경로**: 별도 Admin Portal 또는 `/admin`
+
+#### 4.12.1 정산 관리 (Settlement)
+> **관련 UseCase**: `UC-ADMIN-04`
+
+| 화면 | Type | Route | 설명 |
+|------|------|-------|------|
+| 정산 대기 목록 | Page | `/admin/settlements` | 종료/중단된 챌린지 리스트 |
+| 정산 미리보기 | Modal | `/admin/settlements/:id` | 예상 수수료(1.5%), 패널티 차감액 계산 |
+| 정산 실행 | Action | - | 실제 송금 및 챌린지 종료 처리 |
+
+#### 4.12.2 신고 관리 (Reports)
+> **관련 UseCase**: `UC-ADMIN-01`
+
+| 화면 | Type | Route | 설명 |
+|------|------|-------|------|
+| 신고 접수 목록 | Page | `/admin/reports` | 처리 상태별 필터링 |
+| 신고 상세/처리 | Modal | `/admin/reports/:id` | 승인(제재)/반려/무고 처리 |
+
+---
+
 ## 5. 라우팅 구조
 
 ### 5.1 Route Tree (개편)
@@ -961,6 +985,10 @@ WOORIDO
 │       │   └── /:voteId       (투표 상세)
 │       ├── /members           (멤버 + 당도)
 │       └── /settings          (설정 - 리더)
+│
+├── /admin                     (관리자) ⭐ NEW
+│   ├── /settlements           (정산 관리)
+│   └── /reports               (신고 관리)
 ```
 
 > 💡 **하이브리드 라우팅 전략 (v2.3)**
