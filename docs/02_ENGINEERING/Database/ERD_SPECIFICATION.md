@@ -1,11 +1,11 @@
 # WOORIDO ERD Specification
 **백엔드 개발자용 데이터베이스 설계 명세서**
 
-**작성일**: 2026-01-13
+**작성일**: 2026-01-15
 **대상 DBMS**: Oracle 21c XE
 **ORM**: mybatis-spring-boot-starter 3.0.3
 **트랜잭션 관리**: Spring Boot 3.2.3 (@Transactional)
-**총 테이블**: 31개
+**총 테이블**: 32개
 
 > 📖 정책 기준: [POLICY_DEFINITION.md](../../01_PLANNING/Product/POLICY_DEFINITION.md)
 > 📖 **기준 문서**: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
@@ -839,6 +839,7 @@ CREATE TABLE posts (
   is_pinned CHAR(1) DEFAULT 'N' CHECK (is_pinned IN ('Y', 'N')),
   like_count NUMBER(10) DEFAULT 0,
   comment_count NUMBER(10) DEFAULT 0,
+  view_count NUMBER(10) DEFAULT 0,
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   deleted_at TIMESTAMP
@@ -940,7 +941,41 @@ CREATE INDEX idx_notifications_is_read ON notifications(is_read);
 CREATE INDEX idx_notifications_created_at ON notifications(created_at);
 ```
 
-#### 3.7.2 reports (신고)
+#### 3.7.2 notification_settings (알림 설정)
+
+> 사용자별 알림 수신 설정 관리
+
+```sql
+CREATE TABLE notification_settings (
+  id VARCHAR2(36) PRIMARY KEY,                    -- 설정 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- 알림 채널 설정
+  push_enabled CHAR(1) DEFAULT 'Y' CHECK (push_enabled IN ('Y', 'N')),
+  email_enabled CHAR(1) DEFAULT 'N' CHECK (email_enabled IN ('Y', 'N')),
+  sms_enabled CHAR(1) DEFAULT 'N' CHECK (sms_enabled IN ('Y', 'N')),
+  
+  -- 알림 유형별 설정
+  vote_notification CHAR(1) DEFAULT 'Y' CHECK (vote_notification IN ('Y', 'N')),
+  meeting_notification CHAR(1) DEFAULT 'Y' CHECK (meeting_notification IN ('Y', 'N')),
+  expense_notification CHAR(1) DEFAULT 'Y' CHECK (expense_notification IN ('Y', 'N')),
+  sns_notification CHAR(1) DEFAULT 'Y' CHECK (sns_notification IN ('Y', 'N')),
+  system_notification CHAR(1) DEFAULT 'Y' CHECK (system_notification IN ('Y', 'N')),
+  
+  -- 방해금지 시간
+  quiet_hours_enabled CHAR(1) DEFAULT 'N' CHECK (quiet_hours_enabled IN ('Y', 'N')),
+  quiet_hours_start VARCHAR2(5),                  -- HH:MM 형식
+  quiet_hours_end VARCHAR2(5),                    -- HH:MM 형식
+  
+  -- 타임스탬프
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_notification_settings_user_id ON notification_settings(user_id);
+```
+
+#### 3.7.3 reports (신고)
 
 ```sql
 CREATE TABLE reports (
@@ -964,7 +999,7 @@ CREATE INDEX idx_reports_status ON reports(status);
 CREATE INDEX idx_reports_created_at ON reports(created_at);
 ```
 
-#### 3.7.3 sessions (세션)
+#### 3.7.4 sessions (세션)
 
 ```sql
 CREATE TABLE sessions (
@@ -981,7 +1016,7 @@ CREATE INDEX idx_sessions_user_id ON sessions(user_id);
 CREATE INDEX idx_sessions_expires_at ON sessions(expires_at);
 ```
 
-#### 3.7.4 webhook_logs (Webhook 수신 로그)
+#### 3.7.5 webhook_logs (Webhook 수신 로그)
 
 ```sql
 CREATE TABLE webhook_logs (
@@ -1912,7 +1947,7 @@ def detect_anomaly(request):
 7. **Hybrid returnUrl**: 돈은 DB Session, 의견은 Frontend
 8. **Django 역할**: 순수 분석 엔진 (DB 연결 없음)
 
-### 테이블 요약 (총 31개)
+### 테이블 요약 (총 32개)
 
 | 도메인 | 테이블 수 | 테이블명 |
 |--------|----------|----------|
@@ -1922,7 +1957,7 @@ def detect_anomaly(request):
 | 지출 | 6 | expense_requests, expense_votes, expense_vote_records, payment_barcodes, ledger_entries, payment_logs |
 | 일반 투표 | 2 | general_votes, general_vote_records |
 | SNS | 5 | posts, post_images, post_likes, comments, comment_likes |
-| 시스템 | 4 | notifications, reports, sessions, webhook_logs |
+| 시스템 | 5 | notifications, notification_settings, reports, sessions, webhook_logs |
 | 관리자 | 5 | admins, fee_policies, admin_logs, settlements, refunds |
 
 ### 트랜잭션 오류 해결

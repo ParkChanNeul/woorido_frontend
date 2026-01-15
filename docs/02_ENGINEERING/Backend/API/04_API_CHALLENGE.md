@@ -15,7 +15,7 @@
 | 022 | POST | /challenges | 챌린지 생성 | P0 | 필요 |
 | 023 | GET | /challenges | 챌린지 목록 조회 | P0 | 필요 |
 | 024 | GET | /challenges/{challengeId} | 챌린지 상세 조회 | P0 | 필요 |
-| 025 | PATCH | /challenges/{challengeId} | 챌린지 수정 | P0 | 리더 |
+| 025 | PUT | /challenges/{challengeId} | 챌린지 수정 | P0 | 리더 |
 | 026 | DELETE | /challenges/{challengeId} | 챌린지 삭제 | P1 | 리더 |
 | 027 | GET | /challenges/me | 내 챌린지 목록 | P0 | 필요 |
 | 028 | GET | /challenges/{challengeId}/account | 챌린지 어카운트 조회 | P0 | 멤버 |
@@ -265,7 +265,7 @@ curl -X GET https://api.woorido.com/api/v1/challenges/1 \
 ## 025. 챌린지 수정 (리더만)
 
 ### 기본 정보
-- **Endpoint**: `PATCH /challenges/{challengeId}`
+- **Endpoint**: `PUT /challenges/{challengeId}`
 - **우선순위**: P0
 - **인증**: 필요 (리더)
 
@@ -273,7 +273,7 @@ curl -X GET https://api.woorido.com/api/v1/challenges/1 \
 
 #### Request Syntax
 ```bash
-curl -X PATCH https://api.woorido.com/api/v1/challenges/1 \
+curl -X PUT https://api.woorido.com/api/v1/challenges/1 \
   -H "Authorization: Bearer {accessToken}" \
   -H "Content-Type: application/json" \
   -d '{

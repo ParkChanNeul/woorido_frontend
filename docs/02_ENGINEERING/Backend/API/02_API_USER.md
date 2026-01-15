@@ -11,7 +11,7 @@
 | # | Method | Endpoint | 설명 | 우선순위 | 인증 |
 |---|--------|----------|------|---------|------|
 | 009 | GET | /users/me | 내 정보 조회 | P0 | 필요 |
-| 010 | PATCH | /users/me | 내 정보 수정 | P0 | 필요 |
+| 010 | PUT | /users/me | 내 정보 수정 | P0 | 필요 |
 | 011 | PUT | /users/me/password | 비밀번호 변경 | P1 | 필요 |
 | 012 | DELETE | /users/me | 회원 탈퇴 | P1 | 필요 |
 | 013 | GET | /users/{userId} | 사용자 조회 | P1 | 필요 |
@@ -91,7 +91,7 @@ curl -X GET https://api.woorido.com/api/v1/users/me \
 ## 010. 내 정보 수정
 
 ### 기본 정보
-- **Endpoint**: `PATCH /users/me`
+- **Endpoint**: `PUT /users/me`
 - **우선순위**: P0
 - **인증**: 필요
 
@@ -99,7 +99,7 @@ curl -X GET https://api.woorido.com/api/v1/users/me \
 
 #### Request Syntax
 ```bash
-curl -X PATCH https://api.woorido.com/api/v1/users/me \
+curl -X PUT https://api.woorido.com/api/v1/users/me \
   -H "Authorization: Bearer {accessToken}" \
   -H "Content-Type: application/json" \
   -d '{

@@ -1,7 +1,7 @@
 WOORIDO API 명세서 v1.0.0
-작성일      2026-01-14
+작성일      2026-01-15
 버전        1.0.0
-총 API      88개 (Spring 79 + Django 9)
+총 API      91개 (Spring 82 + Django 9)
 기준 문서   API_SCHEMA_1.0.0.md, POLICY_DEFINITION.md, DB_Schema_1.0.0.md
 
 ---
@@ -509,7 +509,7 @@ HTTP    코드        메시지
 ─────   ─────────   ─────────────────
 401     AUTH_001    인증이 필요합니다
 
-## 010 PATCH /users/me
+## 010 PUT /users/me
 내 정보 수정
 기본 정보
 우선순위    P0
@@ -975,9 +975,9 @@ Copy{
 
 금액 범위              수수료율
 ───────────────────    ────────
-50,000원 이하          1%
-50,001 ~ 500,000원     3%
-500,001원 이상         1.5%
+9,999원 이하           1%
+10,000 ~ 200,000원     3%
+200,001원 이상         1.5%
 Errors
 
 HTTP    코드           메시지
@@ -1047,18 +1047,18 @@ Copy{
         {
           "name": "소액",
           "minAmount": 0,
-          "maxAmount": 50000,
+          "maxAmount": 9999,
           "rate": 1.0
         },
         {
           "name": "일반",
-          "minAmount": 50001,
-          "maxAmount": 500000,
+          "minAmount": 10000,
+          "maxAmount": 200000,
           "rate": 3.0
         },
         {
           "name": "고액",
-          "minAmount": 500001,
+          "minAmount": 200001,
           "maxAmount": null,
           "rate": 1.5
         }
@@ -1271,7 +1271,7 @@ HTTP    코드             메시지
 ─────   ──────────────   ────────────────────────────
 404     CHALLENGE_001    챌린지를 찾을 수 없습니다
 
-## 025 PATCH /challenges/{challengeId}
+## 025 PUT /challenges/{challengeId}
 챌린지 수정 (리더만)
 기본 정보
 우선순위    P0
@@ -1995,7 +1995,7 @@ HTTP    코드             메시지
 403     CHALLENGE_004    리더만 모임을 생성할 수 있습니다
 404     CHALLENGE_001    챌린지를 찾을 수 없습니다
 
-## 038 PATCH /meetings/{meetingId}
+## 038 PUT /meetings/{meetingId}
 모임 수정 (리더만)
 기본 정보
 우선순위    P1

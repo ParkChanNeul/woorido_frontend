@@ -317,9 +317,9 @@ curl -X POST https://api.woorido.com/api/v1/accounts/withdraw \
 ### 수수료 계산 (P-007)
 | 금액 범위 | 수수료율 |
 |-----------|----------|
-| 50,000원 이하 | 1% |
-| 50,001 ~ 500,000원 | 3% |
-| 500,001원 이상 | 1.5% |
+| 9,999원 이하 | 1% |
+| 10,000 ~ 200,000원 | 3% |
+| 200,001원 이상 | 1.5% |
 
 ### Errors
 | HTTP | 코드 | 메시지 |
@@ -413,18 +413,18 @@ curl -X GET https://api.woorido.com/api/v1/accounts/fee-policy \
         {
           "name": "소액",
           "minAmount": 0,
-          "maxAmount": 50000,
+          "maxAmount": 9999,
           "rate": 1.0
         },
         {
           "name": "일반",
-          "minAmount": 50001,
-          "maxAmount": 500000,
+          "minAmount": 10000,
+          "maxAmount": 200000,
           "rate": 3.0
         },
         {
           "name": "고액",
-          "minAmount": 500001,
+          "minAmount": 200001,
           "maxAmount": null,
           "rate": 1.5
         }

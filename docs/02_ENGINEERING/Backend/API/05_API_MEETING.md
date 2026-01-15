@@ -13,7 +13,7 @@
 | 035 | GET | /challenges/{challengeId}/meetings | 모임 목록 조회 | P0 | 멤버 |
 | 036 | GET | /meetings/{meetingId} | 모임 상세 조회 | P0 | 멤버 |
 | 037 | POST | /challenges/{challengeId}/meetings | 모임 생성 | P0 | 리더 |
-| 038 | PATCH | /meetings/{meetingId} | 모임 수정 | P1 | 리더 |
+| 038 | PUT | /meetings/{meetingId} | 모임 수정 | P1 | 리더 |
 | 039 | POST | /meetings/{meetingId}/attendance | 참석 의사 표시 | P0 | 멤버 |
 | 040 | POST | /meetings/{meetingId}/complete | 모임 완료 처리 | P0 | 리더 |
 | **092** | **DELETE** | **/meetings/{meetingId}/attendance** | **참석 취소** | **P1** | **멤버** |
@@ -240,7 +240,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/meetings \
 ## 038. 모임 수정 (리더만)
 
 ### 기본 정보
-- **Endpoint**: `PATCH /meetings/{meetingId}`
+- **Endpoint**: `PUT /meetings/{meetingId}`
 - **우선순위**: P1
 - **인증**: 필요 (리더)
 
@@ -248,7 +248,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/meetings \
 
 #### Request Syntax
 ```bash
-curl -X PATCH https://api.woorido.com/api/v1/meetings/2 \
+curl -X PUT https://api.woorido.com/api/v1/meetings/2 \
   -H "Authorization: Bearer {accessToken}" \
   -H "Content-Type: application/json" \
   -d '{

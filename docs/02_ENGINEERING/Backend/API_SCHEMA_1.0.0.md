@@ -1,5 +1,4 @@
-WOORIDO API 스키마 v1.0.0
-작성일      2026-01-14
+작성일      2026-01-15
 버전        1.0.0
 기준 문서   PRODUCT_AGENDA.md, POLICY_DEFINITION.md, DB_Schema_1.0.0.md
 
@@ -25,7 +24,7 @@ NO   METHOD   ENDPOINT                    설명                  우선순위  
 NO   METHOD   ENDPOINT                    설명                  우선순위  인증
 ───  ──────   ─────────────────────────   ──────────────────    ────────  ────
 009  GET      /users/me                   내 정보 조회           P0        Y
-010  PATCH    /users/me                   내 정보 수정           P0        Y
+010  PUT      /users/me                   내 정보 수정           P0        Y
 011  PUT      /users/me/password          비밀번호 변경          P1        Y
 012  DELETE   /users/me                   회원 탈퇴              P1        Y
 013  GET      /users/{userId}             사용자 조회            P1        Y
@@ -48,7 +47,7 @@ NO   METHOD   ENDPOINT                                 설명                  �
 022  POST     /challenges                              챌린지 생성            P0        Y
 023  GET      /challenges                              챌린지 목록 조회       P0        Y
 024  GET      /challenges/{challengeId}                챌린지 상세 조회       P0        Y
-025  PATCH    /challenges/{challengeId}                챌린지 수정            P0        Y
+025  PUT      /challenges/{challengeId}                챌린지 수정            P0        Y
 026  DELETE   /challenges/{challengeId}                챌린지 삭제            P1        Y
 027  GET      /challenges/me                           내 챌린지 목록         P0        Y
 028  GET      /challenges/{challengeId}/account        챌린지 어카운트 조회   P0        Y
@@ -69,7 +68,7 @@ NO   METHOD   ENDPOINT                                 설명              우�
 035  GET      /challenges/{challengeId}/meetings       모임 목록 조회     P0        Y
 036  GET      /meetings/{meetingId}                    모임 상세 조회     P0        Y
 037  POST     /challenges/{challengeId}/meetings       모임 생성          P0        Y
-038  PATCH    /meetings/{meetingId}                    모임 수정          P1        Y
+038  PUT      /meetings/{meetingId}                    모임 수정          P1        Y
 039  POST     /meetings/{meetingId}/attendance         참석 의사 표시     P0        Y
 040  POST     /meetings/{meetingId}/complete           모임 완료 처리     P0        Y
 
@@ -88,7 +87,7 @@ NO   METHOD   ENDPOINT                                 설명              우�
 046  GET      /challenges/{challengeId}/expenses       지출 목록 조회     P0        Y
 047  GET      /expenses/{expenseId}                    지출 상세 조회     P0        Y
 048  POST     /challenges/{challengeId}/expenses       지출 요청          P0        Y
-049  PATCH    /expenses/{expenseId}                    지출 요청 수정     P1        Y
+049  PUT      /expenses/{expenseId}                    지출 요청 수정     P1        Y
 050  DELETE   /expenses/{expenseId}                    지출 요청 취소     P1        Y
 051  POST     /expenses/{expenseId}/execute            지출 실행          P0        Y
 
@@ -97,6 +96,9 @@ NO   METHOD   ENDPOINT                                 설명              우�
 ───  ──────   ───────────────────────────────────────  ────────────────  ────────  ────
 052  GET      /challenges/{challengeId}/ledger         장부 조회          P0        Y
 053  GET      /challenges/{challengeId}/ledger/export  장부 내보내기      P2        Y
+089  GET      /challenges/{challengeId}/ledger/summary 장부 요약          P1        Y
+090  POST     /challenges/{challengeId}/ledger         장부 등록          P1        Y
+091  PUT      /ledger/{entryId}                        장부 수정          P1        Y
 
 2.10 POST (9개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
@@ -105,7 +107,7 @@ NO   METHOD   ENDPOINT                                 설명               우�
 055  GET      /challenges/{challengeId}/posts          게시글 목록 조회    P1        Y
 056  GET      /posts/{postId}                          게시글 상세 조회    P1        Y
 057  POST     /challenges/{challengeId}/posts          게시글 작성         P1        Y
-058  PATCH    /posts/{postId}                          게시글 수정         P1        Y
+058  PUT      /posts/{postId}                          게시글 수정         P1        Y
 059  DELETE   /posts/{postId}                          게시글 삭제         P1        Y
 060  POST     /posts/{postId}/like                     게시글 좋아요       P1        Y
 061  DELETE   /posts/{postId}/like                     게시글 좋아요 취소  P1        Y
@@ -116,7 +118,7 @@ NO   METHOD   ENDPOINT                                 설명               우�
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
 063  GET      /posts/{postId}/comments                 댓글 목록 조회      P1        Y
 064  POST     /posts/{postId}/comments                 댓글 작성           P1        Y
-065  PATCH    /comments/{commentId}                    댓글 수정           P1        Y
+065  PUT      /comments/{commentId}                    댓글 수정           P1        Y
 066  DELETE   /comments/{commentId}                    댓글 삭제           P1        Y
 067  POST     /comments/{commentId}/like               댓글 좋아요         P2        Y
 068  DELETE   /comments/{commentId}/like               댓글 좋아요 취소    P2        Y
@@ -131,10 +133,10 @@ NO   METHOD   ENDPOINT                                 설명               우�
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
 071  GET      /notifications                           알림 목록 조회      P0        Y
-072  PATCH    /notifications/{notificationId}/read     알림 읽음 처리      P1        Y
-073  PATCH    /notifications/read-all                  전체 읽음 처리      P1        Y
+072  PUT      /notifications/{notificationId}/read     알림 읽음 처리      P1        Y
+073  PUT      /notifications/read-all                  전체 읽음 처리      P1        Y
 074  GET      /notifications/settings                  알림 설정 조회      P1        Y
-075  PATCH    /notifications/settings                  알림 설정 변경      P1        Y
+075  PUT      /notifications/settings                  알림 설정 변경      P1        Y
 
 2.14 REFUND (2개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
@@ -151,17 +153,17 @@ NO   METHOD   ENDPOINT                                 설명               우�
 2.16 SEARCH - Django (3개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
 ───  ──────   ───────────────────────────────────────  ─────────────────  ────────  ────
-080  GET      /search/challenges                       챌린지 검색         P1        Y
-081  GET      /search/users                            사용자 검색         P2        Y
-082  GET      /search/posts                            게시글 검색         P2        Y
+080  GET      /search                                  통합 검색           P1        Y
+081  GET      /search/challenges                       챌린지 상세 검색    P2        Y
+082  GET      /search/autocomplete                     검색어 자동완성     P2        Y
 
 2.17 ANALYTICS - Django (4개)
 NO   METHOD   ENDPOINT                                      설명               우선순위  인증
 ───  ──────   ────────────────────────────────────────────  ─────────────────  ────────  ────
-083  GET      /analytics/challenges/{challengeId}           챌린지 통계         P1        Y
-084  GET      /analytics/users/me/brix                      내 당도 이력        P1        Y
-085  GET      /analytics/challenges/{challengeId}/risk      위험도 분석         P2        Y
-086  GET      /analytics/fraud-detection                    이상거래 탐지       P2        Y
+083  GET      /analytics/user/activity                      내 활동 통계        P1        Y
+084  GET      /analytics/challenge/{challengeId}            챌린지 분석         P1        Y
+085  GET      /analytics/dashboard                          대시보드 데이터     P2        Y
+086  GET      /analytics/user/report                        월간 리포트         P2        Y
 
 2.18 RECOMMENDATION - Django (2개)
 NO   METHOD   ENDPOINT                                 설명               우선순위  인증
@@ -219,6 +221,10 @@ AUTH_003     403     권한이 없습니다
 AUTH_004     401     리프레시 토큰이 만료되었습니다
 AUTH_005     400     이메일 인증이 필요합니다
 AUTH_006     400     인증 코드가 일치하지 않습니다
+AUTH_007     400     잠시 후 다시 시도해주세요
+AUTH_008     400     인증 코드가 만료되었습니다
+AUTH_009     400     재설정 토큰이 만료되었습니다
+AUTH_015     403     관리자 권한이 필요합니다
 
 4.2 USER
 코드         HTTP    메시지
@@ -296,13 +302,24 @@ POST_003       403     게시글 작성자만 가능합니다
 COMMENT_001    404     댓글을 찾을 수 없습니다
 COMMENT_002    403     댓글 작성자만 가능합니다
 
-4.10 기타
+4.10 LEDGER
+코드           HTTP    메시지
+────────────   ─────   ─────────────────────────────────
+LEDGER_001     400     금액은 1원 이상이어야 합니다
+LEDGER_002     400     챌린지 잔액이 부족합니다
+LEDGER_003     400     정산 완료된 항목은 수정할 수 없습니다
+LEDGER_004     404     장부 항목을 찾을 수 없습니다
+
+4.11 기타
 코드               HTTP    메시지
 ────────────────   ─────   ─────────────────────────────────
 REPORT_001         404     신고를 찾을 수 없습니다
+REPORT_002         404     신고 대상을 찾을 수 없습니다
 NOTIFICATION_001   404     알림을 찾을 수 없습니다
 REFUND_001         400     환불 가능 금액을 초과했습니다
+REFUND_002         400     환불 금액이 납입 금액을 초과합니다
 SETTLEMENT_001     400     이미 정산이 진행 중입니다
+SETTLEMENT_002     400     이미 정산이 완료되었습니다
 FILE_001           400     지원하지 않는 파일 형식입니다
 FILE_002           400     파일 크기 초과 (최대 10MB)
 SEARCH_001         400     검색어는 2자 이상이어야 합니다
@@ -311,9 +328,9 @@ VALIDATION_001     400     유효성 검증 실패
 ### 5. 수수료 정책
 구간     금액 범위              수수료율
 ─────    ───────────────────    ────────
-소액     50,000원 이하          1%
-일반     50,001 ~ 500,000원     3%
-고액     500,001원 이상         1.5%
+소액     0 ~ 9,999원            1%
+일반     10,000 ~ 200,000원     3%
+고액     200,001원 이상         1.5%
 
 충전 수수료    0%
 최소 충전      10,000원
@@ -341,7 +358,9 @@ SEARCH           3         Django
 ANALYTICS        4         Django
 RECOMMENDATION   2         Django
 ─────────────    ──────    ──────
-합계             88        Spring 79 / Django 9
+검색/분석/추천 3개 도메인 (Django)
+─────────────    ──────    ──────
+합계             91        Spring 82 / Django 9
 
 ### 7. 인증 불필요 API
 NO    ENDPOINT                    설명
@@ -361,8 +380,8 @@ NO    ENDPOINT                    설명
                               문서 종료
 ================================================================================
 
-작성일          2026-01-14
+작성일          2026-01-15
 버전            1.0.0
-총 API 수       88개 (Spring 79 + Django 9)
+총 API 수       91개 (Spring 82 + Django 9)
 인증 불필요     9개
-인증 필요       79개
+인증 필요       82개
