@@ -5,7 +5,7 @@
 **대상 DBMS**: Oracle 21c XE
 **ORM**: mybatis-spring-boot-starter 3.0.3
 **트랜잭션 관리**: Spring Boot 3.2.3 (@Transactional)
-**총 테이블**: 31개
+**총 테이블**: 32개
 
 > 📖 정책 기준: [POLICY_DEFINITION.md](../../01_PLANNING/Product/POLICY_DEFINITION.md)
 > 📖 기준 문서: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)

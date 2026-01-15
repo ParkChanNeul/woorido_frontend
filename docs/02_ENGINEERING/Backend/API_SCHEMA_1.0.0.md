@@ -176,15 +176,15 @@ NO   METHOD   ENDPOINT                                 설명               우�
 UserStatus              ACTIVE | SUSPENDED | WITHDRAWN
 
 3.2 챌린지
-ChallengeStatus         RECRUITING | ACTIVE | CLOSED
-ChallengeCategory       STUDY | FITNESS | HOBBY | FINANCE | LIFESTYLE | OTHER
+ChallengeStatus         RECRUITING | ACTIVE | PAUSED | CLOSED
+ChallengeCategory       HOBBY | STUDY | EXERCISE | SAVINGS | TRAVEL | FOOD | CULTURE | OTHER
 
 3.3 멤버
 MemberRole              LEADER | FOLLOWER
 MemberStatus            ACTIVE | OVERDUE | GRACE_PERIOD | SUSPENDED | WITHDRAWN
 
 3.4 투표
-VoteType                EXPENSE | KICK | LEADER_KICK | DISSOLVE
+VoteType                EXPENSE | KICK | LEADER_KICK | DISSOLVE | MEETING_ATTENDANCE
 VoteStatus              IN_PROGRESS | APPROVED | REJECTED | EXPIRED
 VoteChoice              AGREE | DISAGREE | ABSTAIN
 

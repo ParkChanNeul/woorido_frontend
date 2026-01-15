@@ -1,175 +1,209 @@
-# WOORIDO 디자인 토큰 v1.2
+# WOORIDO 디자인 시스템 v2.0 (Design System Specification)
 
-> **Purpose:** 플랫폼 공통 디자인 시스템
-> **Last Updated:** 2026-01-14
-> **Brand Assets:** [자산 5@4x.png](../../../자료%20모음/4x/자산%205@4x.png)
-> **Color Scheme:** Tone-on-Tone (주황 계열 통일)
+> **Purpose**: React + TypeScript + Vite 환경을 위한 Type-Safe 디자인 시스템
+> **Brand Identity**: 따뜻한 커뮤니티 (Tone-on-Tone) + 신뢰받는 금융 (Clean Typography)
+> **Brand Color**: `Mandarin Orange` #E9481E
+> **Documentation ID**: DS-2.0-2026
 
 ---
 
-## 1. 색상 (Colors)
+## 1. 아키텍처 (Architecture)
 
-### 1.1 브랜드 색상 ⭐ 톤온톤 스킴
+M3(Material Design 3)의 **3단 레이어 구조**를 채택하되, 도메인 특화 색상은 **Semantic Layer**에서 구체화합니다.
 
-> 로고 분석: **W**🖤**OO**🧡**RI**🖤**DO**🧡 + "우리를 위한 계모임 커뮤니티, 우리두"
-
-| 토큰 | HEX | RGB | 용도 |
-|------|-----|-----|------|
-| `--color-primary` | #E85A2C | rgb(232, 90, 44) | 메인 CTA, 로고 OO/DO |
-| `--color-primary-light` | #F07850 | rgb(240, 120, 80) | 호버 상태 |
-| `--color-primary-dark` | #C94A20 | rgb(201, 74, 32) | 액티브/클릭 상태 |
-| `--color-success` | #D4730C | rgb(212, 115, 12) | 성공, 완료 (황금빛 주황) |
-| `--color-muted` | #B8673A | rgb(184, 103, 58) | 비활성, 보조 |
-| `--color-dark` | #1A1A1A | rgb(26, 26, 26) | 로고 W/RI, 메인 텍스트 |
-
-**톤온톤 컬러 팔레트:**
-```
-🔥 #C94A20  ← Dark (클릭)
-🧡 #E85A2C  ← Primary (메인)
-🍑 #F07850  ← Light (호버)
-🌅 #D4730C  ← Success (완료)
-🍂 #B8673A  ← Muted (비활성)
+```mermaid
+graph TD
+    Ref[Reference Tokens <br/> (Raw Values)] --> Sys[System Tokens <br/> (M3 Roles)]
+    Sys --> Sem[Semantic Tokens <br/> (Brix / Financial)]
+    Sem --> Comp[Component Tokens <br/> (React Props)]
 ```
 
-**버튼 상태 예시:**
-```css
-.btn-primary {
-  background: var(--color-primary);  /* #E85A2C */
+### React/TS 구현 전략 (`src/theme`)
+*   **CSS Variables**: 빌드 시 주입 (런타임 오버헤드 최소화)
+*   **TypeScript Map**: `tokens.sys.color.primary` 형태로 자동완성 지원
+
+---
+
+## 2. Reference Layer (기초 색상)
+
+> **Tone-on-Tone 원칙**: 모든 중립 색상(Neutral)에 브랜드 컬러(Orange)를 2~5% 섞어 따뜻한 미니멀리즘을 구현합니다.
+
+### 2.1 Brand Palette (Mandarin)
+*   **Base**: `#E9481E` (Logo)
+
+| Token Path | Value | Role |
+|------------|-------|------|
+| `ref.palette.orange.10` | #3E0F04 | On-Container (Text) |
+| `ref.palette.orange.20` | #751E09 | Dark Active |
+| `ref.palette.orange.30` | #B32E10 | Dark Hover |
+| `ref.palette.orange.40` | **#E9481E** | **Primary (Logo)** |
+| `ref.palette.orange.50` | #F36B45 | Light Hover |
+| `ref.palette.orange.60` | #FA8F70 | Secondary |
+| `ref.palette.orange.80` | #FDCBBC | Surface Highlight |
+| `ref.palette.orange.90` | #FEE4DC | Container Background |
+| `ref.palette.orange.95` | #FFF1EC | Tinted Surface |
+| `ref.palette.orange.99` | #FFFBFA | Background |
+
+### 2.2 Neutral Palette (Orange Tinted)
+*   일반 회색(`#808080`) 대신 오렌지 틴트가 들어간 웜 그레이 사용.
+
+| Token Path | Value | Role |
+|------------|-------|------|
+| `ref.palette.neutral.10` | #1C1917 | Main Text |
+| `ref.palette.neutral.30` | #57534E | Sub Text |
+| `ref.palette.neutral.50` | #78716C | Icon / Disabled Text |
+| `ref.palette.neutral.80` | #D6D3D1 | Border |
+| `ref.palette.neutral.90` | #E7E5E4 | Divider |
+| `ref.palette.neutral.95` | #F5F5F4 | Card Background |
+| `ref.palette.neutral.99` | #FAFAF9 | App Background |
+
+### 2.3 Brix Palette (Fruits Metaphor)
+*   당도 시스템을 위한 전용 과일 컬러.
+
+| Fruit | Token | Value | Meaning |
+|-------|-------|-------|---------|
+| **Honey** | `ref.palette.gold.60` | #F59E0B | 꿀 (60+) / High Reliability |
+| **Grape** | `ref.palette.purple.60` | #9333EA | 포도 (40~60) / Trust |
+| **Apple** | `ref.palette.red.60` | #F43F5E | 사과 (25~40) / Moderate |
+| **Mandarin**| `ref.palette.orange.40` | #E9481E | 귤 (12~25) / Basic (Brand) |
+| **Tomato** | `ref.palette.tomato.70` | #FCA5A5 | 토마토 (0~12) / Bland |
+| **Bitter** | `ref.palette.green.30` | #14532D | 쓴맛 (<0) / Warning |
+
+---
+
+## 3. System Layer (UI 역할)
+
+### 3.1 Color Roles (M3 Standard)
+
+| Token Pair | Light Mode Value | Usage |
+|------------|------------------|-------|
+| `sys.color.primary` | `ref.orange.40` (#E9481E) | CTA 버튼, 활성 아이콘, 로고 |
+| `sys.color.on-primary` | #FFFFFF | CTA 위 텍스트 |
+| `sys.color.primary-container` | `ref.orange.90` | 칩 배경, 선택된 아이템 배경 |
+| `sys.color.on-primary-container` | `ref.orange.10` | 칩 텍스트 |
+| `sys.color.background` | `ref.neutral.99` | 전체 배경 |
+| `sys.color.surface` | `ref.neutral.99` | 기본 표면 |
+| `sys.color.surface-container` | `ref.neutral.95` | **카드 배경 (Default)** |
+| `sys.color.outline` | `ref.neutral.80` | 인풋 보더, 디바이더 |
+| `sys.color.outline-variant` | `ref.neutral.90` | 약한 디바이더 |
+
+### 3.2 Typography Roles
+*   **Font Family**: `Pretendard`, `San Francisco`, `-apple-system`
+*   **Monospace**: `JetBrains Mono`
+
+| Token (`sys.typescale...`) | Size | Weight | Line Height | Usage |
+|----------------------------|------|--------|-------------|-------|
+| `display.large` | 32px | 700 | 1.3 | 마케팅 헤드라인 |
+| `headline.medium` | 24px | 600 | 1.4 | 화면 타이틀 |
+| `title.medium` | 18px | 600 | 1.5 | 카드 타이틀, 섹션 헤더 |
+| `body.large` | 16px | 400 | 1.6 | 본문 (Default) |
+| `body.medium` | 14px | 400 | 1.5 | 보조 본문 |
+| `label.medium` | 14px | 500 | 1.2 | 버튼 텍스트, 태그 |
+| **`financial.amount`** | **18px** | **600** | **1.2** | **금액 표시 (tnum)** |
+| **`financial.variable`** | **inherit** | **inherit** | **inherit** | **금액 표시 (tnum)** |
+
+> **Financial Font CSS**:
+> ```css
+> .font-financial {
+>   font-family: var(--font-sans);
+>   font-feature-settings: "tnum"; /* 고정폭 숫자 */
+>   font-variant-numeric: tabular-nums;
+>   letter-spacing: -0.02em;
+> }
+> ```
+
+### 3.3 Shape & Elevation (Toss-like)
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `sys.shape.corner.sm` | 8px | 버튼, 인풋 |
+| `sys.shape.corner.md` | 16px | 작은 카드, 토스트 |
+| `sys.shape.corner.lg` | **24px** | **메인 카드, 바텀시트 (Toss Style)** |
+| `sys.shape.corner.full` | 9999px | 뱃지, 아바타 |
+| `sys.shadow.soft` | `0 4px 20px rgba(0,0,0,0.06)` | 기본 그림자 (부드러움) |
+| `sys.shadow.floating` | `0 8px 30px rgba(0,0,0,0.12)` | 모달, 플로팅 버튼 |
+
+---
+
+## 4. Semantic Layer (Domain Specific)
+
+> **React 사용 시 이 토큰들을 주로 사용합니다.**
+
+### 4.1 Financial Status (금액 상태)
+
+| Token (`sys.color...`) | Reference | Meaning |
+|------------------------|-----------|---------|
+| `financial.income` | `ref.gold.60` (Honey) | 입금, 충전, 이익 (+) |
+| `financial.expense` | `ref.neutral.10` (Black) | 지출, 출금 (-) *Toss Style: 빨간색 남용 지양* |
+| `financial.withdraw` | `ref.neutral.10` (Black) | 평문 지출 |
+| `financial.locked` | `ref.neutral.50` (Gray) | 보증금, 잠김 |
+
+### 4.2 Brix Levels (당도)
+
+| Token (`sys.color.brix...`) | Reference | Level |
+|-----------------------------|-----------|-------|
+| `honey` | `ref.gold.60` | 🍯 꿀 |
+| `grape` | `ref.purple.60` | 🍇 포도 |
+| `apple` | `ref.red.60` | 🍎 사과 |
+| `mandarin` | `ref.orange.40` | 🍊 귤 (Standard) |
+| `tomato` | `ref.tomato.70` | 🍅 토마토 |
+| `bitter` | `ref.green.30` | 🥒 쓴맛 |
+
+### 4.3 Entity Status (상태 뱃지)
+
+| Status Enum | Token | Visual |
+|-------------|-------|--------|
+| `ACTIVE` | `sys.color.primary` | Orange Dot / Text |
+| `RECRUITING` | `sys.color.primary` | Orange Badge |
+| `COMPLETED` | `sys.color.neutral.50` | Gray Badge |
+| `SUSPENDED` | `sys.color.error` | Red Badge |
+
+---
+
+## 5. Implementation Guide (React/TS)
+
+### `src/theme/tokens.ts`
+
+```typescript
+// Type Definition
+export interface WooriDoTheme {
+  sys: {
+    color: {
+      primary: string;
+      onPrimary: string;
+      surface: string;
+      background: string;
+      // ...
+      brix: {
+        honey: string;
+        grape: string;
+        // ...
+      };
+      financial: {
+        income: string;
+        expense: string;
+        locked: string;
+      };
+    };
+    typography: {
+      displayLarge: React.CSSProperties;
+      financial: React.CSSProperties; // includes tnum
+    };
+    shape: {
+      corner: {
+        large: string; // '24px'
+      };
+    };
+  };
 }
-.btn-primary:hover {
-  background: var(--color-primary-light);  /* #F07850 */
-}
-.btn-primary:active {
-  background: var(--color-primary-dark);  /* #C94A20 */
-}
-.btn-success {
-  background: var(--color-success);  /* #D4730C - 황금빛 */
-}
-.btn-disabled {
-  background: var(--color-muted);  /* #B8673A */
-}
+
+// Usage Example
+// <div style={{ 
+//    backgroundColor: tokens.sys.color.primary,
+//    borderRadius: tokens.sys.shape.corner.large 
+// }}>
+//   <span style={tokens.sys.typography.financial}>
+//     {formatMoney(10000)}
+//   </span>
+// </div>
 ```
-
-### 1.2 시맨틱 색상 (톤온톤 보조)
-
-| 토큰 | HEX | 용도 |
-|------|-----|------|
-| `--color-success` | #D4730C | 성공, 완료 (황금빛) |
-| `--color-warning` | #F59E0B | 경고, 주의 |
-| `--color-error` | #EF4444 | 에러, 실패 |
-| `--color-info` | #E85A2C | 정보, 안내 (Primary 활용) |
-
-### 1.3 중립 색상
-
-| 토큰 | HEX | 용도 |
-|------|-----|------|
-| `--color-gray-50` | #F9FAFB | 배경 |
-| `--color-gray-100` | #F3F4F6 | 카드 배경 |
-| `--color-gray-200` | #E5E7EB | 보더 |
-| `--color-gray-400` | #9CA3AF | 비활성 텍스트 |
-| `--color-gray-600` | #4B5563 | 보조 텍스트 |
-| `--color-gray-900` | #111827 | 메인 텍스트 |
-
-### 1.4 다크 모드
-
-| 라이트 | 다크 |
-|--------|------|
-| `gray-50` | `gray-900` |
-| `gray-100` | `gray-800` |
-| `gray-900` | `gray-50` |
-| `--color-primary` | `--color-primary-light` |
-
----
-
-## 2. 타이포그래피
-
-### 2.1 폰트 패밀리
-
-```css
---font-sans: 'Pretendard', -apple-system, sans-serif;
---font-mono: 'JetBrains Mono', monospace;
-```
-
-### 2.2 폰트 크기
-
-| 토큰 | 모바일 | 데스크탑 | 용도 |
-|------|--------|---------|------|
-| `--text-xs` | 11px | 12px | 캡션 |
-| `--text-sm` | 13px | 14px | 보조 텍스트 |
-| `--text-base` | 15px | 16px | 본문 |
-| `--text-lg` | 17px | 18px | 소제목 |
-| `--text-xl` | 20px | 22px | 제목 |
-| `--text-2xl` | 24px | 28px | 대제목 |
-| `--text-3xl` | 30px | 36px | 히어로 |
-
-### 2.3 폰트 굵기
-
-| 토큰 | 값 | 용도 |
-|------|-----|------|
-| `--font-normal` | 400 | 본문 |
-| `--font-medium` | 500 | 강조 |
-| `--font-semibold` | 600 | 제목 |
-| `--font-bold` | 700 | 버튼 |
-
----
-
-## 3. 간격 (Spacing)
-
-| 토큰 | 값 | 용도 |
-|------|-----|------|
-| `--space-1` | 4px | 최소 간격 |
-| `--space-2` | 8px | 아이콘-텍스트 |
-| `--space-3` | 12px | 요소 내부 |
-| `--space-4` | 16px | 카드 패딩 |
-| `--space-6` | 24px | 섹션 간격 |
-| `--space-8` | 32px | 큰 섹션 |
-
----
-
-## 4. 둥글기 (Border Radius)
-
-| 토큰 | 값 | 용도 |
-|------|-----|------|
-| `--radius-sm` | 4px | 작은 버튼 |
-| `--radius-md` | 8px | 카드 |
-| `--radius-lg` | 12px | 모달 |
-| `--radius-xl` | 16px | 바텀시트 |
-| `--radius-full` | 9999px | 원형 |
-
----
-
-## 5. 그림자 (Shadow)
-
-| 토큰 | 값 | 용도 |
-|------|-----|------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | 카드 |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | 드롭다운 |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | 모달 |
-
----
-
-## 6. 애니메이션
-
-| 토큰 | 값 | 용도 |
-|------|-----|------|
-| `--duration-fast` | 150ms | 호버 |
-| `--duration-normal` | 250ms | 전환 |
-| `--duration-slow` | 400ms | 모달 |
-| `--easing-default` | `cubic-bezier(0.4, 0, 0.2, 1)` | 기본 |
-
----
-
-## 7. Z-Index
-
-| 토큰 | 값 | 용도 |
-|------|-----|------|
-| `--z-dropdown` | 1000 | 드롭다운 |
-| `--z-sticky` | 1020 | 스티키 헤더 |
-| `--z-modal` | 1050 | 모달 |
-| `--z-toast` | 1080 | 토스트 |
-
----
-
-**관련 문서:**
-- [IA_MOBILE.md](../MOBILE/IA_MOBILE.md)
-- [IA_DESKTOP.md](../DESKTOP/IA_DESKTOP.md)

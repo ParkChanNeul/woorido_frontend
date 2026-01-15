@@ -1,10 +1,10 @@
-# WOORIDO Information Architecture (IA) 명세서 v2.3
+# WOORIDO Information Architecture (IA) 명세서 v2.4
 
-> **Project:** WOORIDO - 커뮤니티 기반 계모임 플랫폼
-> **Version:** v2.3 - UI/UX Strategy Applied
-> **Last Updated:** 2026-01-14
+> **Project:** WOORIDO - 커뮤니티 기반 챌린지 플랫폼
+> **Version:** v2.4 - Design System 2.0 Integration
+> **Last Updated:** 2026-01-15
 > **Status:** Development Ready
-> **Based On:** PRODUCT_AGENDA v3.0 Final
+> **Design System:** [DESIGN_TOKENS.md](./SHARED/DESIGN_TOKENS.md) (v2.0)
 
 ---
 
@@ -83,6 +83,18 @@
 3. **Mobile-First**: 모든 화면은 모바일 우선 설계
 4. **Progressive Disclosure**: 복잡한 금융 정보는 단계적 노출
 5. **Demo Day 역산**: 8주 개발 일정에 맞춘 우선순위
+
+### 1.3 Design System Mapping (v2.0)
+
+> **Type-Safe Implementation**: 개발 시 아래 토큰 매핑을 엄수하세요.
+
+| UI Component | Token / Style | Usage Rule |
+|--------------|---------------|------------|
+| **Brand Identity** | `sys.color.primary` (#E9481E) | CTA, Active State, Logo |
+| **Financial Text** | `sys.typescale.financial` | 금액 표시 시 필수 (Tabular Nums) |
+| **Brix Badge** | `custom.brix.{level}` | 🍯(Gold), 🍇(Purple), 🍊(Mandarin) 등급 표시 |
+| **Status Badge** | `sys.color.status.{state}` | Active(Orange), Suspended(Red) |
+| **Card (Toss-like)** | `sys.shape.corner.large` (24px) | 메인 컨텐츠 컨테이너 |
 
 ---
 
@@ -214,7 +226,7 @@ WOORIDO
 │                    우리두 어카운트                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│   총 크레딧: ₩500,000                                        │
+│   총 크레딧: ₩500,000  (Financial Text 적용)                     │
 │   ├── 가용 크레딧: ₩300,000 (사용 가능)                       │
 │   └── 보증금 락: ₩200,000 (챌린지별 잠금)                     │
 │                                                             │
@@ -749,8 +761,8 @@ WOORIDO
 | 화면 | Type | Route | 설명 |
 |------|------|-------|------|
 | 멤버 리스트 | Tab | `/groups/:id/members` | 프로필, 가입일, 역할, 당도 |
-| 리더 뱃지 | Component | - | 👑 리더 표시 |
-| 당도 뱃지 | Component | - | 🍯🍇🍎🍊🍅🥒 + 점수 표시 |
+| 리더 뱃지 | Component | - | 👑 `sys.color.primary` 텍스트/아이콘 |
+| 당도 뱃지 | Component | - | `BrixBadge` (🍯 `honey`, 🍇 `grape`, 🍊 `mandarin`) |
 | 신고 | BottomSheet | `/groups/:id/members` | 악성 유저 신고 |
 
 **멤버 카드 와이어프레임:**

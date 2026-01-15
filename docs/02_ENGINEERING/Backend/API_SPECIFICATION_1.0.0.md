@@ -4810,15 +4810,15 @@ NO    Method    Endpoint                              설명
 
 구간      금액 범위                수수료율
 ──────    ─────────────────────    ────────
-소액      50,000원 이하            1%
-일반      50,001 ~ 500,000원       3%
-고액      500,001원 이상           1.5%
+소액      10,000원 미만            1%
+일반      10,000 ~ 200,000원       3%
+고액      200,000원 초과           1.5%
 
 ## D. 문서 정보
 문서명       WOORIDO API 명세서
 버전         v1.0.0
 작성일       2026-01-14
-총 API 수    88개 (Spring 79 + Django 9)
+총 API 수    91개 (Spring 82 + Django 9)
 기준 문서    PRODUCT_AGENDA.md
              POLICY_DEFINITION.md
              DB_Schema_1.0.0.md
@@ -4992,17 +4992,21 @@ ChallengeStatus (챌린지 상태)
 값              설명
 ──────────────  ─────────────────────────────────
 RECRUITING      모집 중 - 멤버 모집 기간
-IN_PROGRESS     진행 중 - 챌린지 진행 기간
-COMPLETED       완료 - 정상 종료
-DISSOLVED       해산 - 투표로 해산됨
+ACTIVE          진행 중 - 챌린지 진행 기간
+PAUSED          일시 정지 - 리더 요청 또는 시스템 정지
+CLOSED          종료 - 정상 종료 또는 해산
 
 ChallengeCategory (챌린지 카테고리)
 값              설명
 ──────────────  ─────────────────────────────────
-SAVING          저축 - 일반 저축 목표
-INVESTMENT      투자 - 투자 학습/실천
-EXPENSE_CUT     지출 절감 - 소비 줄이기
-CUSTOM          사용자 정의 - 기타 목표
+HOBBY           취미 - 취미 관련 목표
+STUDY           학습 - 학습/공부 목표
+EXERCISE        운동 - 운동/건강 목표
+SAVINGS         저축 - 일반 저축 목표
+TRAVEL          여행 - 여행 모임
+FOOD            음식 - 음식/맛집 탐방
+CULTURE         문화 - 문화/예술 활동
+OTHER           기타 - 분류되지 않은 목표
 
 TransactionType (거래 유형)
 값          설명
@@ -5031,13 +5035,13 @@ SUPPLIES    물품 - 소모품 구매
 OTHER       기타 - 분류되지 않은 지출
 
 VoteType (투표 유형)
-값              설명
-──────────────  ─────────────────────────────────
-GENERAL         일반 투표 - 안건 의결
-EXPENSE         지출 승인 - 지출 승인 투표
-LEADER_KICK     모임장 퇴장 - 모임장 강제 퇴장
-MEMBER_KICK     멤버 퇴장 - 일반 멤버 강제 퇴장
-DISSOLVE        해산 투표 - 챌린지 해산
+값                    설명
+────────────────────  ─────────────────────────────────
+EXPENSE             지출 승인 - 지출 승인 투표
+KICK                멤버 퇴장 - 일반 멤버 강제 퇴장
+LEADER_KICK         리더 퇴장 - 리더 강제 퇴장
+DISSOLVE            해산 투표 - 챌린지 해산
+MEETING_ATTENDANCE  모임 참석 - 정기 모임 참석 투표
 
 VoteStatus (투표 상태)
 값          설명
