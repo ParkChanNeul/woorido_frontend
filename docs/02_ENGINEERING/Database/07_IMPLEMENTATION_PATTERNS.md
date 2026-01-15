@@ -15,7 +15,7 @@
 **해결:** Optimistic Locking + Version Column
 
 ```sql
-ALTER TABLE challenges ADD version BIGINT DEFAULT 0 NOT NULL;
+ALTER TABLE challenges ADD version NUMBER(19) DEFAULT 0 NOT NULL;
 ```
 
 ```xml
@@ -190,19 +190,19 @@ public void reconcileCounts() {
 -- 챌린지 삭제 시 연관 데이터 처리
 CREATE TABLE challenge_members (
   ...
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE ledger_entries (
   ...
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE
 );
 
 -- 유저 삭제 시 연관 데이터 처리
 CREATE TABLE posts (
   ...
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL
 );
 ```
 

@@ -11,13 +11,13 @@
 
 ```sql
 CREATE TABLE admins (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  name VARCHAR(50) NOT NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 관리자 ID (UUID)
+  email VARCHAR2(100) UNIQUE NOT NULL,
+  password_hash VARCHAR2(255) NOT NULL,
+  name VARCHAR2(50) NOT NULL,
   
   -- 권한
-  role VARCHAR(20) DEFAULT 'ADMIN' CHECK (role IN ('SUPER_ADMIN', 'ADMIN', 'SUPPORT')),
+  role VARCHAR2(20) DEFAULT 'ADMIN' CHECK (role IN ('SUPER_ADMIN', 'ADMIN', 'SUPPORT')),
   
   -- 상태
   is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
@@ -47,20 +47,20 @@ CREATE INDEX idx_admins_role ON admins(role, is_active);
 
 ```sql
 CREATE TABLE fee_policies (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 정책 ID (UUID)
   
   -- 금액 범위
-  min_amount BIGINT NOT NULL,  -- 최소 금액 (이상)
-  max_amount BIGINT,           -- 최대 금액 (이하), NULL이면 상한 없음
+  min_amount NUMBER(19) NOT NULL,  -- 최소 금액 (이상)
+  max_amount NUMBER(19),           -- 최대 금액 (이하), NULL이면 상한 없음
   
   -- 수수료율 (소수점 4자리까지, 0.0300 = 3%)
-  rate DECIMAL(5,4) NOT NULL CHECK (rate >= 0 AND rate <= 1),
+  rate NUMBER(5,4) NOT NULL CHECK (rate >= 0 AND rate <= 1),
   
   -- 상태
   is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
   
   -- 감사
-  created_by UUID REFERENCES admins(id),
+  created_by VARCHAR2(36) REFERENCES admins(id),
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   
@@ -95,22 +95,22 @@ INSERT INTO fee_policies (id, min_amount, max_amount, rate, is_active) VALUES
 
 ```sql
 CREATE TABLE admin_logs (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 로그 ID (UUID)
   
   -- 관리자
-  admin_id UUID REFERENCES admins(id) ON DELETE SET NULL,
+  admin_id VARCHAR2(36) REFERENCES admins(id) ON DELETE SET NULL,
   
   -- 활동 정보
-  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_CHALLENGE 등
-  target_type VARCHAR(20),
-  target_id UUID,
+  action VARCHAR2(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_CHALLENGE 등
+  target_type VARCHAR2(20),
+  target_id VARCHAR2(36),
   
   -- 상세 내용 (JSON)
   details CLOB,
   
   -- 접속 정보
-  ip_address VARCHAR(50),
-  user_agent VARCHAR(500),
+  ip_address VARCHAR2(50),
+  user_agent VARCHAR2(500),
   
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL

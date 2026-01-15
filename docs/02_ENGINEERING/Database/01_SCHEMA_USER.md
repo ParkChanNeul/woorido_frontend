@@ -9,38 +9,38 @@
 
 ```sql
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  name VARCHAR(50) NOT NULL,
-  profile_image_url VARCHAR(500),
-  phone VARCHAR(20),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 사용자 ID (UUID)
+  email VARCHAR2(100) UNIQUE NOT NULL,
+  password_hash VARCHAR2(255) NOT NULL,
+  name VARCHAR2(50) NOT NULL,
+  profile_image_url VARCHAR2(500),
+  phone VARCHAR2(20),
   birth_date DATE,
   gender CHAR(1) CHECK (gender IN ('M', 'F', 'O')),
-  bio VARCHAR(500),
+  bio VARCHAR2(500),
 
   -- 인증 정보
   is_verified CHAR(1) DEFAULT 'N' CHECK (is_verified IN ('Y', 'N')),
-  verification_token VARCHAR(100),
+  verification_token VARCHAR2(100),
   verification_token_expires TIMESTAMP,
 
   -- 소셜 로그인
-  social_provider VARCHAR(20) CHECK (social_provider IN ('GOOGLE', 'KAKAO', 'NAVER')),
-  social_id VARCHAR(100),
+  social_provider VARCHAR2(20) CHECK (social_provider IN ('GOOGLE', 'KAKAO', 'NAVER')),
+  social_id VARCHAR2(100),
 
   -- 보안
-  password_reset_token VARCHAR(100),
+  password_reset_token VARCHAR2(100),
   password_reset_expires TIMESTAMP,
-  failed_login_attempts NUMBER DEFAULT 0,
+  failed_login_attempts NUMBER(10) DEFAULT 0,
   locked_until TIMESTAMP,
 
   -- P-030 ~ P-031: 계정 상태 관리 (신고/정지 시스템)
-  account_status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'BANNED')),
+  account_status VARCHAR2(20) DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'BANNED')),
   suspended_at TIMESTAMP,
   suspended_until TIMESTAMP,
-  suspension_reason VARCHAR(500),
-  warning_count NUMBER DEFAULT 0,
-  report_received_count NUMBER DEFAULT 0,
+  suspension_reason VARCHAR2(500),
+  warning_count NUMBER(10) DEFAULT 0,
+  report_received_count NUMBER(10) DEFAULT 0,
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -64,20 +64,20 @@ CREATE INDEX idx_users_suspended ON users(suspended_until);
 
 ```sql
 CREATE TABLE accounts (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 계좌 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 잔액 (동시성 제어 필수)
-  balance BIGINT DEFAULT 0 NOT NULL,
-  locked_balance BIGINT DEFAULT 0 NOT NULL,
+  balance NUMBER(19) DEFAULT 0 NOT NULL,
+  locked_balance NUMBER(19) DEFAULT 0 NOT NULL,
 
   -- 동시성 제어
-  version BIGINT DEFAULT 0 NOT NULL,  -- Optimistic Lock
+  version NUMBER(10) DEFAULT 0 NOT NULL,  -- Optimistic Lock
 
   -- 계좌 정보
-  bank_code VARCHAR(10),
-  account_number VARCHAR(50),
-  account_holder VARCHAR(50),
+  bank_code VARCHAR2(10),
+  account_number VARCHAR2(50),
+  account_holder VARCHAR2(50),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -105,30 +105,30 @@ CREATE INDEX idx_accounts_user ON accounts(user_id);
 
 ```sql
 CREATE TABLE account_transactions (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 거래 ID (UUID)
+  account_id VARCHAR2(36) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
 
   -- 트랜잭션 정보
-  type VARCHAR(20) NOT NULL CHECK (type IN ('CHARGE', 'WITHDRAW', 'LOCK', 'UNLOCK', 'TRANSFER', 'ENTRY_FEE', 'SUPPORT')),
-  amount BIGINT NOT NULL,
+  type VARCHAR2(20) NOT NULL CHECK (type IN ('CHARGE', 'WITHDRAW', 'LOCK', 'UNLOCK', 'TRANSFER', 'ENTRY_FEE', 'SUPPORT')),
+  amount NUMBER(19) NOT NULL,
 
   -- 잔액 스냅샷 (감사 추적)
-  balance_before BIGINT NOT NULL,
-  balance_after BIGINT NOT NULL,
-  locked_before BIGINT NOT NULL,
-  locked_after BIGINT NOT NULL,
+  balance_before NUMBER(19) NOT NULL,
+  balance_after NUMBER(19) NOT NULL,
+  locked_before NUMBER(19) NOT NULL,
+  locked_after NUMBER(19) NOT NULL,
 
   -- 중복 방지 (Idempotency)
-  idempotency_key VARCHAR(100) UNIQUE,
+  idempotency_key VARCHAR2(100) UNIQUE,
 
   -- 관련 엔티티
-  related_challenge_id UUID REFERENCES challenges(id),
-  related_user_id UUID REFERENCES users(id),
+  related_challenge_id VARCHAR2(36) REFERENCES challenges(id),
+  related_user_id VARCHAR2(36) REFERENCES users(id),
 
   -- 메타데이터
-  description VARCHAR(500),
-  payment_method VARCHAR(20),
-  payment_gateway_tx_id VARCHAR(100),
+  description VARCHAR2(500),
+  payment_method VARCHAR2(20),
+  payment_gateway_tx_id VARCHAR2(100),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -164,30 +164,30 @@ CREATE INDEX idx_acct_tx_type ON account_transactions(type, created_at DESC);
 
 ```sql
 CREATE TABLE user_scores (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 점수 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 납입 관련 원본 데이터 (Spring에서 집계)
-  total_attendance_count NUMBER DEFAULT 0,       -- 총 모임 참석 횟수
-  total_payment_months NUMBER DEFAULT 0,         -- 총 납입 개월수 (모든 챌린지 합산)
-  total_overdue_count NUMBER DEFAULT 0,          -- 총 연체 횟수
+  total_attendance_count NUMBER(10) DEFAULT 0,       -- 총 모임 참석 횟수
+  total_payment_months NUMBER(10) DEFAULT 0,         -- 총 납입 개월수 (모든 챌린지 합산)
+  total_overdue_count NUMBER(10) DEFAULT 0,          -- 총 연체 횟수
 
   -- 활동 관련 원본 데이터 (Spring에서 집계)
-  total_feed_count NUMBER DEFAULT 0,             -- 총 피드 작성 수
-  total_comment_count NUMBER DEFAULT 0,          -- 총 댓글 작성 수
-  total_like_count NUMBER DEFAULT 0,             -- 총 좋아요 수
-  total_leader_months NUMBER DEFAULT 0,          -- 총 리더 경험 개월수
-  total_report_received_count NUMBER DEFAULT 0,  -- 총 신고 당한 횟수
-  total_kick_count NUMBER DEFAULT 0,             -- 총 강퇴 당한 횟수
+  total_feed_count NUMBER(10) DEFAULT 0,             -- 총 피드 작성 수
+  total_comment_count NUMBER(10) DEFAULT 0,          -- 총 댓글 작성 수
+  total_like_count NUMBER(10) DEFAULT 0,             -- 총 좋아요 수
+  total_leader_months NUMBER(10) DEFAULT 0,          -- 총 리더 경험 개월수
+  total_report_received_count NUMBER(10) DEFAULT 0,  -- 총 신고 당한 횟수
+  total_kick_count NUMBER(10) DEFAULT 0,             -- 총 강퇴 당한 횟수
 
   -- Django 연산 결과
-  payment_score DECIMAL(10,4) DEFAULT 0,         -- 납입 점수 (원본)
-  activity_score DECIMAL(10,4) DEFAULT 0,        -- 활동 점수 (원본)
-  total_score DECIMAL(10,4) DEFAULT 36.5,        -- 최종 점수
+  payment_score NUMBER(10,4) DEFAULT 0,         -- 납입 점수 (원본)
+  activity_score NUMBER(10,4) DEFAULT 0,        -- 활동 점수 (원본)
+  total_score NUMBER(10,4) DEFAULT 36.5,        -- 최종 점수
 
   -- 갱신 정보
   calculated_at TIMESTAMP DEFAULT SYSTIMESTAMP,  -- 마지막 연산 시점
-  calculated_month VARCHAR(7),                   -- 연산 기준월 (YYYY-MM)
+  calculated_month VARCHAR2(7),                   -- 연산 기준월 (YYYY-MM)
 
   -- 제약조건
   CONSTRAINT uk_user_score UNIQUE (user_id),

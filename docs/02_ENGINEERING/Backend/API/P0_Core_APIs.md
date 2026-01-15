@@ -63,6 +63,13 @@
 | POST | /challenges/{id}/join | 챌린지 가입 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#030-챌린지-가입) |
 | DELETE | /challenges/{id}/leave | 챌린지 탈퇴 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#031-챌린지-탈퇴) |
 | GET | /challenges/{id}/members | 멤버 목록 조회 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#032-멤버-목록-조회) |
+| GET | /challenges/{id}/expenses | 지출 목록 조회 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#033-지출-목록-조회) |
+| GET | /challenges/{id}/expenses/{id} | 지출 상세 조회 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#034-지출-상세-조회) |
+| POST | /challenges/{id}/expenses | 지출 생성 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#035-지출-생성) |
+| POST | /challenges/{id}/expenses/{id}/vote | 지출 투표 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#036-지출-투표) |
+| POST | /challenges/{id}/expenses/{id}/payment | 지출 결제 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#037-지출-결제) |
+| DELETE | /challenges/{id}/expenses/{id} | 지출 삭제 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#038-지출-삭제) |
+| PUT | /challenges/{id}/expenses/{id} | 지출 수정 | [04_API_CHALLENGE.md](./04_API_CHALLENGE.md#039-지출-수정) |
 
 ---
 
@@ -75,6 +82,8 @@
 | POST | /challenges/{id}/meetings | 모임 생성 | [05_API_MEETING.md](./05_API_MEETING.md#037-모임-생성) |
 | POST | /meetings/{id}/attendance | 참석 의사 표시 | [05_API_MEETING.md](./05_API_MEETING.md#039-참석-의사-표시) |
 | POST | /meetings/{id}/complete | 모임 완료 처리 | [05_API_MEETING.md](./05_API_MEETING.md#040-모임-완료-처리) |
+| DELETE | /meetings/{id} | 모임 삭제 | [05_API_MEETING.md](./05_API_MEETING.md#041-모임-삭제) |
+| PUT | /meetings/{id} | 모임 수정 | [05_API_MEETING.md](./05_API_MEETING.md#042-모임-수정) |
 
 ---
 

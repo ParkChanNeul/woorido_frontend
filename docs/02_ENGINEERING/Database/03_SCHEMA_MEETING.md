@@ -13,21 +13,21 @@
 
 ```sql
 CREATE TABLE meetings (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 모임 ID (UUID)
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 모임 정보 (예상 비용 없음 - 지출은 건별 별도 투표)
-  title VARCHAR(200) NOT NULL,
-  description VARCHAR(2000),
+  title VARCHAR2(200) NOT NULL,
+  description VARCHAR2(2000),
   meeting_date TIMESTAMP NOT NULL,
-  location VARCHAR(500),
+  location VARCHAR2(500),
 
   -- 연결된 투표 (참석/불참 투표)
-  vote_id UUID REFERENCES votes(id),
+  vote_id VARCHAR2(36) REFERENCES votes(id),
 
   -- 상태 관리
-  status VARCHAR(20) DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
+  status VARCHAR2(20) DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -58,12 +58,12 @@ CREATE INDEX idx_meetings_status ON meetings(status, meeting_date);
 
 ```sql
 CREATE TABLE meeting_attendees (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  meeting_id UUID NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 참석자 ID (UUID)
+  meeting_id VARCHAR2(36) NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 참석 상태
-  status VARCHAR(20) DEFAULT 'REGISTERED' CHECK (status IN ('REGISTERED', 'ATTENDED', 'NO_SHOW')),
+  status VARCHAR2(20) DEFAULT 'REGISTERED' CHECK (status IN ('REGISTERED', 'ATTENDED', 'NO_SHOW')),
 
   -- 타임스탬프
   registered_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -90,35 +90,35 @@ CREATE INDEX idx_attendees_user ON meeting_attendees(user_id, registered_at DESC
 
 ```sql
 CREATE TABLE votes (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 투표 ID (UUID)
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 투표 유형 (P-037 ~ P-041: RULE_CHANGE 제거 - MVP 범위 외)
-  type VARCHAR(30) NOT NULL CHECK (type IN ('EXPENSE', 'KICK', 'MEETING_ATTENDANCE', 'LEADER_KICK', 'DISSOLVE')),
+  type VARCHAR2(30) NOT NULL CHECK (type IN ('EXPENSE', 'KICK', 'MEETING_ATTENDANCE', 'LEADER_KICK', 'DISSOLVE')),
 
   -- 투표 내용
-  title VARCHAR(200) NOT NULL,
-  description VARCHAR(2000),
-  amount BIGINT,  -- EXPENSE 타입인 경우 필수
-  target_user_id UUID REFERENCES users(id),  -- KICK 타입인 경우 필수
+  title VARCHAR2(200) NOT NULL,
+  description VARCHAR2(2000),
+  amount NUMBER(19),  -- EXPENSE 타입인 경우 필수
+  target_user_id VARCHAR2(36) REFERENCES users(id),  -- KICK 타입인 경우 필수
 
   -- 정기 모임 관련 (P-042: 모임 관련 지출)
-  meeting_id UUID REFERENCES meetings(id),  -- EXPENSE일 때 모임 관련 지출인 경우: 참석자만 투표 가능
-  meeting_title VARCHAR(200),  -- MEETING_ATTENDANCE일 때 모임 제목
+  meeting_id VARCHAR2(36) REFERENCES meetings(id),  -- EXPENSE일 때 모임 관련 지출인 경우: 참석자만 투표 가능
+  meeting_title VARCHAR2(200),  -- MEETING_ATTENDANCE일 때 모임 제목
   meeting_date TIMESTAMP,  -- MEETING_ATTENDANCE일 때 모임 날짜
-  meeting_location VARCHAR(500),  -- MEETING_ATTENDANCE일 때 모임 장소
+  meeting_location VARCHAR2(500),  -- MEETING_ATTENDANCE일 때 모임 장소
 
   -- 투표 설정
-  required_approval_count NUMBER NOT NULL,
+  required_approval_count NUMBER(10) NOT NULL,
 
   -- 투표 상태
-  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')),
+  status VARCHAR2(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')),
   approved_at TIMESTAMP,
 
   -- 장부 연동 (원자성 보장, EXPENSE 타입만 사용)
-  ledger_entry_id UUID REFERENCES ledger_entries(id),  -- 투표-장부 연결
-  ledger_status VARCHAR(20) DEFAULT 'PENDING' CHECK (ledger_status IN ('PENDING', 'RECORDED', 'FAILED')),
+  ledger_entry_id VARCHAR2(36) REFERENCES ledger_entries(id),  -- 투표-장부 연결
+  ledger_status VARCHAR2(20) DEFAULT 'PENDING' CHECK (ledger_status IN ('PENDING', 'RECORDED', 'FAILED')),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -162,13 +162,13 @@ CREATE INDEX idx_votes_meeting ON votes(meeting_id);  -- 모임 관련 지출 �
 
 ```sql
 CREATE TABLE vote_records (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  vote_id UUID NOT NULL REFERENCES votes(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 기록 ID (UUID)
+  vote_id VARCHAR2(36) NOT NULL REFERENCES votes(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 투표 선택 (P-039: ATTEND/ABSENT 추가 - 정기 모임 참석 투표용)
-  choice VARCHAR(20) NOT NULL CHECK (choice IN ('APPROVE', 'REJECT', 'ATTEND', 'ABSENT')),
-  comment VARCHAR(500),
+  choice VARCHAR2(20) NOT NULL CHECK (choice IN ('APPROVE', 'REJECT', 'ATTEND', 'ABSENT')),
+  comment VARCHAR2(500),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,

@@ -9,12 +9,12 @@
 
 ```sql
 CREATE TABLE sessions (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 세션 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 세션 정보
-  return_url VARCHAR(500) NOT NULL,
-  session_type VARCHAR(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
+  return_url VARCHAR2(500) NOT NULL,
+  session_type VARCHAR2(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
 
   -- 상태 관리
   is_used CHAR(1) DEFAULT 'N' CHECK (is_used IN ('Y', 'N')),
@@ -44,16 +44,16 @@ CREATE INDEX idx_sessions_expires ON sessions(expires_at);  -- 만료 세션 정
 
 ```sql
 CREATE TABLE notifications (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 알림 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 알림 내용
-  type VARCHAR(50) NOT NULL,
-  title VARCHAR(200) NOT NULL,
-  content VARCHAR(500) NOT NULL,
+  type VARCHAR2(50) NOT NULL,
+  title VARCHAR2(200) NOT NULL,
+  content VARCHAR2(500) NOT NULL,
 
   -- 링크
-  link_url VARCHAR(500),
+  link_url VARCHAR2(500),
 
   -- 상태
   is_read CHAR(1) DEFAULT 'N' CHECK (is_read IN ('Y', 'N')),
@@ -86,23 +86,23 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read, created
 
 ```sql
 CREATE TABLE reports (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  reporter_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  reported_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 신고 ID (UUID)
+  reporter_user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reported_user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 신고 대상 (다형성 참조)
-  reported_entity_type VARCHAR(20) NOT NULL CHECK (reported_entity_type IN ('USER', 'POST', 'COMMENT')),
-  reported_entity_id UUID,  -- POST/COMMENT ID (USER 신고 시 NULL)
+  reported_entity_type VARCHAR2(20) NOT NULL CHECK (reported_entity_type IN ('USER', 'POST', 'COMMENT')),
+  reported_entity_id VARCHAR2(36),  -- POST/COMMENT ID (USER 신고 시 NULL)
 
   -- 신고 내용
-  reason_category VARCHAR(50) NOT NULL,  -- SPAM, ABUSE, FRAUD, INAPPROPRIATE 등
-  reason_detail VARCHAR(500),
+  reason_category VARCHAR2(50) NOT NULL,  -- SPAM, ABUSE, FRAUD, INAPPROPRIATE 등
+  reason_detail VARCHAR2(500),
 
   -- 처리 상태
-  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED', 'FALSE_REPORT')),
+  status VARCHAR2(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED', 'FALSE_REPORT')),
   reviewed_at TIMESTAMP,
-  reviewed_by UUID REFERENCES users(id),
-  admin_note VARCHAR(500),
+  reviewed_by VARCHAR2(36) REFERENCES users(id),
+  admin_note VARCHAR2(500),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,

@@ -121,10 +121,10 @@ public boolean isNewUser(User user) {
 **돈 관련 (Option A - DB Session):**
 ```sql
 CREATE TABLE sessions (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  return_url VARCHAR(500) NOT NULL,
-  session_type VARCHAR(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 세션 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id),
+  return_url VARCHAR2(500) NOT NULL,
+  session_type VARCHAR2(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
   created_at TIMESTAMP NOT NULL DEFAULT SYSTIMESTAMP,
   expires_at TIMESTAMP NOT NULL,
   is_used CHAR(1) DEFAULT 'N' CHECK (is_used IN ('Y', 'N'))
@@ -161,7 +161,7 @@ navigate(savedUrl || '/feed');
 
 ```sql
 ALTER TABLE challenges ADD deleted_at TIMESTAMP;
-ALTER TABLE challenges ADD dissolution_reason VARCHAR(500);
+ALTER TABLE challenges ADD dissolution_reason VARCHAR2(500);
 ```
 
 **API 동작:**
@@ -202,7 +202,7 @@ GET /api/challenges/my-challenges?includeDeleted=true
 **해결:** Optimistic Locking + Version Column
 
 ```sql
-ALTER TABLE challenges ADD version BIGINT DEFAULT 0 NOT NULL;
+ALTER TABLE challenges ADD version NUMBER(19) DEFAULT 0 NOT NULL;
 ```
 
 ```xml
@@ -369,19 +369,19 @@ public void reconcileCounts() {
 -- 챌린지 삭제 시 연관 데이터 처리
 CREATE TABLE challenge_members (
   ...
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE ledger_entries (
   ...
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE
 );
 
 -- 유저 삭제 시 연관 데이터 처리
 CREATE TABLE posts (
   ...
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL
 );
 ```
 
@@ -393,38 +393,38 @@ CREATE TABLE posts (
 
 ```sql
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  name VARCHAR(50) NOT NULL,
-  profile_image_url VARCHAR(500),
-  phone VARCHAR(20),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 사용자 ID (UUID)
+  email VARCHAR2(100) UNIQUE NOT NULL,
+  password_hash VARCHAR2(255) NOT NULL,
+  name VARCHAR2(50) NOT NULL,
+  profile_image_url VARCHAR2(500),
+  phone VARCHAR2(20),
   birth_date DATE,
   gender CHAR(1) CHECK (gender IN ('M', 'F', 'O')),
-  bio VARCHAR(500),
+  bio VARCHAR2(500),
 
   -- 인증 정보
   is_verified CHAR(1) DEFAULT 'N' CHECK (is_verified IN ('Y', 'N')),
-  verification_token VARCHAR(100),
+  verification_token VARCHAR2(100),
   verification_token_expires TIMESTAMP,
 
   -- 소셜 로그인
-  social_provider VARCHAR(20) CHECK (social_provider IN ('GOOGLE', 'KAKAO', 'NAVER')),
-  social_id VARCHAR(100),
+  social_provider VARCHAR2(20) CHECK (social_provider IN ('GOOGLE', 'KAKAO', 'NAVER')),
+  social_id VARCHAR2(100),
 
   -- 보안
-  password_reset_token VARCHAR(100),
+  password_reset_token VARCHAR2(100),
   password_reset_expires TIMESTAMP,
-  failed_login_attempts NUMBER DEFAULT 0,
+  failed_login_attempts NUMBER(10) DEFAULT 0,
   locked_until TIMESTAMP,
 
   -- P-030 ~ P-031: 계정 상태 관리 (신고/정지 시스템)
-  account_status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'BANNED')),
+  account_status VARCHAR2(20) DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'BANNED')),
   suspended_at TIMESTAMP,
   suspended_until TIMESTAMP,
-  suspension_reason VARCHAR(500),
-  warning_count NUMBER DEFAULT 0,
-  report_received_count NUMBER DEFAULT 0,
+  suspension_reason VARCHAR2(500),
+  warning_count NUMBER(10) DEFAULT 0,
+  report_received_count NUMBER(10) DEFAULT 0,
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -446,20 +446,20 @@ CREATE INDEX idx_users_suspended ON users(suspended_until);
 
 ```sql
 CREATE TABLE accounts (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 계좌 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 잔액 (동시성 제어 필수)
-  balance BIGINT DEFAULT 0 NOT NULL,
-  locked_balance BIGINT DEFAULT 0 NOT NULL,
+  balance NUMBER(19) DEFAULT 0 NOT NULL,
+  locked_balance NUMBER(19) DEFAULT 0 NOT NULL,
 
   -- 동시성 제어
-  version BIGINT DEFAULT 0 NOT NULL,  -- Optimistic Lock
+  version NUMBER(19) DEFAULT 0 NOT NULL,  -- Optimistic Lock
 
   -- 계좌 정보
-  bank_code VARCHAR(10),
-  account_number VARCHAR(50),
-  account_holder VARCHAR(50),
+  bank_code VARCHAR2(10),
+  account_number VARCHAR2(50),
+  account_holder VARCHAR2(50),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -479,30 +479,30 @@ CREATE INDEX idx_accounts_user ON accounts(user_id);
 
 ```sql
 CREATE TABLE account_transactions (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 거래 ID (UUID)
+  account_id VARCHAR2(36) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
 
   -- 트랜잭션 정보
-  type VARCHAR(20) NOT NULL CHECK (type IN ('CHARGE', 'WITHDRAW', 'LOCK', 'UNLOCK', 'TRANSFER', 'ENTRY_FEE', 'SUPPORT')),  -- ENTRY_FEE, SUPPORT 추가
-  amount BIGINT NOT NULL,
+  type VARCHAR2(20) NOT NULL CHECK (type IN ('CHARGE', 'WITHDRAW', 'LOCK', 'UNLOCK', 'TRANSFER', 'ENTRY_FEE', 'SUPPORT')),  -- ENTRY_FEE, SUPPORT 추가
+  amount NUMBER(19) NOT NULL,
 
   -- 잔액 스냅샷 (감사 추적)
-  balance_before BIGINT NOT NULL,
-  balance_after BIGINT NOT NULL,
-  locked_before BIGINT NOT NULL,
-  locked_after BIGINT NOT NULL,
+  balance_before NUMBER(19) NOT NULL,
+  balance_after NUMBER(19) NOT NULL,
+  locked_before NUMBER(19) NOT NULL,
+  locked_after NUMBER(19) NOT NULL,
 
   -- 중복 방지 (Idempotency)
-  idempotency_key VARCHAR(100) UNIQUE,  -- 중복 요청 검증
+  idempotency_key VARCHAR2(100) UNIQUE,  -- 중복 요청 검증
 
   -- 관련 엔티티
-  related_challenge_id UUID REFERENCES challenges(id),
-  related_user_id UUID REFERENCES users(id),
+  related_challenge_id VARCHAR2(36) REFERENCES challenges(id),
+  related_user_id VARCHAR2(36) REFERENCES users(id),
 
   -- 메타데이터
-  description VARCHAR(500),
-  payment_method VARCHAR(20),
-  payment_gateway_tx_id VARCHAR(100),
+  description VARCHAR2(500),
+  payment_method VARCHAR2(20),
+  payment_gateway_tx_id VARCHAR2(100),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -525,30 +525,30 @@ CREATE INDEX idx_acct_tx_type ON account_transactions(type, created_at DESC);
 
 ```sql
 CREATE TABLE user_scores (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 점수 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 납입 관련 원본 데이터 (Spring에서 집계)
-  total_attendance_count NUMBER DEFAULT 0,       -- 총 모임 참석 횟수
-  total_payment_months NUMBER DEFAULT 0,         -- 총 납입 개월수 (모든 챌린지 합산)
-  total_overdue_count NUMBER DEFAULT 0,          -- 총 연체 횟수
+  total_attendance_count NUMBER(10) DEFAULT 0,       -- 총 모임 참석 횟수
+  total_payment_months NUMBER(10) DEFAULT 0,         -- 총 납입 개월수 (모든 챌린지 합산)
+  total_overdue_count NUMBER(10) DEFAULT 0,          -- 총 연체 횟수
 
   -- 활동 관련 원본 데이터 (Spring에서 집계)
-  total_feed_count NUMBER DEFAULT 0,             -- 총 피드 작성 수
-  total_comment_count NUMBER DEFAULT 0,          -- 총 댓글 작성 수
-  total_like_count NUMBER DEFAULT 0,             -- 총 좋아요 수
-  total_leader_months NUMBER DEFAULT 0,          -- 총 리더 경험 개월수
-  total_report_received_count NUMBER DEFAULT 0,  -- 총 신고 당한 횟수
-  total_kick_count NUMBER DEFAULT 0,             -- 총 강퇴 당한 횟수
+  total_feed_count NUMBER(10) DEFAULT 0,             -- 총 피드 작성 수
+  total_comment_count NUMBER(10) DEFAULT 0,          -- 총 댓글 작성 수
+  total_like_count NUMBER(10) DEFAULT 0,             -- 총 좋아요 수
+  total_leader_months NUMBER(10) DEFAULT 0,          -- 총 리더 경험 개월수
+  total_report_received_count NUMBER(10) DEFAULT 0,  -- 총 신고 당한 횟수
+  total_kick_count NUMBER(10) DEFAULT 0,             -- 총 강퇴 당한 횟수
 
   -- Django 연산 결과
-  payment_score DECIMAL(10,4) DEFAULT 0,         -- 납입 점수 (원본)
-  activity_score DECIMAL(10,4) DEFAULT 0,        -- 활동 점수 (원본)
-  total_score DECIMAL(10,4) DEFAULT 36.5,        -- 최종 점수 (36.5 + 납입×0.7 + 활동×0.15)
+  payment_score NUMBER(10,4) DEFAULT 0,         -- 납입 점수 (원본)
+  activity_score NUMBER(10,4) DEFAULT 0,        -- 활동 점수 (원본)
+  total_score NUMBER(10,4) DEFAULT 36.5,        -- 최종 점수
 
   -- 갱신 정보
   calculated_at TIMESTAMP DEFAULT SYSTIMESTAMP,  -- 마지막 연산 시점
-  calculated_month VARCHAR(7),                   -- 연산 기준월 (YYYY-MM)
+  calculated_month VARCHAR2(7),                   -- 연산 기준월 (YYYY-MM)
 
   -- 제약조건
   CONSTRAINT uk_user_score UNIQUE (user_id),
@@ -579,32 +579,32 @@ CREATE INDEX idx_user_scores_month ON user_scores(calculated_month);
 
 ```sql
 CREATE TABLE challenges (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  name VARCHAR(100) NOT NULL,
-  description VARCHAR(2000),
-  category VARCHAR(50) NOT NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 챌린지 ID (UUID)
+  name VARCHAR2(100) NOT NULL,
+  description VARCHAR2(2000),
+  category VARCHAR2(50) NOT NULL,
 
-  -- 리더 (creator_id → leaderId 용어 매핑)
-  creator_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  -- 리더 (creator_id -> leaderId 용어 매핑)
+  creator_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 
   -- 리더 활동 추적
   leader_last_active_at TIMESTAMP DEFAULT SYSTIMESTAMP,  -- 리더 최근 활동일
   leader_benefit_rate NUMBER(5,4) DEFAULT 0,  -- 리더 혜택 비율 (0.0500 = 5%)
 
   -- 멤버 관리 (동시성 제어) (멤버 = 리더 + 팔로워)
-  current_members NUMBER DEFAULT 1 NOT NULL,  -- → currentMembers (전체 인원)
-  min_members NUMBER DEFAULT 3 NOT NULL,  -- P-046: 최소 인원 (기본 3명)
-  max_members NUMBER NOT NULL,  -- → maxMembers
-  version BIGINT DEFAULT 0 NOT NULL,  -- Optimistic Lock
+  current_members NUMBER(10) DEFAULT 1 NOT NULL,  -- -> currentMembers (전체 인원)
+  min_members NUMBER(10) DEFAULT 3 NOT NULL,  -- P-046: 최소 인원 (기본 3명)
+  max_members NUMBER(10) NOT NULL,  -- -> maxMembers
+  version NUMBER(19) DEFAULT 0 NOT NULL,  -- Optimistic Lock
 
-  -- P-046 ~ P-050: 챌린지 상태 (모집 중 → 진행 중 자동 전환)
-  status VARCHAR(20) DEFAULT 'RECRUITING' CHECK (status IN ('RECRUITING', 'ACTIVE', 'PAUSED', 'CLOSED')),
+  -- P-046 ~ P-050: 챌린지 상태 (모집 중 -> 진행 중 자동 전환)
+  status VARCHAR2(20) DEFAULT 'RECRUITING' CHECK (status IN ('RECRUITING', 'ACTIVE', 'PAUSED', 'CLOSED')),
   activated_at TIMESTAMP,  -- ACTIVE 상태 전환 시점
 
   -- 재무 정보 (용어 매핑)
-  balance BIGINT DEFAULT 0 NOT NULL,  -- → challengeAccountBalance (챌린지 금고 잔액)
-  monthly_fee BIGINT NOT NULL,  -- → supportAmount (월 서포트)
-  deposit_amount BIGINT NOT NULL,  -- → depositLock (보증금 락)
+  balance NUMBER(19) DEFAULT 0 NOT NULL,  -- -> challengeAccountBalance (챌린지 금고 잔액)
+  monthly_fee NUMBER(19) NOT NULL,  -- -> supportAmount (월 서포트)
+  deposit_amount NUMBER(19) NOT NULL,  -- -> depositLock (보증금 락)
 
   -- 챌린지 설정
   is_public CHAR(1) DEFAULT 'Y' CHECK (is_public IN ('Y', 'N')),
@@ -614,12 +614,12 @@ CREATE TABLE challenges (
   verified_at TIMESTAMP,  -- 완주 인증 시점
 
   -- 이미지
-  thumbnail_url VARCHAR(500),
-  banner_url VARCHAR(500),
+  thumbnail_url VARCHAR2(500),
+  banner_url VARCHAR2(500),
 
   -- Soft Delete
   deleted_at TIMESTAMP,
-  dissolution_reason VARCHAR(500),
+  dissolution_reason VARCHAR2(500),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -659,34 +659,34 @@ CREATE INDEX idx_challenges_inactive_leader ON challenges(leader_last_active_at)
 
 ```sql
 CREATE TABLE challenge_members (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 멤버십 ID (UUID)
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 
-  -- 역할 (MEMBER → FOLLOWER 용어 변경)
-  role VARCHAR(20) DEFAULT 'FOLLOWER' CHECK (role IN ('LEADER', 'FOLLOWER')),
+  -- 역할 (MEMBER -> FOLLOWER 용어 변경)
+  role VARCHAR2(20) DEFAULT 'FOLLOWER' CHECK (role IN ('LEADER', 'FOLLOWER')),
 
   -- 보증금 상태
-  deposit_status VARCHAR(20) DEFAULT 'NONE' CHECK (deposit_status IN ('NONE', 'LOCKED', 'USED', 'UNLOCKED')),
+  deposit_status VARCHAR2(20) DEFAULT 'NONE' CHECK (deposit_status IN ('NONE', 'LOCKED', 'USED', 'UNLOCKED')),
   deposit_locked_at TIMESTAMP,  -- 보증금 락 시점
   deposit_unlocked_at TIMESTAMP,  -- 보증금 락 해제 시점
 
   -- 입회비 정보
-  entry_fee_amount BIGINT DEFAULT 0,  -- 입회비 금액
+  entry_fee_amount NUMBER(19) DEFAULT 0,  -- 입회비 금액
   entry_fee_paid_at TIMESTAMP,  -- 입회비 납부일
 
   -- P-018 ~ P-021: 권한 박탈 시스템 (보증금 충당 시)
-  privilege_status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (privilege_status IN ('ACTIVE', 'REVOKED')),
+  privilege_status VARCHAR2(20) DEFAULT 'ACTIVE' CHECK (privilege_status IN ('ACTIVE', 'REVOKED')),
   privilege_revoked_at TIMESTAMP,  -- 권한 박탈 시점 (자동 탈퇴 60일 카운트 기준)
 
   -- 서포트 납부 상태
   last_support_paid_at TIMESTAMP,  -- 마지막 서포트 납입일
-  total_support_paid BIGINT DEFAULT 0 NOT NULL,  -- 총 서포트 납입액
+  total_support_paid NUMBER(19) DEFAULT 0 NOT NULL,  -- 총 서포트 납입액
 
   -- 타임스탬프
   joined_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   left_at TIMESTAMP,
-  leave_reason VARCHAR(50),  -- 탈퇴 사유 (NORMAL, KICKED, AUTO_LEAVE, CHALLENGE_CLOSED)
+  leave_reason VARCHAR2(50),  -- 탈퇴 사유 (NORMAL, KICKED, AUTO_LEAVE, CHALLENGE_CLOSED)
 
   -- 제약조건
   CONSTRAINT uk_challenge_user UNIQUE (challenge_id, user_id)
@@ -714,32 +714,32 @@ CREATE INDEX idx_challenge_members_revoked ON challenge_members(privilege_status
 
 ```sql
 CREATE TABLE ledger_entries (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 장부 ID (UUID)
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
 
   -- 거래 정보
-  type VARCHAR(20) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE', 'FEE_COLLECTION', 'DEPOSIT_LOCK', 'DEPOSIT_UNLOCK')),
-  amount BIGINT NOT NULL,
-  description VARCHAR(500) NOT NULL,
+  type VARCHAR2(20) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE', 'FEE_COLLECTION', 'DEPOSIT_LOCK', 'DEPOSIT_UNLOCK')),
+  amount NUMBER(19) NOT NULL,
+  description VARCHAR2(500) NOT NULL,
 
   -- 결재 정보
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
-  approved_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  approved_by VARCHAR2(36) REFERENCES users(id) ON DELETE SET NULL,
   approved_at TIMESTAMP,
 
   -- 증빙 자료
-  receipt_url VARCHAR(500),
+  receipt_url VARCHAR2(500),
 
   -- P-029: 사용처 자동 기록 (PG 영수증 파싱, 토스페이/카카오페이 등 확장 가능)
-  merchant_name VARCHAR(100),       -- 상호명 (PG에서 자동 파싱, 수동 입력 불가)
-  merchant_category VARCHAR(50),    -- 업종 (식당, 카페, 숙박 등)
-  pg_provider VARCHAR(30),          -- PG사 (TOSSPAY, KAKAOPAY, NAVERPAY 등)
-  pg_approval_number VARCHAR(50),   -- PG 승인번호
+  merchant_name VARCHAR2(100),       -- 상호명 (PG에서 자동 파싱, 수동 입력 불가)
+  merchant_category VARCHAR2(50),    -- 업종 (식당, 카페, 숙박 등)
+  pg_provider VARCHAR2(30),          -- PG사 (TOSSPAY, KAKAOPAY, NAVERPAY 등)
+  pg_approval_number VARCHAR2(50),   -- PG 승인번호
 
   -- 리더 메모 (수정 가능)
-  memo VARCHAR(500),
+  memo VARCHAR2(500),
   memo_updated_at TIMESTAMP,
-  memo_updated_by UUID REFERENCES users(id),
+  memo_updated_by VARCHAR2(36) REFERENCES users(id),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -770,21 +770,21 @@ CREATE INDEX idx_ledger_merchant ON ledger_entries(merchant_name);  -- 사용처
 
 ```sql
 CREATE TABLE meetings (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 모임 ID (UUID)
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 모임 정보 (예상 비용 없음 - 지출은 건별 별도 투표)
-  title VARCHAR(200) NOT NULL,
-  description VARCHAR(2000),
+  title VARCHAR2(200) NOT NULL,
+  description VARCHAR2(2000),
   meeting_date TIMESTAMP NOT NULL,
-  location VARCHAR(500),
+  location VARCHAR2(500),
 
   -- 연결된 투표 (참석/불참 투표)
-  vote_id UUID REFERENCES votes(id),
+  vote_id VARCHAR2(36) REFERENCES votes(id),
 
   -- 상태 관리
-  status VARCHAR(20) DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
+  status VARCHAR2(20) DEFAULT 'PLANNED' CHECK (status IN ('PLANNED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -805,12 +805,12 @@ CREATE INDEX idx_meetings_status ON meetings(status, meeting_date);
 
 ```sql
 CREATE TABLE meeting_attendees (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  meeting_id UUID NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 참석자 ID (UUID)
+  meeting_id VARCHAR2(36) NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 참석 상태
-  status VARCHAR(20) DEFAULT 'REGISTERED' CHECK (status IN ('REGISTERED', 'ATTENDED', 'NO_SHOW')),
+  status VARCHAR2(20) DEFAULT 'REGISTERED' CHECK (status IN ('REGISTERED', 'ATTENDED', 'NO_SHOW')),
 
   -- 타임스탬프
   registered_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -828,35 +828,35 @@ CREATE INDEX idx_attendees_user ON meeting_attendees(user_id, registered_at DESC
 
 ```sql
 CREATE TABLE votes (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 투표 ID (UUID)
+  challenge_id VARCHAR2(36) NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 투표 유형 (P-037 ~ P-041: RULE_CHANGE 제거 - MVP 범위 외)
-  type VARCHAR(30) NOT NULL CHECK (type IN ('EXPENSE', 'KICK', 'MEETING_ATTENDANCE', 'LEADER_KICK', 'DISSOLVE')),
+  type VARCHAR2(30) NOT NULL CHECK (type IN ('EXPENSE', 'KICK', 'MEETING_ATTENDANCE', 'LEADER_KICK', 'DISSOLVE')),
 
   -- 투표 내용
-  title VARCHAR(200) NOT NULL,
-  description VARCHAR(2000),
-  amount BIGINT,  -- EXPENSE 타입인 경우 필수
-  target_user_id UUID REFERENCES users(id),  -- KICK 타입인 경우 필수
+  title VARCHAR2(200) NOT NULL,
+  description VARCHAR2(2000),
+  amount NUMBER(19),  -- EXPENSE 타입인 경우 필수
+  target_user_id VARCHAR2(36) REFERENCES users(id),  -- KICK 타입인 경우 필수
 
   -- 정기 모임 관련 (P-042: 모임 관련 지출)
-  meeting_id UUID REFERENCES meetings(id),  -- EXPENSE일 때 모임 관련 지출인 경우: 참석자만 투표 가능
-  meeting_title VARCHAR(200),  -- MEETING_ATTENDANCE일 때 모임 제목
+  meeting_id VARCHAR2(36) REFERENCES meetings(id),  -- EXPENSE일 때 모임 관련 지출인 경우: 참석자만 투표 가능
+  meeting_title VARCHAR2(200),  -- MEETING_ATTENDANCE일 때 모임 제목
   meeting_date TIMESTAMP,  -- MEETING_ATTENDANCE일 때 모임 날짜
-  meeting_location VARCHAR(500),  -- MEETING_ATTENDANCE일 때 모임 장소
+  meeting_location VARCHAR2(500),  -- MEETING_ATTENDANCE일 때 모임 장소
 
   -- 투표 설정
-  required_approval_count NUMBER NOT NULL,
+  required_approval_count NUMBER(10) NOT NULL,
 
   -- 투표 상태
-  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')),
+  status VARCHAR2(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED')),
   approved_at TIMESTAMP,
 
   -- 장부 연동 (원자성 보장, EXPENSE 타입만 사용)
-  ledger_entry_id UUID REFERENCES ledger_entries(id),  -- 투표-장부 연결
-  ledger_status VARCHAR(20) DEFAULT 'PENDING' CHECK (ledger_status IN ('PENDING', 'RECORDED', 'FAILED')),
+  ledger_entry_id VARCHAR2(36) REFERENCES ledger_entries(id),  -- 투표-장부 연결
+  ledger_status VARCHAR2(20) DEFAULT 'PENDING' CHECK (ledger_status IN ('PENDING', 'RECORDED', 'FAILED')),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -889,13 +889,13 @@ CREATE INDEX idx_votes_meeting ON votes(meeting_id);  -- 모임 관련 지출 �
 
 ```sql
 CREATE TABLE vote_records (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  vote_id UUID NOT NULL REFERENCES votes(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 기록 ID (UUID)
+  vote_id VARCHAR2(36) NOT NULL REFERENCES votes(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 투표 선택 (P-039: ATTEND/ABSENT 추가 - 정기 모임 참석 투표용)
-  choice VARCHAR(20) NOT NULL CHECK (choice IN ('APPROVE', 'REJECT', 'ATTEND', 'ABSENT')),
-  comment VARCHAR(500),
+  choice VARCHAR2(20) NOT NULL CHECK (choice IN ('APPROVE', 'REJECT', 'ATTEND', 'ABSENT')),
+  comment VARCHAR2(500),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -912,16 +912,16 @@ CREATE INDEX idx_vote_records_user ON vote_records(user_id, created_at DESC);
 
 ```sql
 CREATE TABLE posts (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  challenge_id UUID REFERENCES challenges(id) ON DELETE CASCADE,  -- NULL이면 공개 피드
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 게시글 ID (UUID)
+  challenge_id VARCHAR2(36) REFERENCES challenges(id) ON DELETE CASCADE,  -- NULL이면 공개 피드
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 내용
-  content VARCHAR(4000) NOT NULL,
+  content VARCHAR2(4000) NOT NULL,
 
   -- 비정규화 카운터 (Atomic Operations)
-  like_count NUMBER DEFAULT 0 NOT NULL,
-  comment_count NUMBER DEFAULT 0 NOT NULL,
+  like_count NUMBER(10) DEFAULT 0 NOT NULL,
+  comment_count NUMBER(10) DEFAULT 0 NOT NULL,
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -941,10 +941,10 @@ CREATE INDEX idx_posts_created ON posts(created_at DESC);  -- 전체 피드용
 
 ```sql
 CREATE TABLE post_images (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  image_url VARCHAR(500) NOT NULL,
-  display_order NUMBER NOT NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 이미지 ID (UUID)
+  post_id VARCHAR2(36) NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  image_url VARCHAR2(500) NOT NULL,
+  display_order NUMBER(10) NOT NULL,
 
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
 
@@ -958,9 +958,9 @@ CREATE INDEX idx_post_images_post ON post_images(post_id, display_order);
 
 ```sql
 CREATE TABLE post_likes (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 좋아요 ID (UUID)
+  post_id VARCHAR2(36) NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
 
@@ -975,12 +975,12 @@ CREATE INDEX idx_likes_user ON post_likes(user_id, created_at DESC);
 
 ```sql
 CREATE TABLE comments (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 댓글 ID (UUID)
+  post_id VARCHAR2(36) NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  created_by VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE SET NULL,
 
   -- 내용
-  content VARCHAR(1000) NOT NULL,
+  content VARCHAR2(1000) NOT NULL,
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -995,12 +995,12 @@ CREATE INDEX idx_comments_creator ON comments(created_by, created_at DESC);
 
 ```sql
 CREATE TABLE sessions (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 세션 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 세션 정보
-  return_url VARCHAR(500) NOT NULL,
-  session_type VARCHAR(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
+  return_url VARCHAR2(500) NOT NULL,
+  session_type VARCHAR2(20) NOT NULL CHECK (session_type IN ('CHARGE', 'JOIN', 'WITHDRAW')),
 
   -- 상태 관리
   is_used CHAR(1) DEFAULT 'N' CHECK (is_used IN ('Y', 'N')),
@@ -1021,16 +1021,16 @@ CREATE INDEX idx_sessions_expires ON sessions(expires_at);  -- 만료 세션 정
 
 ```sql
 CREATE TABLE notifications (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 알림 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 알림 내용
-  type VARCHAR(50) NOT NULL,
-  title VARCHAR(200) NOT NULL,
-  content VARCHAR(500) NOT NULL,
+  type VARCHAR2(50) NOT NULL,
+  title VARCHAR2(200) NOT NULL,
+  content VARCHAR2(500) NOT NULL,
 
   -- 링크
-  link_url VARCHAR(500),
+  link_url VARCHAR2(500),
 
   -- 상태
   is_read CHAR(1) DEFAULT 'N' CHECK (is_read IN ('Y', 'N')),
@@ -1052,23 +1052,23 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read, created
 
 ```sql
 CREATE TABLE reports (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  reporter_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  reported_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 신고 ID (UUID)
+  reporter_user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reported_user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   -- 신고 대상 (다형성 참조)
-  reported_entity_type VARCHAR(20) NOT NULL CHECK (reported_entity_type IN ('USER', 'POST', 'COMMENT')),
-  reported_entity_id UUID,  -- POST/COMMENT ID (USER 신고 시 NULL)
+  reported_entity_type VARCHAR2(20) NOT NULL CHECK (reported_entity_type IN ('USER', 'POST', 'COMMENT')),
+  reported_entity_id VARCHAR2(36),  -- POST/COMMENT ID (USER 신고 시 NULL)
 
   -- 신고 내용
-  reason_category VARCHAR(50) NOT NULL,  -- SPAM, ABUSE, FRAUD, INAPPROPRIATE 등
-  reason_detail VARCHAR(500),
+  reason_category VARCHAR2(50) NOT NULL,  -- SPAM, ABUSE, FRAUD, INAPPROPRIATE 등
+  reason_detail VARCHAR2(500),
 
   -- 처리 상태
-  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED', 'FALSE_REPORT')),
+  status VARCHAR2(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED', 'FALSE_REPORT')),
   reviewed_at TIMESTAMP,
-  reviewed_by UUID REFERENCES users(id),
-  admin_note VARCHAR(500),
+  reviewed_by VARCHAR2(36) REFERENCES users(id),
+  admin_note VARCHAR2(500),
 
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
@@ -1921,13 +1921,13 @@ def detect_anomaly(request):
 
 ```sql
 CREATE TABLE admins (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  name VARCHAR(50) NOT NULL,
+  id VARCHAR2(36) PRIMARY KEY,                    -- 관리자 ID (UUID)
+  email VARCHAR2(100) UNIQUE NOT NULL,
+  password_hash VARCHAR2(255) NOT NULL,
+  name VARCHAR2(50) NOT NULL,
   
   -- 권한
-  role VARCHAR(20) DEFAULT 'ADMIN' CHECK (role IN ('SUPER_ADMIN', 'ADMIN', 'SUPPORT')),
+  role VARCHAR2(20) DEFAULT 'ADMIN' CHECK (role IN ('SUPER_ADMIN', 'ADMIN', 'SUPPORT')),
   
   -- 상태
   is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
@@ -1948,20 +1948,20 @@ CREATE INDEX idx_admins_role ON admins(role, is_active);
 
 ```sql
 CREATE TABLE fee_policies (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 정책 ID (UUID)
   
   -- 금액 범위
-  min_amount BIGINT NOT NULL,  -- 최소 금액 (이상)
-  max_amount BIGINT,           -- 최대 금액 (이하), NULL이면 상한 없음
+  min_amount NUMBER(19) NOT NULL,  -- 최소 금액 (이상)
+  max_amount NUMBER(19),           -- 최대 금액 (이하), NULL이면 상한 없음
   
   -- 수수료율 (소수점 4자리까지, 0.0300 = 3%)
-  rate DECIMAL(5,4) NOT NULL CHECK (rate >= 0 AND rate <= 1),
+  rate NUMBER(5,4) NOT NULL CHECK (rate >= 0 AND rate <= 1),
   
   -- 상태
   is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
   
   -- 감사
-  created_by UUID REFERENCES admins(id),
+  created_by VARCHAR2(36) REFERENCES admins(id),
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   
@@ -1985,26 +1985,26 @@ INSERT INTO fee_policies (id, min_amount, max_amount, rate, is_active) VALUES
 
 ```sql
 CREATE TABLE reports (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 신고 ID (UUID)
   
   -- 신고자
-  reporter_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  reporter_id VARCHAR2(36) REFERENCES users(id) ON DELETE SET NULL,
   
   -- 신고 대상
-  target_type VARCHAR(20) NOT NULL CHECK (target_type IN ('USER', 'CHALLENGE', 'POST', 'COMMENT')),
-  target_id UUID NOT NULL,
+  target_type VARCHAR2(20) NOT NULL CHECK (target_type IN ('USER', 'CHALLENGE', 'POST', 'COMMENT')),
+  target_id VARCHAR2(36) NOT NULL,
   
   -- 신고 내용
-  reason VARCHAR(500) NOT NULL,
-  evidence_url VARCHAR(500),  -- 증거 첨부
+  reason VARCHAR2(500) NOT NULL,
+  evidence_url VARCHAR2(500),  -- 증거 첨부
   
   -- 처리 상태
-  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'REVIEWING', 'RESOLVED', 'DISMISSED')),
+  status VARCHAR2(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'REVIEWING', 'RESOLVED', 'DISMISSED')),
   
   -- 처리 결과
-  handled_by UUID REFERENCES admins(id),
+  handled_by VARCHAR2(36) REFERENCES admins(id),
   handled_at TIMESTAMP,
-  action_taken VARCHAR(500),  -- 조치 내용
+  action_taken VARCHAR2(500),  -- 조치 내용
   
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
@@ -2021,22 +2021,22 @@ CREATE INDEX idx_reports_reporter ON reports(reporter_id);
 
 ```sql
 CREATE TABLE admin_logs (
-  id UUID PRIMARY KEY DEFAULT SYS_GUID(),
+  id VARCHAR2(36) PRIMARY KEY,                    -- 로그 ID (UUID)
   
   -- 관리자
-  admin_id UUID REFERENCES admins(id) ON DELETE SET NULL,
+  admin_id VARCHAR2(36) REFERENCES admins(id) ON DELETE SET NULL,
   
   -- 활동 정보
-  action VARCHAR(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_CHALLENGE 등
-  target_type VARCHAR(20),
-  target_id UUID,
+  action VARCHAR2(50) NOT NULL,  -- CREATE_FEE_POLICY, RESOLVE_REPORT, VERIFY_CHALLENGE 등
+  target_type VARCHAR2(20),
+  target_id VARCHAR2(36),
   
   -- 상세 내용 (JSON)
   details CLOB,
   
   -- 접속 정보
-  ip_address VARCHAR(50),
-  user_agent VARCHAR(500),
+  ip_address VARCHAR2(50),
+  user_agent VARCHAR2(500),
   
   -- 타임스탬프
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
