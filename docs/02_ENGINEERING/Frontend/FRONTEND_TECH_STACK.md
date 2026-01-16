@@ -2,7 +2,7 @@
 
 > **Purpose**: 프론트엔드 기술 스택 및 아키텍처 정의
 > **Framework**: React 18 + TypeScript + Vite
-> **Design System**: [WDS (WooriDo Design System)](../UX_UI/SHARED/DESIGN_TOKENS.md)
+> **Design System**: [WDS (WooriDo Design System)](./DesignSystem/DESIGN_TOKENS.md)
 > **Last Updated**: 2026-01-15
 
 ---
@@ -372,16 +372,16 @@ src/
 │   └── global.css           # 글로벌 스타일
 ├── types/                   # TypeScript 타입
 ├── App.tsx
-└── main.tsx
+├── main.tsx
 ```
 
 ---
 
 ## 8. 관련 문서
 
-- [DESIGN_TOKENS.md](../UX_UI/SHARED/DESIGN_TOKENS.md) - WDS 메인 토큰
-- [WDS_FOUNDATION.md](../UX_UI/SHARED/WDS_FOUNDATION.md) - 기초 컴포넌트
-- [WDS_OVERLAY.md](../UX_UI/SHARED/WDS_OVERLAY.md) - 오버레이 컴포넌트
-- [WDS_FEEDBACK.md](../UX_UI/SHARED/WDS_FEEDBACK.md) - 피드백 컴포넌트
-- [WDS_DOMAIN.md](../UX_UI/SHARED/WDS_DOMAIN.md) - 도메인 컴포넌트
+- [DESIGN_TOKENS.md](./DesignSystem/DESIGN_TOKENS.md) - WDS 메인 토큰
+- [WDS_FOUNDATION.md](./DesignSystem/WDS_FOUNDATION.md) - 기초 컴포넌트
+- [WDS_OVERLAY.md](./DesignSystem/WDS_OVERLAY.md) - 오버레이 컴포넌트
+- [WDS_FEEDBACK.md](./DesignSystem/WDS_FEEDBACK.md) - 피드백 컴포넌트
+- [WDS_DOMAIN.md](./DesignSystem/WDS_DOMAIN.md) - 도메인 컴포넌트
 - [IA_SPECIFICATION.md](../UX_UI/IA_SPECIFICATION.md) - 화면 설계

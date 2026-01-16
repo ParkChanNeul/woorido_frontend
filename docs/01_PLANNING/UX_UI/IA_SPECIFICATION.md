@@ -4,7 +4,7 @@
 > **Version:** v2.4 - Design System 2.0 Integration
 > **Last Updated:** 2026-01-15
 > **Status:** Development Ready
-> **Design System:** [DESIGN_TOKENS.md](./SHARED/DESIGN_TOKENS.md) (v2.0)
+> **Design System**: [DESIGN_TOKENS.md](../../02_ENGINEERING/Frontend/DesignSystem/DESIGN_TOKENS.md) (v2.0)
 
 ---
 

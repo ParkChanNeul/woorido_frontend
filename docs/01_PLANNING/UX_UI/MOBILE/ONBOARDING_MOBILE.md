@@ -198,5 +198,5 @@
 ---
 
 **관련 문서:**
-- [UX_FLOW.md](../SHARED/UX_FLOW.md) - 공통 UX 플로우
+- [UX_FLOW.md](../../../02_ENGINEERING/Frontend/DesignSystem/UX_FLOW.md) - 공통 UX 플로우
 - [ONBOARDING_DESKTOP.md](../DESKTOP/ONBOARDING_DESKTOP.md) - 데스크탑 온보딩

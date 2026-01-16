@@ -131,5 +131,5 @@
 ---
 
 **관련 문서:**
-- [UX_FLOW.md](../SHARED/UX_FLOW.md) - 공통 UX 플로우
+- [UX_FLOW.md](../../../02_ENGINEERING/Frontend/DesignSystem/UX_FLOW.md) - 공통 UX 플로우
 - [ONBOARDING_MOBILE.md](../MOBILE/ONBOARDING_MOBILE.md) - 모바일 온보딩
