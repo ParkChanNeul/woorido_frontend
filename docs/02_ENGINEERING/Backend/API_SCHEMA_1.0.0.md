@@ -384,6 +384,6 @@ NO    ENDPOINT                    설명
 
 작성일          2026-01-15
 버전            1.0.0
-총 API 수       92개 (Spring 82 + Django 10)
+총 API 수       92개 (Spring 83 + Django 9)
 인증 불필요     9개
-인증 필요       82개
+인증 필요       83개
