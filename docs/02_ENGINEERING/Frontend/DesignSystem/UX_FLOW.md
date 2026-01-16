@@ -1,7 +1,8 @@
-# WOORIDO 공통 UX 플로우 v1.0
+# WOORIDO 공통 UX 플로우 v2.0
 
-> **Purpose:** 플랫폼 공통 사용자 여정 정의
-> **Last Updated:** 2026-01-08
+> **Purpose:** 플랫폼 공통 사용자 여정 및 화면별 상태 정의
+> **Last Updated:** 2026-01-16
+> **Status:** 확장됨 (Phase 3)
 
 ---
 
@@ -28,24 +29,25 @@
 
 ## 2. 핵심 플로우
 
-### 2.1 신규 가입 → 첫 챌린지 가입
+### 2.1 신규 가입 → 첫 챌린지 가입 (웹 진입)
 
 ```mermaid
 flowchart TD
-    A[앱 진입] --> B{기존 회원?}
+    A[검색/URL 진입] --> B{기존 회원?}
     B -->|No| C[회원가입]
-    C --> D[충전 유도]
-    D --> E[챌린지 탐색]
-    E --> F[챌린지 선택]
-    F --> G[가입 플로우]
-    G --> H{잔액 충분?}
-    H -->|No| I[충전 모달]
-    I --> G
-    H -->|Yes| J[서포트 + 보증금 결제]
-    J --> K[가입 완료]
-    K --> L[챌린지 피드]
+    C --> D[Trust Triangle 온보딩]
+    D --> E[충전 유도]
+    E --> F[챌린지 탐색]
+    F --> G[챌린지 선택]
+    G --> H[가입 플로우]
+    H --> I{잔액 충분?}
+    I -->|No| J[충전 모달]
+    J --> H
+    I -->|Yes| K[보증금 + 입회비 결제]
+    K --> L[가입 완료 🎉]
+    L --> M[챌린지 피드]
     
-    B -->|Yes| E
+    B -->|Yes| F
 ```
 
 ### 2.2 보증금 충당 → 권한 복구
@@ -56,18 +58,18 @@ flowchart TD
     B -->|Yes| C[정상 납입]
     B -->|No| D[보증금에서 납입]
     D --> E[권한 박탈]
-    E --> F[알림: 보증금 충전 필요]
+    E --> F[Alert Banner 표시]
     
     F --> G{60일 이내 충전?}
     G -->|Yes| H[충전]
     H --> I[보증금 우선 복구]
-    I --> J[권한 복구]
+    I --> J[권한 복구 🎉]
     
     G -->|No| K[자동 탈퇴]
     K --> L[리더 알림]
 ```
 
-### 2.3 정기 모임 → 오픈 사용
+### 2.3 정기 모임 → 지출 승인
 
 ```mermaid
 flowchart TD
@@ -81,6 +83,21 @@ flowchart TD
     H -->|No| I[지출 거절]
     H -->|Yes| J[오픈에서 차감]
     J --> K[장부 자동 기록]
+    K --> L[바코드 발급]
+```
+
+### 2.4 챌린지 해산 플로우 (신규)
+
+```mermaid
+flowchart TD
+    A[리더: 해산 요청] --> B[최종 경고 모달]
+    B --> C[DISSOLVE 투표 생성]
+    C --> D[전체 멤버 투표]
+    D --> E{전원 동의?}
+    E -->|No| F[해산 취소]
+    E -->|Yes| G[잔액 N분의 1 계산]
+    G --> H[각 어카운트에 분배]
+    H --> I[챌린지 COMPLETED]
 ```
 
 ---
@@ -91,32 +108,107 @@ flowchart TD
 
 | 타입 | 생성자 | 대상 | 승인 조건 | 결과 |
 |------|--------|------|----------|------|
-| EXPENSE | 리더 | 전체 or 참석자 | 과반수~70% | 오픈 차감 |
+| EXPENSE | 리더 | **참석자만** | 과반수~70% | 오픈 차감 |
 | MEETING_ATTENDANCE | 리더 | 전체 | 과반수 | 모임 확정 |
 | KICK | 리더/멤버 | 전체 | 70% | 강퇴 |
-| RULE_CHANGE | 리더 | 전체 | 2/3 | 규칙 변경 |
+| LEADER_KICK | 팔로워 | 팔로워만 | 70% | 리더 교체 |
+| DISSOLVE | 리더 | 전체 | **100%** | 해산 + 분배 |
 
 ### 3.2 투표 상태 전이
 
-```
-PENDING → APPROVED (승인)
-        → REJECTED (거절)
-        → EXPIRED (기한 만료)
+```mermaid
+stateDiagram-v2
+    [*] --> IN_PROGRESS: 투표 생성
+    IN_PROGRESS --> APPROVED: 승인 조건 충족
+    IN_PROGRESS --> REJECTED: 거절 조건 충족
+    IN_PROGRESS --> EXPIRED: 기한 만료
+    IN_PROGRESS --> CANCELLED: 생성자 취소
 ```
 
 ---
 
-## 4. 에러 복구 플로우
+## 4. 화면별 진입점 & 이탈점 (신규)
 
-| 상황 | 사용자 액션 | 시스템 응답 |
-|------|-----------|------------|
-| 결제 실패 | 다시 시도 | 재결제 모달 |
-| 네트워크 오류 | 새로고침 | 재시도 버튼 |
-| 권한 없음 | - | Toast + 홈 이동 |
-| 잔액 부족 | 충전하기 | 충전 모달 |
+### 4.1 홈 화면
+
+| 진입점 | 이탈점 |
+|--------|--------|
+| 앱 실행 | 챌린지 상세 (탭) |
+| 로그인 완료 | 탐색 (탭) |
+| 딥링크 | 마이페이지 (탭) |
+
+### 4.2 챌린지 상세
+
+| 진입점 | 이탈점 |
+|--------|--------|
+| 홈 GroupCard 탭 | 뒤로가기 (홈) |
+| 탐색 검색 결과 탭 | 설정 (모달) |
+| 초대 딥링크 | 외부 공유 |
+| 푸시 알림 탭 | |
+
+### 4.3 장부 탭
+
+| 진입점 | 이탈점 |
+|--------|--------|
+| 챌린지 탭 전환 | 거래 상세 (모달) |
+| 푸시 알림 | 투표 상세 (연결) |
 
 ---
 
-**관련 문서:**
-- [ONBOARDING_MOBILE.md](../MOBILE/ONBOARDING_MOBILE.md)
-- [ONBOARDING_DESKTOP.md](../DESKTOP/ONBOARDING_DESKTOP.md)
+## 5. 화면 상태 정의 (신규)
+
+### 5.1 공통 상태
+
+| 상태 | 트리거 | UI 표현 | 참조 |
+|------|--------|---------|------|
+| **Loading** | API 호출 중 | Skeleton / Spinner | WDS_FEEDBACK.md |
+| **Error** | API 실패 | ErrorState + 재시도 | WDS_FEEDBACK.md |
+| **Empty** | 데이터 없음 | EmptyState + CTA | WDS_FEEDBACK.md |
+| **Success** | 작업 완료 | Toast / Confetti | WDS_FEEDBACK.md |
+
+### 5.2 화면별 상태
+
+| 화면 | Loading | Error | Empty |
+|------|---------|-------|-------|
+| **홈** | GroupCard Skeleton × 3 | 새로고침 CTA | "첫 챌린지를 찾아보세요" |
+| **팔로우 피드** | PostCard Skeleton × 5 | 재시도 버튼 | "첫 글을 작성해보세요" |
+| **장부** | ChartWrapper Skeleton | 재시도 버튼 | "아직 거래 내역이 없어요" |
+| **투표** | VoteCard Skeleton × 3 | 재시도 버튼 | "진행 중인 투표가 없어요" |
+| **모임** | MeetingCard Skeleton × 3 | 재시도 버튼 | "예정된 모임이 없어요" |
+
+### 5.3 에러 복구 플로우
+
+| 상황 | 사용자 액션 | 시스템 응답 | 마이크로카피 |
+|------|-----------|------------|-------------|
+| 결제 실패 | 다시 시도 | 재결제 모달 | "다시 시도해보세요" |
+| 네트워크 오류 | 새로고침 | 재시도 버튼 | "연결이 끊겼어요" |
+| 권한 없음 | - | Toast + 홈 이동 | "접근 권한이 없어요" |
+| 잔액 부족 | 충전하기 | 충전 모달 | "잔액이 부족해요" |
+| 정원 초과 | 알림 신청 | 대기열 등록 | "자리가 나면 알려드릴게요" |
+
+---
+
+## 6. 로딩 전략 (신규)
+
+### 6.1 Skeleton 우선 적용 화면
+
+- 홈 (GroupCard 목록)
+- 피드 (PostCard 목록)
+- 장부 (ChartWrapper + Timeline)
+- 모임 (MeetingCard 목록)
+
+### 6.2 Spinner 적용 액션
+
+- 버튼 액션 (결제, 투표, 게시)
+- 모달 내 API 호출
+- 검색 결과 로딩
+
+---
+
+## 관련 문서
+
+- [UX_STRATEGY.md](../../01_PLANNING/UX_UI/UX_STRATEGY.md) - UX 전략 및 원칙
+- [UX_SCENARIOS.md](../../01_PLANNING/UX_UI/UX_SCENARIOS.md) - 15개 시나리오
+- [UX_EMOTION_MAP.md](../../01_PLANNING/UX_UI/UX_EMOTION_MAP.md) - 감정 맵핑
+- [WDS_FEEDBACK.md](./WDS_FEEDBACK.md) - 피드백 컴포넌트
+- [IA_SPECIFICATION.md](../../01_PLANNING/UX_UI/IA_SPECIFICATION.md) - 정보 구조
