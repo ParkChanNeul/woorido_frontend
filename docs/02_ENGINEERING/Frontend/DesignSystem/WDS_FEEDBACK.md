@@ -307,6 +307,284 @@ interface EmptyStateProps {
 <EmptyState.Feed />
 <EmptyState.Challenge action={{ label: '챌린지 둘러보기', onClick: handleBrowse }} />
 <EmptyState.Search />
+---
+
+## 5. AlertBanner (경고 배너)
+
+상단에 고정되어 중요한 알림을 표시하는 배너입니다.
+
+### Props Interface
+
+```tsx
+interface AlertBannerProps {
+  variant: 'warning' | 'error' | 'info' | 'success';
+  title: string;
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  countdown?: {
+    label: string;          // "자동 탈퇴까지" 
+    targetDate: Date;
+  };
+  dismissible?: boolean;
+  onDismiss?: () => void;
+}
+```
+
+### Variants
+
+| Variant | Background | Border | Icon | Usage |
+|---------|-----------|--------|------|-------|
+| `warning` | `colors.warning` + 10% | `colors.warning` | ⚠️ | 권한 박탈, 납입 임박 |
+| `error` | `colors.error` + 10% | `colors.error` | 🚨 | 자동 탈퇴 임박 |
+| `info` | `colors.info` + 10% | `colors.orange500` | ℹ️ | 일반 안내 |
+| `success` | `colors.success` + 10% | `colors.success` | ✅ | 완료 알림 |
+
+### Layout
+
+```
+[D-0~7: 유예 기간]
+┌─────────────────────────────────────────────────────────────┐
+│  ⚠️ 7일 내 충전 시 권한 복구  │  남은 기간: 5일  [충전 →]  │
+└─────────────────────────────────────────────────────────────┘
+
+[D-7~60: 모임 제외 상태]
+┌─────────────────────────────────────────────────────────────┐
+│  🚨 자동 탈퇴까지 30일  │  모임 참석 불가  [지금 충전 →]    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Usage
+
+```tsx
+// 권한 박탈 배너
+<AlertBanner
+  variant="warning"
+  title="7일 내 충전 시 권한 복구"
+  countdown={{
+    label: "남은 기간",
+    targetDate: gracePeriodEnd,
+  }}
+  action={{
+    label: "충전",
+    onClick: () => openChargeModal(),
+  }}
+/>
+
+// 자동 탈퇴 임박
+<AlertBanner
+  variant="error"
+  title="자동 탈퇴까지"
+  description="모임 참석 불가"
+  countdown={{
+    label: "",
+    targetDate: autoLeaveDate,
+  }}
+  action={{
+    label: "지금 충전",
+    onClick: () => openChargeModal(),
+  }}
+/>
+```
+
+---
+
+## 6. CountdownTimer (카운트다운)
+
+시간 제한이 있는 항목의 남은 시간을 표시합니다.
+
+### Props Interface
+
+```tsx
+interface CountdownTimerProps {
+  targetDate: Date;
+  format: 'full' | 'short' | 'minimal';
+  onExpire?: () => void;
+  urgentThreshold?: number;   // ms (기본: 5분)
+  showDays?: boolean;
+}
+```
+
+### Formats
+
+| Format | 예시 | Usage |
+|--------|------|-------|
+| `full` | 2일 5시간 30분 15초 | 투표 만료 |
+| `short` | 2일 5:30:15 | 일반 카운트다운 |
+| `minimal` | 05:30 | 바코드 만료 (10분 이내) |
+
+### Styling
+
+| 상태 | 색상 | 조건 |
+|------|------|------|
+| Normal | `colors.textSecondary` | > urgentThreshold |
+| Urgent | `colors.warning` | 10% ~ urgentThreshold |
+| Critical | `colors.error` + pulse 애니메이션 | < 10% |
+
+### Animation (Framer Motion)
+
+```tsx
+// Critical 상태 pulse 애니메이션
+const pulseVariants = {
+  normal: { scale: 1 },
+  urgent: { 
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 1,
+      repeat: Infinity,
+    }
+  }
+};
+```
+
+### Usage
+
+```tsx
+// 바코드 만료
+<CountdownTimer
+  targetDate={barcodeExpiry}
+  format="minimal"
+  onExpire={() => handleBarcodeExpired()}
+  urgentThreshold={60000}  // 1분
+/>
+
+// 투표 종료
+<CountdownTimer
+  targetDate={voteDeadline}
+  format="full"
+  showDays
+/>
+
+// 배너 내 인라인
+<AlertBanner
+  variant="warning"
+  title="보증금 충전 필요"
+  countdown={{ label: "자동 탈퇴까지", targetDate: autoLeaveDate }}
+/>
+```
+
+---
+
+## 7. State Transition (상태 전이 피드백)
+
+상태 변화를 사용자에게 시각적으로 알리는 피드백 시스템입니다.
+
+### 7.1 Transition Types
+
+| Type | 트리거 | 피드백 |
+|------|--------|--------|
+| `vote_approved` | 투표 승인됨 | Toast + 장부 하이라이트 |
+| `vote_rejected` | 투표 거절됨 | Toast + 투표 카드 Fade |
+| `payment_complete` | 결제 완료 | Toast + 장부 항목 슬라이드인 |
+| `privilege_revoked` | 권한 박탈 | AlertBanner + 제한 UI 표시 |
+| `privilege_restored` | 권한 복구 | Toast + Celebration 애니메이션 |
+| `challenge_completed` | 완주 인증 | FullScreen Celebration |
+
+### 7.2 Framer Motion Variants
+
+```tsx
+// 공통 전이 variants
+export const transitionVariants = {
+  // 새 항목 등장
+  slideIn: {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
+    transition: { duration: 0.25, ease: 'easeOut' }
+  },
+  
+  // 항목 하이라이트
+  highlight: {
+    initial: { backgroundColor: 'transparent' },
+    animate: { 
+      backgroundColor: ['rgba(233, 72, 30, 0.2)', 'transparent'],
+      transition: { duration: 1.5 }
+    }
+  },
+  
+  // 성공 축하
+  celebrate: {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: { 
+      scale: [0.8, 1.1, 1],
+      opacity: 1,
+      transition: { duration: 0.4, ease: 'backOut' }
+    }
+  },
+  
+  // 항목 제거
+  fadeOut: {
+    exit: { 
+      opacity: 0, 
+      height: 0,
+      transition: { duration: 0.2 }
+    }
+  }
+};
+```
+
+### 7.3 Usage Patterns
+
+```tsx
+// 투표 승인 → 장부 연동
+function handleVoteApproved(vote: Vote) {
+  // 1. Toast 표시
+  toast.success('투표가 승인되었습니다');
+  
+  // 2. 장부에 새 항목 추가 (애니메이션)
+  addLedgerEntry({
+    ...vote,
+    animationVariant: 'slideIn',
+  });
+  
+  // 3. 연결 하이라이트
+  setTimeout(() => {
+    highlightLedgerEntry(vote.id, 'highlight');
+  }, 500);
+}
+
+// 권한 복구
+function handlePrivilegeRestored() {
+  // 1. Toast 표시
+  toast.success('권한이 복구되었습니다!');
+  
+  // 2. AlertBanner 제거 (fadeOut)
+  setShowRevocationBanner(false);
+  
+  // 3. 축하 애니메이션
+  showCelebration('privilege_restored');
+}
+```
+
+### 7.4 CelebrationOverlay (전체 화면 축하)
+
+```tsx
+interface CelebrationOverlayProps {
+  type: 'challenge_completed' | 'privilege_restored' | 'first_post';
+  title: string;
+  description?: string;
+  onClose: () => void;
+  autoClose?: number;         // ms
+}
+```
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│                         🎉                                  │
+│                                                             │
+│              축하합니다!                                      │
+│                                                             │
+│          1년 연속 운영 달성!                                   │
+│     챌린지에 인증 마크가 부여되었습니다.                         │
+│                                                             │
+│              ┌────────────────┐                             │
+│              │     확인       │                              │
+│              └────────────────┘                             │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -317,3 +595,6 @@ interface EmptyStateProps {
 - [WDS_FOUNDATION.md](./WDS_FOUNDATION.md) - 기초 컴포넌트
 - [WDS_OVERLAY.md](./WDS_OVERLAY.md) - 오버레이 컴포넌트
 - [WDS_DOMAIN.md](./WDS_DOMAIN.md) - 도메인 특화 컴포넌트
+- [WDS_LEDGER.md](./WDS_LEDGER.md) - 장부 시스템 컴포넌트
+- [WDS_CALENDAR.md](./WDS_CALENDAR.md) - 캘린더 컴포넌트
+

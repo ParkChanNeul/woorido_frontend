@@ -438,10 +438,166 @@ interface LedgerEntryProps {
 
 ---
 
+## 9. MeetingCard (정기 모임 카드)
+
+정기 모임 목록에서 사용하는 카드 컴포넌트입니다.
+
+### Props Interface
+
+```tsx
+interface MeetingCardProps {
+  meeting: {
+    id: string;
+    title: string;
+    date: Date;
+    location: string;
+    status: MeetingStatus;
+    attendeeCount: number;
+    totalMembers: number;
+    isQuorumMet: boolean;     // 과반수 충족 여부
+  };
+  onAttend?: () => void;
+  onViewDetail?: () => void;
+}
+
+type MeetingStatus = 'SCHEDULED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+```
+
+### Status Mapping
+
+| Status | Label | Color | Description |
+|--------|-------|-------|-------------|
+| `SCHEDULED` | 예정 | `colors.grey500` | 투표 진행 중 |
+| `CONFIRMED` | 확정 | `colors.success` | 과반수 참석 확정 |
+| `COMPLETED` | 완료 | `colors.grey400` | 모임 종료 |
+| `CANCELLED` | 취소 | `colors.error` | 과반수 미달로 취소 |
+
+### Layout
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  📅 2월 독서 토론회                            ✅ 확정     │
+│  2026-02-15 14:00 · 강남역 스터디카페                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  참석: 7/10명 (과반수 충족 ✅)                              │
+│                                                             │
+│  ┌───────────────┐  ┌───────────────┐                      │
+│  │   참석 확인    │  │   상세 보기    │                      │
+│  └───────────────┘  └───────────────┘                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Styling
+
+| Property | Value |
+|----------|-------|
+| Background | White |
+| Border Radius | `shape.radiusLg` (20px) |
+| Shadow | `shadow.sm` |
+| Hover Shadow | `shadow.md` |
+| Padding | 16px |
+
+### Usage
+
+```tsx
+<MeetingCard
+  meeting={{
+    id: 'meeting_123',
+    title: '2월 독서 토론회',
+    date: new Date('2026-02-15T14:00:00'),
+    location: '강남역 스터디카페',
+    status: 'CONFIRMED',
+    attendeeCount: 7,
+    totalMembers: 10,
+    isQuorumMet: true,
+  }}
+  onAttend={() => handleAttend()}
+  onViewDetail={() => openMeetingDetail('meeting_123')}
+/>
+```
+
+---
+
+## 10. AttendanceStatusBadge (참석 상태 뱃지)
+
+정기 모임 참석 상태를 표시하는 뱃지입니다.
+
+### Props Interface
+
+```tsx
+interface AttendanceStatusBadgeProps {
+  status: AttendanceStatus;
+  size?: 'sm' | 'md';
+}
+
+type AttendanceStatus = 'REGISTERED' | 'ATTENDED' | 'NO_SHOW';
+```
+
+### Status Mapping
+
+| Status | Label | Color | Icon |
+|--------|-------|-------|------|
+| `REGISTERED` | 등록 | `colors.grey500` | 📋 |
+| `ATTENDED` | 참석 | `colors.success` | ✅ |
+| `NO_SHOW` | 불참 | `colors.error` | ❌ |
+
+### Usage
+
+```tsx
+// 멤버 목록에서 모임 참석 현황 표시
+<MemberCard>
+  <Avatar src={member.avatarUrl} />
+  <span>{member.name}</span>
+  <AttendanceStatusBadge status={member.attendanceStatus} />
+</MemberCard>
+```
+
+---
+
+## 11. ChallengeStatusBadge (챌린지 상태 뱃지)
+
+챌린지 상태를 표시하는 전용 뱃지입니다.
+
+### Props Interface
+
+```tsx
+interface ChallengeStatusBadgeProps {
+  status: ChallengeStatus;
+  size?: 'sm' | 'md';
+}
+
+type ChallengeStatus = 'RECRUITING' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
+```
+
+### Status Mapping
+
+| Status | Label | Color | Icon |
+|--------|-------|-------|------|
+| `RECRUITING` | 모집 중 | `colors.orange500` | 📢 |
+| `ACTIVE` | 진행 중 | `colors.success` | ✅ |
+| `PAUSED` | 일시 정지 | `colors.warning` | ⏸️ |
+| `CLOSED` | 종료 | `colors.grey400` | 🔒 |
+
+### Usage
+
+```tsx
+<GroupCard>
+  <ChallengeStatusBadge status={challenge.status} />
+  <h3>{challenge.name}</h3>
+</GroupCard>
+```
+
+---
+
 ## 관련 문서
 
 - [DESIGN_TOKENS.md](./DESIGN_TOKENS.md) - 메인 디자인 토큰
 - [WDS_FOUNDATION.md](./WDS_FOUNDATION.md) - 기초 컴포넌트
 - [WDS_OVERLAY.md](./WDS_OVERLAY.md) - 오버레이 컴포넌트
 - [WDS_FEEDBACK.md](./WDS_FEEDBACK.md) - 피드백 컴포넌트
-- [IA_SPECIFICATION.md](../IA_SPECIFICATION.md) - 화면 설계
+- [WDS_LEDGER.md](./WDS_LEDGER.md) - 장부 시스템 컴포넌트
+- [WDS_CALENDAR.md](./WDS_CALENDAR.md) - 캘린더 컴포넌트
+- [IA_SPECIFICATION.md](../../01_PLANNING/UX_UI/IA_SPECIFICATION.md) - 화면 설계
+

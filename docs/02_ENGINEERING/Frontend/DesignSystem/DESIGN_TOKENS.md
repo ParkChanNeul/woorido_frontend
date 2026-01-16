@@ -210,16 +210,96 @@ Pretendard 기반의 타이포그래피 스케일입니다.
 
 ---
 
+## 5.5 Dark Mode (PostDemo)
+
+> [!NOTE]
+> Dark Mode는 PostDemo에서 구현 예정입니다. 아래 토큰은 준비용입니다.
+
+### Light Mode ↔ Dark Mode 매핑
+
+| Semantic Token | Light Mode | Dark Mode |
+|---------------|------------|-----------|
+| `colors.background` | `grey50` (#FAFAF9) | `grey900` (#1C1917) |
+| `colors.surface` | White (#FFFFFF) | `grey800` (#292524) |
+| `colors.surfaceGrey` | `grey100` (#F5F5F4) | `grey700` (#44403C) |
+| `colors.textPrimary` | `grey900` (#1C1917) | `grey50` (#FAFAF9) |
+| `colors.textSecondary` | `grey600` (#57534E) | `grey400` (#A8A29E) |
+| `colors.border` | `grey300` (#D6D3D1) | `grey600` (#57534E) |
+| `colors.divider` | `grey200` (#E7E5E4) | `grey700` (#44403C) |
+
+### CSS 구현 패턴
+
+```css
+/* tokens.css */
+:root {
+  /* Light Mode (기본) */
+  --color-background: var(--color-grey-50);
+  --color-surface: #FFFFFF;
+  --color-text-primary: var(--color-grey-900);
+  --color-text-secondary: var(--color-grey-600);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-grey-900);
+    --color-surface: var(--color-grey-800);
+    --color-text-primary: var(--color-grey-50);
+    --color-text-secondary: var(--color-grey-400);
+  }
+}
+
+/* 수동 토글 지원 */
+[data-theme="dark"] {
+  --color-background: var(--color-grey-900);
+  --color-surface: var(--color-grey-800);
+  --color-text-primary: var(--color-grey-50);
+  --color-text-secondary: var(--color-grey-400);
+}
+```
+
+### Zustand Theme Store
+
+```typescript
+// src/store/themeStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+type Theme = 'light' | 'dark' | 'system';
+
+interface ThemeState {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}
+
+export const useThemeStore = create<ThemeState>()(
+  persist(
+    (set) => ({
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
+    }),
+    { name: 'woorido-theme' }
+  )
+);
+```
+
+---
+
+
 ## 6. Components
 
-WDS 컴포넌트는 4개의 카테고리로 분류되어 별도 문서에서 관리됩니다.
+WDS 컴포넌트는 9개의 카테고리로 분류되어 별도 문서에서 관리됩니다.
 
 | 카테고리 | 문서 | 포함 컴포넌트 |
 |---------|------|-------------|
 | **Foundation** | [WDS_FOUNDATION.md](./WDS_FOUNDATION.md) | Button, Input, Avatar, Badge, Chip, Divider |
 | **Overlay** | [WDS_OVERLAY.md](./WDS_OVERLAY.md) | Modal, BottomSheet, Toast, Tooltip |
-| **Feedback** | [WDS_FEEDBACK.md](./WDS_FEEDBACK.md) | Skeleton, Spinner, ProgressBar, EmptyState |
-| **Domain** | [WDS_DOMAIN.md](./WDS_DOMAIN.md) | BrixBadge, FinancialText, StatusBadge, GroupCard, PostCard, VoteCard, BalanceCard, LedgerEntry |
+| **Feedback** | [WDS_FEEDBACK.md](./WDS_FEEDBACK.md) | Skeleton, Spinner, ProgressBar, EmptyState, AlertBanner, CountdownTimer, State Transition |
+| **Domain** | [WDS_DOMAIN.md](./WDS_DOMAIN.md) | BrixBadge, FinancialText, StatusBadge, GroupCard, PostCard, VoteCard, BalanceCard, LedgerEntry, MeetingCard |
+| **Ledger** | [WDS_LEDGER.md](./WDS_LEDGER.md) | LedgerSummaryCard, ChartWrapper, InsightCard, BarcodeCard, BarcodeModal, TransactionTimeline |
+| **Calendar** | [WDS_CALENDAR.md](./WDS_CALENDAR.md) | EventCalendar, DatePicker, MiniCalendar, DateRangePicker, UpcomingEventCard |
+| **Navigation** | [WDS_NAVIGATION.md](./WDS_NAVIGATION.md) | BottomNav, Header, SideNav, SegmentedControl, Breadcrumb |
+| **Form** | [WDS_FORM.md](./WDS_FORM.md) | FormField, AmountInput, Select, TextArea, ImageUpload, CheckboxGroup, Form |
+| **Responsive** | [WDS_RESPONSIVE.md](./WDS_RESPONSIVE.md) | Breakpoints, Asset Resolution, Layout Patterns |
 
 ---
 
@@ -334,6 +414,6 @@ export type Motion = typeof motion;
 
 ## 관련 문서
 
-- [IA_SPECIFICATION.md](../IA_SPECIFICATION.md) - 화면 설계
-- [IA_MOBILE.md](../MOBILE/IA_MOBILE.md) - 모바일 IA
-- [IA_DESKTOP.md](../DESKTOP/IA_DESKTOP.md) - 데스크탑 IA
+- [IA_SPECIFICATION.md](../../01_PLANNING/UX_UI/IA_SPECIFICATION.md) - 화면 설계
+- [FRONTEND_TECH_STACK.md](../FRONTEND_TECH_STACK.md) - 프론트엔드 기술 스택
+
