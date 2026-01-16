@@ -19,8 +19,8 @@
 
 | Method | Endpoint | 설명 | 서버 | 상세 문서 |
 |--------|----------|------|------|-----------|
-| GET | /analytics/user/report | 개인 리포트 생성 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#086-개인-리포트-생성) |
-| GET | /recommendations/savings-plan | 맞춤형 저축 플랜 추천 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#088-맞춤형-저축-플랜-추천) |
+| GET | /analytics/user/report | 개인 리포트 생성 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#089-개인-리포트-생성) |
+| GET | /recommendations/savings-plan | 맞춤형 저축 플랜 추천 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#091-맞춤형-저축-플랜-추천) |
 
 ---
 

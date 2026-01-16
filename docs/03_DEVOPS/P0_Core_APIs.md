@@ -102,11 +102,11 @@
 
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
-| GET | /challenges/{id}/posts | 게시글 목록 조회 | [07_API_SNS.md](./07_API_SNS.md#054-게시글-목록-조회) |
-| GET | /challenges/{id}/posts/{id} | 게시글 상세 조회 | [07_API_SNS.md](./07_API_SNS.md#055-게시글-상세-조회) |
-| POST | /challenges/{id}/posts | 게시글 작성 | [07_API_SNS.md](./07_API_SNS.md#056-게시글-작성) |
-| GET | /challenges/{id}/posts/{id}/comments | 댓글 목록 조회 | [07_API_SNS.md](./07_API_SNS.md#063-댓글-목록-조회) |
-| POST | /challenges/{id}/posts/{id}/comments | 댓글 작성 | [07_API_SNS.md](./07_API_SNS.md#064-댓글-작성) |
+| GET | /challenges/{id}/posts | 게시글 목록 조회 | [07_API_SNS.md](./07_API_SNS.md#057-게시글-목록-조회) |
+| GET | /challenges/{id}/posts/{id} | 게시글 상세 조회 | [07_API_SNS.md](./07_API_SNS.md#058-게시글-상세-조회) |
+| POST | /challenges/{id}/posts | 게시글 작성 | [07_API_SNS.md](./07_API_SNS.md#059-게시글-작성) |
+| GET | /challenges/{id}/posts/{id}/comments | 댓글 목록 조회 | [07_API_SNS.md](./07_API_SNS.md#066-댓글-목록-조회) |
+| POST | /challenges/{id}/posts/{id}/comments | 댓글 작성 | [07_API_SNS.md](./07_API_SNS.md#067-댓글-작성) |
 
 ---
 
@@ -114,8 +114,8 @@
 
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
-| GET | /notifications | 알림 목록 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#071-알림-목록-조회) |
-| PUT | /notifications/{id}/read | 알림 읽음 처리 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#073-알림-읽음-처리) |
+| GET | /notifications | 알림 목록 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#074-알림-목록-조회) |
+| PUT | /notifications/{id}/read | 알림 읽음 처리 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#076-알림-읽음-처리) |
 
 ---
 

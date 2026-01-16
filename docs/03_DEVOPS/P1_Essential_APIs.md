@@ -67,13 +67,13 @@
 
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
-| PUT | /challenges/{id}/posts/{id} | 게시글 수정 | [07_API_SNS.md](./07_API_SNS.md#057-게시글-수정) |
-| DELETE | /challenges/{id}/posts/{id} | 게시글 삭제 | [07_API_SNS.md](./07_API_SNS.md#058-게시글-삭제) |
-| POST | /challenges/{id}/posts/{id}/like | 게시글 좋아요 | [07_API_SNS.md](./07_API_SNS.md#059-게시글-좋아요) |
-| POST | /challenges/{id}/posts/upload | 파일 업로드 | [07_API_SNS.md](./07_API_SNS.md#061-파일-업로드) |
-| PUT | /comments/{id} | 댓글 수정 | [07_API_SNS.md](./07_API_SNS.md#065-댓글-수정) |
-| DELETE | /comments/{id} | 댓글 삭제 | [07_API_SNS.md](./07_API_SNS.md#066-댓글-삭제) |
-| POST | /comments/{id}/replies | 대댓글 작성 | [07_API_SNS.md](./07_API_SNS.md#068-대댓글-작성) |
+| PUT | /challenges/{id}/posts/{id} | 게시글 수정 | [07_API_SNS.md](./07_API_SNS.md#060-게시글-수정) |
+| DELETE | /challenges/{id}/posts/{id} | 게시글 삭제 | [07_API_SNS.md](./07_API_SNS.md#061-게시글-삭제) |
+| POST | /challenges/{id}/posts/{id}/like | 게시글 좋아요 | [07_API_SNS.md](./07_API_SNS.md#062-게시글-좋아요) |
+| POST | /challenges/{id}/posts/upload | 파일 업로드 | [07_API_SNS.md](./07_API_SNS.md#064-파일-업로드) |
+| PUT | /comments/{id} | 댓글 수정 | [07_API_SNS.md](./07_API_SNS.md#068-댓글-수정) |
+| DELETE | /comments/{id} | 댓글 삭제 | [07_API_SNS.md](./07_API_SNS.md#069-댓글-삭제) |
+| POST | /comments/{id}/replies | 대댓글 작성 | [07_API_SNS.md](./07_API_SNS.md#071-대댓글-작성) |
 
 ---
 
@@ -82,9 +82,9 @@
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
 | GET | /challenges/{id}/ledger | 장부 조회 | [09_API_LEDGER.md](./09_API_LEDGER.md#052-장부-조회) |
-| GET | /challenges/{id}/ledger/summary | 장부 요약 | [09_API_LEDGER.md](./09_API_LEDGER.md#089-장부-요약) |
-| POST | /challenges/{id}/ledger | 장부 등록 | [09_API_LEDGER.md](./09_API_LEDGER.md#090-장부-등록) |
-| PUT | /ledger/{entryId} | 장부 수정 | [09_API_LEDGER.md](./09_API_LEDGER.md#091-장부-수정) |
+| GET | /challenges/{id}/ledger/summary | 장부 요약 | [09_API_LEDGER.md](./09_API_LEDGER.md#054-장부-요약) |
+| POST | /challenges/{id}/ledger | 장부 등록 | [09_API_LEDGER.md](./09_API_LEDGER.md#055-장부-등록) |
+| PUT | /ledger/{entryId} | 장부 수정 | [09_API_LEDGER.md](./09_API_LEDGER.md#056-장부-수정) |
 
 ---
 
@@ -92,12 +92,12 @@
 
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
-| POST | /reports | 신고하기 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#069-신고하기) |
-| GET | /notifications/{id} | 알림 상세 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#072-알림-상세-조회) |
-| PUT | /notifications/read-all | 전체 알림 읽음 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#074-전체-알림-읽음) |
-| POST | /refunds | 환불 요청 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#076-환불-요청) |
-| GET | /challenges/{id}/settlement | 정산 내역 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#078-정산-내역-조회) |
-| POST | /challenges/{id}/settlement/process | 정산 실행 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#079-정산-실행) |
+| POST | /reports | 신고하기 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#072-신고하기) |
+| GET | /notifications/{id} | 알림 상세 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#075-알림-상세-조회) |
+| PUT | /notifications/read-all | 전체 알림 읽음 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#077-전체-알림-읽음) |
+| POST | /refunds | 환불 요청 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#079-환불-요청) |
+| GET | /challenges/{id}/settlement | 정산 내역 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#081-정산-내역-조회) |
+| POST | /challenges/{id}/settlement/process | 정산 실행 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#082-정산-실행) |
 
 ---
 
@@ -105,8 +105,8 @@
 
 | Method | Endpoint | 설명 | 서버 | 상세 문서 |
 |--------|----------|------|------|-----------|
-| GET | /search | 통합 검색 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#080-통합-검색) |
-| GET | /search/challenges | 챌린지 검색 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#081-챌린지-검색) |
+| GET | /search | 통합 검색 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#083-통합-검색) |
+| GET | /search/challenges | 챌린지 검색 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#084-챌린지-검색) |
 
 ---
 

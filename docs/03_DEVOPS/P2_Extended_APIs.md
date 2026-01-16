@@ -27,9 +27,9 @@
 
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
-| PUT | /challenges/{id}/posts/{id}/pin | 게시글 상단 고정 | [07_API_SNS.md](./07_API_SNS.md#060-게시글-상단-고정) |
-| GET | /posts/my | 내 게시글 목록 | [07_API_SNS.md](./07_API_SNS.md#062-내-게시글-목록) |
-| POST | /comments/{id}/like | 댓글 좋아요 | [07_API_SNS.md](./07_API_SNS.md#067-댓글-좋아요) |
+| PUT | /challenges/{id}/posts/{id}/pin | 게시글 상단 고정 | [07_API_SNS.md](./07_API_SNS.md#063-게시글-상단-고정) |
+| GET | /posts/my | 내 게시글 목록 | [07_API_SNS.md](./07_API_SNS.md#065-내-게시글-목록) |
+| POST | /comments/{id}/like | 댓글 좋아요 | [07_API_SNS.md](./07_API_SNS.md#070-댓글-좋아요) |
 
 ---
 
@@ -45,9 +45,9 @@
 
 | Method | Endpoint | 설명 | 상세 문서 |
 |--------|----------|------|-----------|
-| GET | /reports/my | 내 신고 목록 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#070-내-신고-목록) |
-| GET | /refunds/{id} | 환불 상태 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#077-환불-상태-조회) |
-| GET/PUT | /notifications/settings | 알림 설정 조회/수정 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#075-알림-설정) |
+| GET | /reports/my | 내 신고 목록 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#073-내-신고-목록) |
+| GET | /refunds/{id} | 환불 상태 조회 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#080-환불-상태-조회) |
+| GET/PUT | /notifications/settings | 알림 설정 조회/수정 | [08_API_SYSTEM.md](./08_API_SYSTEM.md#078-알림-설정) |
 
 ---
 
@@ -55,11 +55,11 @@
 
 | Method | Endpoint | 설명 | 서버 | 상세 문서 |
 |--------|----------|------|------|-----------|
-| GET | /search/autocomplete | 검색어 자동완성 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#082-검색어-자동완성) |
-| GET | /analytics/user/activity | 사용자 활동 통계 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#083-사용자-활동-통계) |
-| GET | /analytics/challenge/{id} | 챌린지 분석 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#084-챌린지-분석) |
-| GET | /analytics/dashboard | 전체 통계 대시보드 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#085-전체-통계-대시보드) |
-| GET | /recommendations/challenges | 챌린지 추천 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#087-챌린지-추천) |
+| GET | /search/autocomplete | 검색어 자동완성 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#085-검색어-자동완성) |
+| GET | /analytics/user/activity | 사용자 활동 통계 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#086-사용자-활동-통계) |
+| GET | /analytics/challenge/{id} | 챌린지 분석 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#087-챌린지-분석) |
+| GET | /analytics/dashboard | 전체 통계 대시보드 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#088-전체-통계-대시보드) |
+| GET | /recommendations/challenges | 챌린지 추천 | Django | [10_API_DJANGO.md](./10_API_DJANGO.md#090-챌린지-추천) |
 
 ---
 

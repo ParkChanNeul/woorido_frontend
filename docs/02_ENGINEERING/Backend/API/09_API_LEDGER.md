@@ -12,9 +12,9 @@
 |---|--------|----------|------|---------|------|
 | 052 | GET | /challenges/{challengeId}/ledger | 장부 조회 | P1 | 멤버 |
 | 053 | GET | /challenges/{challengeId}/ledger/export | 장부 내보내기 | P2 | 멤버 |
-| **089** | **GET** | **/challenges/{challengeId}/ledger/summary** | **장부 요약** | **P1** | **멤버** |
-| **090** | **POST** | **/challenges/{challengeId}/ledger** | **장부 등록** | **P1** | **리더** |
-| **091** | **PUT** | **/ledger/{entryId}** | **장부 수정** | **P1** | **리더** |
+| **054** | **GET** | **/challenges/{challengeId}/ledger/summary** | **장부 요약** | **P1** | **멤버** |
+| **055** | **POST** | **/challenges/{challengeId}/ledger** | **장부 등록** | **P1** | **리더** |
+| **056** | **PUT** | **/ledger/{entryId}** | **장부 수정** | **P1** | **리더** |
 
 ---
 
@@ -128,7 +128,7 @@ curl -X GET "https://api.woorido.com/api/v1/challenges/1/ledger?page=0&size=20" 
 
 ---
 
-## 089. 장부 요약 ⭐ NEW
+## 054. 장부 요약 ⭐ NEW
 
 ### 기본 정보
 - **Endpoint**: `GET /challenges/{challengeId}/ledger/summary`
@@ -207,7 +207,7 @@ curl -X GET "https://api.woorido.com/api/v1/challenges/1/ledger/summary?period=M
 
 ---
 
-## 090. 장부 등록 ⭐ NEW
+## 055. 장부 등록 ⭐ NEW
 
 ### 기본 정보
 - **Endpoint**: `POST /challenges/{challengeId}/ledger`
@@ -284,7 +284,7 @@ curl -X POST https://api.woorido.com/api/v1/challenges/1/ledger \
 
 ---
 
-## 091. 장부 수정 ⭐ NEW
+## 056. 장부 수정 ⭐ NEW
 
 ### 기본 정보
 - **Endpoint**: `PUT /ledger/{entryId}`
