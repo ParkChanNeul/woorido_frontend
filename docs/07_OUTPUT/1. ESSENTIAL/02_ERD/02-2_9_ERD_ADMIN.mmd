@@ -1,0 +1,97 @@
+erDiagram
+    %% ========================================
+    %% 관리자 도메인 (Admin Domain)
+    %% 테이블: 5개
+    %% ========================================
+
+    admins {
+        bigint id PK
+        varchar email UK
+        varchar password_hash
+        varchar name
+        varchar role "SUPER_ADMIN | ADMIN | OPERATOR"
+        varchar status "ACTIVE | INACTIVE | SUSPENDED"
+        timestamp last_login_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    fee_policies {
+        bigint id PK
+        varchar policy_type "PLATFORM_FEE | WITHDRAWAL_FEE | PENALTY_RATE"
+        decimal value
+        varchar description
+        boolean is_active
+        timestamp effective_from
+        timestamp effective_to
+        bigint created_by FK "admins.id"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    admin_logs {
+        bigint id PK
+        bigint admin_id FK
+        varchar action_type "CREATE | UPDATE | DELETE | APPROVE | REJECT"
+        varchar target_type
+        bigint target_id
+        text description
+        varchar ip_address
+        timestamp created_at
+    }
+
+    settlements {
+        bigint id PK
+        bigint challenge_id FK
+        varchar settlement_type "MONTHLY | FINAL | DISSOLUTION"
+        decimal total_amount
+        decimal fee_amount
+        decimal net_amount
+        varchar status "PENDING | PROCESSING | COMPLETED | FAILED"
+        bigint processed_by FK "admins.id"
+        timestamp processed_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    refunds {
+        bigint id PK
+        bigint user_id FK
+        bigint account_id FK
+        bigint transaction_id FK "account_transactions.id"
+        decimal amount
+        varchar reason
+        varchar status "PENDING | APPROVED | REJECTED | COMPLETED"
+        bigint processed_by FK "admins.id"
+        timestamp processed_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    challenges {
+        bigint id PK
+        varchar name
+    }
+
+    users {
+        bigint id PK
+        varchar name
+    }
+
+    accounts {
+        bigint id PK
+    }
+
+    account_transactions {
+        bigint id PK
+    }
+
+    %% 관계
+    admins ||--o{ fee_policies : "creates"
+    admins ||--o{ admin_logs : "logs"
+    challenges ||--o{ settlements : "settles"
+    admins ||--o{ settlements : "processes"
+    users ||--o{ refunds : "receives"
+    accounts ||--o{ refunds : "from"
+    account_transactions ||--o{ refunds : "references"
+    admins ||--o{ refunds : "processes"

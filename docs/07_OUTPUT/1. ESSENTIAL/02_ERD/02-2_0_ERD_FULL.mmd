@@ -1,0 +1,491 @@
+erDiagram
+    %% ========================================
+    %% WOORIDO 전체 관계도
+    %% 테이블: 32개 / FK: 56개
+    %% ========================================
+
+    %% ----------------------------------------
+    %% 사용자 도메인 (4 tables)
+    %% ----------------------------------------
+    users {
+        bigint id PK
+        varchar email UK
+        varchar password_hash
+        varchar name
+        varchar nickname
+        varchar phone UK
+        varchar profile_image_url
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    accounts {
+        bigint id PK
+        bigint user_id FK
+        bigint challenge_id FK
+        decimal balance
+        varchar account_type
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    account_transactions {
+        bigint id PK
+        bigint account_id FK
+        bigint related_account_id FK
+        varchar transaction_type
+        decimal amount
+        decimal balance_after
+        varchar description
+        bigint reference_id
+        varchar reference_type
+        timestamp created_at
+    }
+
+    user_scores {
+        bigint id PK
+        bigint user_id FK
+        int sweetness_score
+        int attendance_count
+        int absence_count
+        int late_payment_count
+        timestamp calculated_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ----------------------------------------
+    %% 챌린지 도메인 (2 tables)
+    %% ----------------------------------------
+    challenges {
+        bigint id PK
+        bigint leader_id FK
+        varchar name
+        varchar description
+        varchar category
+        decimal monthly_fee
+        int max_members
+        int current_members
+        varchar status
+        date start_date
+        date end_date
+        int duration_months
+        decimal penalty_rate
+        varchar image_url
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    challenge_members {
+        bigint id PK
+        bigint challenge_id FK
+        bigint user_id FK
+        varchar role
+        varchar status
+        boolean auto_pay_enabled
+        varchar leave_reason
+        timestamp joined_at
+        timestamp left_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ----------------------------------------
+    %% 모임 도메인 (3 tables)
+    %% ----------------------------------------
+    meetings {
+        bigint id PK
+        bigint challenge_id FK
+        bigint created_by FK
+        varchar title
+        varchar description
+        timestamp scheduled_at
+        varchar location
+        varchar status
+        int min_participants
+        timestamp vote_deadline
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    meeting_votes {
+        bigint id PK
+        bigint meeting_id FK
+        varchar status
+        int agree_count
+        int disagree_count
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    meeting_vote_records {
+        bigint id PK
+        bigint meeting_vote_id FK
+        bigint user_id FK
+        varchar choice
+        timestamp voted_at
+        timestamp created_at
+    }
+
+    %% ----------------------------------------
+    %% 지출 도메인 (6 tables)
+    %% ----------------------------------------
+    expense_requests {
+        bigint id PK
+        bigint challenge_id FK
+        bigint requester_id FK
+        varchar title
+        varchar description
+        decimal amount
+        varchar category
+        varchar receipt_image_url
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    expense_votes {
+        bigint id PK
+        bigint expense_request_id FK
+        varchar status
+        int approve_count
+        int reject_count
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    expense_vote_records {
+        bigint id PK
+        bigint expense_vote_id FK
+        bigint user_id FK
+        varchar choice
+        timestamp voted_at
+        timestamp created_at
+    }
+
+    payment_barcodes {
+        bigint id PK
+        bigint expense_request_id FK
+        varchar barcode_number UK
+        decimal amount
+        varchar status
+        timestamp expires_at
+        timestamp used_at
+        timestamp created_at
+    }
+
+    ledger_entries {
+        bigint id PK
+        bigint challenge_id FK
+        bigint created_by FK
+        varchar entry_type
+        decimal amount
+        decimal balance_after
+        varchar description
+        bigint reference_id
+        varchar reference_type
+        timestamp created_at
+    }
+
+    payment_logs {
+        bigint id PK
+        bigint barcode_id FK
+        varchar payment_method
+        decimal amount
+        varchar status
+        varchar pg_transaction_id
+        varchar failure_reason
+        timestamp paid_at
+        timestamp created_at
+    }
+
+    %% ----------------------------------------
+    %% 일반투표 도메인 (2 tables)
+    %% ----------------------------------------
+    general_votes {
+        bigint id PK
+        bigint challenge_id FK
+        bigint created_by FK
+        bigint target_user_id FK
+        varchar type
+        varchar title
+        varchar description
+        varchar status
+        int approve_count
+        int reject_count
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    general_vote_records {
+        bigint id PK
+        bigint general_vote_id FK
+        bigint user_id FK
+        varchar choice
+        timestamp voted_at
+        timestamp created_at
+    }
+
+    %% ----------------------------------------
+    %% SNS 도메인 (5 tables)
+    %% ----------------------------------------
+    posts {
+        bigint id PK
+        bigint challenge_id FK
+        bigint author_id FK
+        varchar title
+        text content
+        varchar category
+        int like_count
+        int comment_count
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    post_images {
+        bigint id PK
+        bigint post_id FK
+        varchar image_url
+        int display_order
+        timestamp created_at
+    }
+
+    post_likes {
+        bigint id PK
+        bigint post_id FK
+        bigint user_id FK
+        timestamp created_at
+    }
+
+    comments {
+        bigint id PK
+        bigint post_id FK
+        bigint author_id FK
+        bigint parent_id FK
+        text content
+        int like_count
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    comment_likes {
+        bigint id PK
+        bigint comment_id FK
+        bigint user_id FK
+        timestamp created_at
+    }
+
+    %% ----------------------------------------
+    %% 시스템 도메인 (5 tables)
+    %% ----------------------------------------
+    notifications {
+        bigint id PK
+        bigint user_id FK
+        varchar type
+        varchar title
+        varchar message
+        varchar reference_type
+        bigint reference_id
+        boolean is_read
+        timestamp read_at
+        timestamp created_at
+    }
+
+    notification_settings {
+        bigint id PK
+        bigint user_id FK
+        boolean push_enabled
+        boolean email_enabled
+        boolean vote_notification
+        boolean meeting_notification
+        boolean expense_notification
+        boolean comment_notification
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    reports {
+        bigint id PK
+        bigint reporter_id FK
+        varchar target_type
+        bigint target_id
+        varchar reason
+        varchar description
+        varchar status
+        bigint handled_by FK
+        varchar handle_result
+        timestamp handled_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    sessions {
+        bigint id PK
+        bigint user_id FK
+        varchar session_token UK
+        varchar device_info
+        varchar ip_address
+        varchar session_type
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    webhook_logs {
+        bigint id PK
+        varchar event_type
+        varchar target_url
+        text request_body
+        int response_status
+        text response_body
+        int retry_count
+        varchar status
+        timestamp next_retry_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ----------------------------------------
+    %% 관리자 도메인 (5 tables)
+    %% ----------------------------------------
+    admins {
+        bigint id PK
+        varchar email UK
+        varchar password_hash
+        varchar name
+        varchar role
+        varchar status
+        timestamp last_login_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    fee_policies {
+        bigint id PK
+        varchar policy_type
+        decimal value
+        varchar description
+        boolean is_active
+        timestamp effective_from
+        timestamp effective_to
+        bigint created_by FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    admin_logs {
+        bigint id PK
+        bigint admin_id FK
+        varchar action_type
+        varchar target_type
+        bigint target_id
+        text description
+        varchar ip_address
+        timestamp created_at
+    }
+
+    settlements {
+        bigint id PK
+        bigint challenge_id FK
+        varchar settlement_type
+        decimal total_amount
+        decimal fee_amount
+        decimal net_amount
+        varchar status
+        bigint processed_by FK
+        timestamp processed_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    refunds {
+        bigint id PK
+        bigint user_id FK
+        bigint account_id FK
+        bigint transaction_id FK
+        decimal amount
+        varchar reason
+        varchar status
+        bigint processed_by FK
+        timestamp processed_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ========================================
+    %% FK 관계 정의 (56개)
+    %% ========================================
+
+    %% 사용자 도메인
+    users ||--o{ accounts : "has"
+    users ||--o{ user_scores : "has"
+    accounts ||--o{ account_transactions : "has"
+    accounts ||--o{ account_transactions : "related_to"
+
+    %% 챌린지 도메인
+    users ||--o{ challenges : "leads"
+    challenges ||--o{ accounts : "has"
+    challenges ||--o{ challenge_members : "has"
+    users ||--o{ challenge_members : "joins"
+
+    %% 모임 도메인
+    challenges ||--o{ meetings : "has"
+    users ||--o{ meetings : "creates"
+    meetings ||--o{ meeting_votes : "has"
+    meeting_votes ||--o{ meeting_vote_records : "has"
+    users ||--o{ meeting_vote_records : "votes"
+
+    %% 지출 도메인
+    challenges ||--o{ expense_requests : "has"
+    users ||--o{ expense_requests : "requests"
+    expense_requests ||--o{ expense_votes : "has"
+    expense_votes ||--o{ expense_vote_records : "has"
+    users ||--o{ expense_vote_records : "votes"
+    expense_requests ||--o{ payment_barcodes : "generates"
+    payment_barcodes ||--o{ payment_logs : "logs"
+    challenges ||--o{ ledger_entries : "has"
+    users ||--o{ ledger_entries : "creates"
+
+    %% 일반투표 도메인
+    challenges ||--o{ general_votes : "has"
+    users ||--o{ general_votes : "creates"
+    users ||--o{ general_votes : "targets"
+    general_votes ||--o{ general_vote_records : "has"
+    users ||--o{ general_vote_records : "votes"
+
+    %% SNS 도메인
+    challenges ||--o{ posts : "has"
+    users ||--o{ posts : "writes"
+    posts ||--o{ post_images : "has"
+    posts ||--o{ post_likes : "has"
+    users ||--o{ post_likes : "likes"
+    posts ||--o{ comments : "has"
+    users ||--o{ comments : "writes"
+    comments ||--o{ comments : "replies_to"
+    comments ||--o{ comment_likes : "has"
+    users ||--o{ comment_likes : "likes"
+
+    %% 시스템 도메인
+    users ||--o{ notifications : "receives"
+    users ||--o{ notification_settings : "configures"
+    users ||--o{ reports : "reports"
+    admins ||--o{ reports : "handles"
+    users ||--o{ sessions : "has"
+
+    %% 관리자 도메인
+    admins ||--o{ fee_policies : "creates"
+    admins ||--o{ admin_logs : "logs"
+    challenges ||--o{ settlements : "settles"
+    admins ||--o{ settlements : "processes"
+    users ||--o{ refunds : "receives"
+    accounts ||--o{ refunds : "from"
+    account_transactions ||--o{ refunds : "references"
+    admins ||--o{ refunds : "processes"

@@ -1,0 +1,96 @@
+erDiagram
+    %% ========================================
+    %% 지출 도메인 (Expense Domain)
+    %% 테이블: 6개
+    %% ========================================
+
+    expense_requests {
+        bigint id PK
+        bigint challenge_id FK
+        bigint requester_id FK "users.id"
+        varchar title
+        varchar description
+        decimal amount
+        varchar category
+        varchar receipt_image_url
+        varchar status "PENDING | VOTING | APPROVED | REJECTED | PAID | CANCELLED"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    expense_votes {
+        bigint id PK
+        bigint expense_request_id FK
+        varchar status "IN_PROGRESS | APPROVED | REJECTED | EXPIRED"
+        int approve_count
+        int reject_count
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    expense_vote_records {
+        bigint id PK
+        bigint expense_vote_id FK
+        bigint user_id FK
+        varchar choice "APPROVE | REJECT"
+        timestamp voted_at
+        timestamp created_at
+    }
+
+    payment_barcodes {
+        bigint id PK
+        bigint expense_request_id FK
+        varchar barcode_number UK
+        decimal amount
+        varchar status "ACTIVE | USED | EXPIRED | CANCELLED"
+        timestamp expires_at
+        timestamp used_at
+        timestamp created_at
+    }
+
+    ledger_entries {
+        bigint id PK
+        bigint challenge_id FK
+        bigint created_by FK "users.id"
+        varchar entry_type "INCOME | EXPENSE | TRANSFER | FEE | PENALTY"
+        decimal amount
+        decimal balance_after
+        varchar description
+        bigint reference_id
+        varchar reference_type
+        timestamp created_at
+    }
+
+    payment_logs {
+        bigint id PK
+        bigint barcode_id FK
+        varchar payment_method
+        decimal amount
+        varchar status "SUCCESS | FAILED | PENDING"
+        varchar pg_transaction_id
+        varchar failure_reason
+        timestamp paid_at
+        timestamp created_at
+    }
+
+    challenges {
+        bigint id PK
+        varchar name
+    }
+
+    users {
+        bigint id PK
+        varchar name
+    }
+
+    %% 관계
+    challenges ||--o{ expense_requests : "has"
+    users ||--o{ expense_requests : "requests"
+    expense_requests ||--o{ expense_votes : "has"
+    expense_votes ||--o{ expense_vote_records : "has"
+    users ||--o{ expense_vote_records : "votes"
+    expense_requests ||--o{ payment_barcodes : "generates"
+    payment_barcodes ||--o{ payment_logs : "logs"
+    challenges ||--o{ ledger_entries : "has"
+    users ||--o{ ledger_entries : "creates"

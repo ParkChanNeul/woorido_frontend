@@ -1,0 +1,47 @@
+erDiagram
+    %% ========================================
+    %% 일반투표 도메인 (General Vote Domain)
+    %% 테이블: 2개
+    %% ========================================
+
+    general_votes {
+        bigint id PK
+        bigint challenge_id FK
+        bigint created_by FK "users.id"
+        bigint target_user_id FK "users.id"
+        varchar type "KICK | LEADER_KICK | DISSOLVE"
+        varchar title
+        varchar description
+        varchar status "IN_PROGRESS | APPROVED | REJECTED | EXPIRED"
+        int approve_count
+        int reject_count
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    general_vote_records {
+        bigint id PK
+        bigint general_vote_id FK
+        bigint user_id FK
+        varchar choice "APPROVE | REJECT"
+        timestamp voted_at
+        timestamp created_at
+    }
+
+    challenges {
+        bigint id PK
+        varchar name
+    }
+
+    users {
+        bigint id PK
+        varchar name
+    }
+
+    %% 관계
+    challenges ||--o{ general_votes : "has"
+    users ||--o{ general_votes : "creates"
+    users ||--o{ general_votes : "is_target"
+    general_votes ||--o{ general_vote_records : "has"
+    users ||--o{ general_vote_records : "votes"
