@@ -1304,4 +1304,4 @@ SNS (5)             posts                피드
 END OF DOCUMENT
 ================================================================================
 
-총 31개 테이블 | 56개 Foreign Keys | Oracle 21c XE
+총 32개 테이블 | 56개 Foreign Keys | Oracle 21c XE
