@@ -24,9 +24,11 @@ interface EventCalendarProps {
   compact?: boolean;          // 장부 탭 상단용 컴팩트 뷰
 }
 
+// [!NOTE] CalendarEvent.type은 프론트엔드 전용 복합 타입입니다.
+// API의 TransactionType + MeetingStatus를 조합하여 생성합니다.
 interface CalendarEvent {
   id: string;
-  type: 'MEETING' | 'SUPPORT' | 'EXPENSE' | 'ENTRY_FEE';
+  type: CalendarEventType;    // 프론트엔드 전용
   date: Date;
   title: string;
   summary: string;
@@ -34,7 +36,14 @@ interface CalendarEvent {
   challengeId: string;
   link: string;
 }
+
+// 프론트엔드 전용 복합 타입 (API에 없음)
+type CalendarEventType = 'MEETING' | 'SUPPORT' | 'EXPENSE' | 'ENTRY_FEE';
 ```
+
+> [!NOTE]
+> `CalendarEventType`은 프론트엔드 전용 복합 타입입니다.
+> API의 `TransactionType` + `MeetingStatus`를 조합하여 생성합니다.
 
 ### Event Type Styling
 

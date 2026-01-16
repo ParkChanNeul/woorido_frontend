@@ -217,6 +217,7 @@ interface GroupCardProps {
 interface PostCardProps {
   post: {
     id: string;
+    category: PostCategory;  // API 기준
     author: {
       id: string;
       name: string;
@@ -226,7 +227,6 @@ interface PostCardProps {
     content: string;
     imageUrls?: string[];
     isPinned?: boolean;
-    isNotice?: boolean;
     likeCount: number;
     commentCount: number;
     isLiked?: boolean;
@@ -236,7 +236,18 @@ interface PostCardProps {
   onComment?: () => void;
   onClick?: () => void;
 }
+
+// API_SPECIFICATION_1.0.0.md PostCategory Enum 기준
+type PostCategory = 'NOTICE' | 'GENERAL' | 'QUESTION';
 ```
+
+### Category Mapping
+
+| Category | 레이블 | 아이콘 | 설명 |
+|----------|--------|------|------|
+| `NOTICE` | 공지사항 | 📌 | 모임장만 작성 가능 |
+| `GENERAL` | 일반 | - | 자유 게시글 |
+| `QUESTION` | 질문 | ❓ | Q&A |
 
 ### Layout
 
@@ -290,18 +301,38 @@ interface VoteCardProps {
       name: string;
       avatarUrl?: string;
     };
-    approveCount: number;
-    rejectCount: number;
-    totalVoters: number;
-    threshold: number;     // 통과 기준 %
+    voteCount: {
+      agree: number;
+      disagree: number;
+      abstain: number;
+      notVoted: number;
+      total: number;
+    };
+    threshold: number;     // 통과 기준 % (70%)
     status: VoteStatus;
     expiresAt: string;
-    hasVoted?: boolean;
-    myVote?: 'APPROVE' | 'REJECT';
+    myVote?: VoteChoice;   // API 기준
   };
-  onVote?: (choice: 'APPROVE' | 'REJECT') => void;
+  onVote?: (choice: VoteChoice) => void;
 }
+
+// API_SPECIFICATION_1.0.0.md VoteType Enum 기준
+type VoteType = 'EXPENSE' | 'KICK' | 'LEADER_KICK' | 'DISSOLVE' | 'MEETING_ATTENDANCE';
+
+// API_SPECIFICATION_1.0.0.md VoteStatus Enum 기준
+type VoteStatus = 'IN_PROGRESS' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED';
+
+// API_SPECIFICATION_1.0.0.md VoteChoice Enum 기준
+type VoteChoice = 'AGREE' | 'DISAGREE' | 'ABSTAIN';
 ```
+
+> [!NOTE]
+> **VoteType 별 용도**
+> - `EXPENSE`: 지출 승인 투표
+> - `KICK`: 멤버 강제 퇴장
+> - `LEADER_KICK`: 리더 강제 퇴장 (팔로워만 투표)
+> - `DISSOLVE`: 챌린지 해산
+> - `MEETING_ATTENDANCE`: 정기 모임 참석
 
 ### Layout
 
@@ -314,7 +345,7 @@ interface VoteCardProps {
 │                                            │
 │ 남은 시간: 23시간                           │
 │                                            │
-│ [👍 찬성]  [👎 반대]                        │
+│ [👍 찬성]  [👎 반대]  [⚪ 기권]             │
 └────────────────────────────────────────────┘
 ```
 
@@ -460,27 +491,29 @@ interface MeetingCardProps {
   onViewDetail?: () => void;
 }
 
-type MeetingStatus = 'SCHEDULED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+type MeetingStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
 ```
 
 ### Status Mapping
 
+> [!NOTE]
+> API_SPECIFICATION_1.0.0.md MeetingStatus Enum 기준 (3개 값)
+
 | Status | Label | Color | Description |
 |--------|-------|-------|-------------|
-| `SCHEDULED` | 예정 | `colors.grey500` | 투표 진행 중 |
-| `CONFIRMED` | 확정 | `colors.success` | 과반수 참석 확정 |
-| `COMPLETED` | 완료 | `colors.grey400` | 모임 종료 |
-| `CANCELLED` | 취소 | `colors.error` | 과반수 미달로 취소 |
+| `SCHEDULED` | 예정 | `colors.grey500` | 모임 예정 |
+| `COMPLETED` | 완료 | `colors.grey400` | 모임 완료 |
+| `CANCELLED` | 취소 | `colors.error` | 모임 취소 |
 
 ### Layout
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  📅 2월 독서 토론회                            ✅ 확정     │
+│  📅 2월 독서 토론회                            📅 예정     │
 │  2026-02-15 14:00 · 강남역 스터디카페                      │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  참석: 7/10명 (과반수 충족 ✅)                              │
+│  참석 예정: 7/10명                                          │
 │                                                             │
 │  ┌───────────────┐  ┌───────────────┐                      │
 │  │   참석 확인    │  │   상세 보기    │                      │
@@ -508,7 +541,7 @@ type MeetingStatus = 'SCHEDULED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
     title: '2월 독서 토론회',
     date: new Date('2026-02-15T14:00:00'),
     location: '강남역 스터디카페',
-    status: 'CONFIRMED',
+    status: 'SCHEDULED',
     attendeeCount: 7,
     totalMembers: 10,
     isQuorumMet: true,
@@ -532,16 +565,19 @@ interface AttendanceStatusBadgeProps {
   size?: 'sm' | 'md';
 }
 
-type AttendanceStatus = 'REGISTERED' | 'ATTENDED' | 'NO_SHOW';
+type AttendanceStatus = 'ATTENDING' | 'NOT_ATTENDING' | 'PENDING';
 ```
 
 ### Status Mapping
 
+> [!NOTE]
+> API_SPECIFICATION_1.0.0.md AttendStatus Enum 기준
+
 | Status | Label | Color | Icon |
 |--------|-------|-------|------|
-| `REGISTERED` | 등록 | `colors.grey500` | 📋 |
-| `ATTENDED` | 참석 | `colors.success` | ✅ |
-| `NO_SHOW` | 불참 | `colors.error` | ❌ |
+| `ATTENDING` | 참석 예정 | `colors.success` | ✅ |
+| `NOT_ATTENDING` | 불참석 | `colors.error` | ❌ |
+| `PENDING` | 미응답 | `colors.grey500` | ⏳ |
 
 ### Usage
 
@@ -587,6 +623,52 @@ type ChallengeStatus = 'RECRUITING' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
   <ChallengeStatusBadge status={challenge.status} />
   <h3>{challenge.name}</h3>
 </GroupCard>
+```
+
+---
+
+## 12. MemberStatusBadge (멤버 상태 뱃지)
+
+챌린지 내 멤버의 상태를 표시하는 뱃지입니다.
+
+### Props Interface
+
+```tsx
+interface MemberStatusBadgeProps {
+  status: MemberStatus;
+  size?: 'sm' | 'md';
+}
+
+// API_SPECIFICATION_1.0.0.md MemberStatus Enum 기준
+type MemberStatus = 'ACTIVE' | 'GRACE_PERIOD' | 'KICKED' | 'LEFT';
+```
+
+### Status Mapping
+
+> [!NOTE]
+> API_SPECIFICATION_1.0.0.md MemberStatus Enum 기준
+
+| Status | Label | Color | Icon | 설명 |
+|--------|-------|-------|------|------|
+| `ACTIVE` | 활성 | `colors.success` | ✅ | 정상 참여 중 |
+| `GRACE_PERIOD` | 유예 | `colors.warning` | ⏳ | 미납 후 7일 유예 |
+| `KICKED` | 퇴장 | `colors.error` | ❌ | 투표로 퇴장됨 |
+| `LEFT` | 탈퇴 | `colors.grey400` | 🚪 | 자진 탈퇴 |
+
+### Usage
+
+```tsx
+// 멤버 목록에서 상태 표시
+<MemberCard>
+  <Avatar src={member.avatarUrl} />
+  <span>{member.name}</span>
+  <MemberStatusBadge status={member.status} />
+</MemberCard>
+
+// 유예 상태 강조 (경고 알림)
+{member.status === 'GRACE_PERIOD' && (
+  <AlertBanner variant="warning" message="납입 유예 중 (7일 이내 납입 필요)" />
+)}
 ```
 
 ---

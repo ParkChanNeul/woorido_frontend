@@ -89,8 +89,6 @@ interface ChartDataItem {
 |------|----------|
 | Income (수입) | `colors.income` (#F59E0B) |
 | Expense (지출) | `colors.grey600` |
-| Support (서포트) | `colors.success` |
-| EntryFee (입회비) | `colors.brixGrape` |
 
 ### Styling
 
@@ -351,34 +349,50 @@ interface TransactionTimelineProps {
 
 interface Transaction {
   id: string;
-  type: 'SUPPORT' | 'EXPENSE' | 'ENTRY_FEE' | 'REFUND';
-  category: LedgerCategory;
+  type: TransactionType;       // API 기준
+  category?: ExpenseCategory;  // 지출인 경우만
   amount: number;
   description: string;
   transactionDate: string;
-  linkedVoteId?: string;      // 연결된 투표 ID
-  linkedMeetingId?: string;   // 연결된 모임 ID
+  linkedVoteId?: string;       // 연결된 투표 ID
+  linkedMeetingId?: string;    // 연결된 모임 ID
   createdBy?: {
     name: string;
     avatarUrl?: string;
   };
 }
 
-type LedgerCategory = 'MEETING' | 'FOOD' | 'SUPPLIES' | 'SUPPORT' | 'ENTRY_FEE' | 'OTHER';
+// API_SPECIFICATION_1.0.0.md TransactionType Enum 기준
+type TransactionType = 'CHARGE' | 'WITHDRAW' | 'DEPOSIT' | 'REFUND' | 'FEE' | 'SETTLEMENT';
+
+// API_SPECIFICATION_1.0.0.md ExpenseCategory Enum 기준
+type ExpenseCategory = 'MEETING' | 'FOOD' | 'SUPPLIES' | 'OTHER';
 ```
 
-### Category Icons
+> [!NOTE]
+> **API 정합성 참고**
+> - `TransactionType`: 거래 유형 (6개 값)
+> - `ExpenseCategory`: 지출 카테고리 (4개 값)
 
-| Category | Icon | 색상 |
-|----------|------|------|
-| MEETING | 🏢 | `colors.orange500` |
-| FOOD | 🍽️ | `colors.brixApple` |
-| SUPPLIES | 📦 | `colors.brixGrape` |
-| SUPPORT | 💰 | `colors.success` |
-| ENTRY_FEE | 🎫 | `colors.brixGrape` |
-| OTHER | 📋 | `colors.grey600` |
+### TransactionType Icons
 
-### Layout
+| Type | Icon | 색상 | 설명 |
+|------|------|------|------|
+| CHARGE | 💳 | `colors.success` | 충전 |
+| WITHDRAW | 📤 | `colors.grey600` | 출금 |
+| DEPOSIT | 💰 | `colors.success` | 서포트 납입 |
+| REFUND | 🔙 | `colors.warning` | 환불 |
+| FEE | 📊 | `colors.grey400` | 수수료 |
+| SETTLEMENT | 📋 | `colors.brixGrape` | 정산 |
+
+### ExpenseCategory Icons
+
+| Category | Icon | 색상 | 설명 |
+|----------|------|------|------|
+| MEETING | 🏢 | `colors.orange500` | 모임비 - 장소 대여 등 |
+| FOOD | 🍽️ | `colors.brixApple` | 식비 - 다과, 식사 |
+| SUPPLIES | 📦 | `colors.brixGrape` | 물품 - 소모품 구매 |
+| OTHER | 📋 | `colors.grey600` | 기타 |
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
