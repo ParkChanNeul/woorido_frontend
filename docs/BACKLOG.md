@@ -4,6 +4,67 @@
 
 ---
 
+## UX 문서 구조 재배치 (2026-01-17)
+
+> **목적**: UX 문서 계층 구조 정리 (경로 B 방안 적용)
+> **분석 방법**: ToT (Tree of Thought)
+
+### 변경 전
+
+```
+01_PLANNING/UX_UI/
+├── UX_STRATEGY.md
+├── UX_SCENARIOS.md
+├── UX_EMOTION_MAP.md
+├── IA_SPECIFICATION.md
+├── DESKTOP/          ← 레거시
+└── MOBILE/           ← 레거시
+
+02_ENGINEERING/Frontend/DesignSystem/
+├── UX_FLOW.md
+├── UX_INTERACTIONS.md
+├── UX_MICROMOTION.md
+└── UX_PILOT_PROMPTS.md
+```
+
+### 변경 후
+
+```
+01_PLANNING/UX_UI/
+├── Strategy/           # Why - 전략 계층
+│   ├── UX_STRATEGY.md
+│   ├── UX_SCENARIOS.md
+│   └── UX_EMOTION_MAP.md
+├── Architecture/       # What - 구조 계층
+│   └── IA_SPECIFICATION.md
+└── Behavior/           # How - 행동 계층
+    ├── UX_FLOW.md
+    ├── UX_INTERACTIONS.md
+    ├── UX_MICROMOTION.md
+    └── UX_PILOT_PROMPTS.md
+```
+
+### 작업 내역
+
+| 작업 | 상세 |
+|------|------|
+| ✅ 폴더 생성 | Strategy, Architecture, Behavior 3개 계층 |
+| ✅ 파일 이동 | 8개 UX 문서 계층별 분류 |
+| ✅ 레거시 삭제 | DESKTOP/, MOBILE/ 폴더 및 내용 삭제 |
+| ✅ 링크 수정 | 4개 문서의 상대 경로 업데이트 |
+
+### 삭제된 레거시 파일
+
+- `DESKTOP/IA_DESKTOP.md`
+- `DESKTOP/ONBOARDING_DESKTOP.md`
+- `MOBILE/IA_MOBILE.md`
+- `MOBILE/ONBOARDING_MOBILE.md`
+
+> 세분화된 UX 문서로 대체되어 더 이상 필요하지 않음
+
+---
+
+
 ## 문서 정합성 해결 백로그 (2026-01-15)
 
 > **목적**: woorido_consistency.md에서 식별된 30개 문서 불일치 항목 전체 해결
