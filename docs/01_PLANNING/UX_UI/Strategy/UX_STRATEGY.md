@@ -167,5 +167,6 @@ WOORIDO는 **신뢰 기반의 커뮤니티 금융 경험**을 제공합니다.
 
 - [UX_SCENARIOS.md](./UX_SCENARIOS.md) - 15개 시나리오 상세
 - [UX_EMOTION_MAP.md](./UX_EMOTION_MAP.md) - 감정 맵핑
-- [IA_SPECIFICATION.md](./IA_SPECIFICATION.md) - 정보 구조
-- [PRODUCT_AGENDA.md](../Product/PRODUCT_AGENDA.md) - 프로덕트 아젠다
+- [IA_SPECIFICATION.md](../Architecture/IA_SPECIFICATION.md) - 정보 구조
+- [PRODUCT_AGENDA.md](../../Product/PRODUCT_AGENDA.md) - 프로덕트 아젠다
+

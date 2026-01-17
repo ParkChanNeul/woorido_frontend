@@ -183,5 +183,6 @@
 
 - [UX_FLOW.md](./UX_FLOW.md) - 플로우 다이어그램
 - [UX_MICROMOTION.md](./UX_MICROMOTION.md) - 마이크로 모션
-- [WDS_FORM.md](./WDS_FORM.md) - 폼 컴포넌트
-- [WDS_OVERLAY.md](./WDS_OVERLAY.md) - 모달/BottomSheet
+- [WDS_FORM.md](../../../02_ENGINEERING/Frontend/DesignSystem/WDS_FORM.md) - 폼 컴포넌트
+- [WDS_OVERLAY.md](../../../02_ENGINEERING/Frontend/DesignSystem/WDS_OVERLAY.md) - 모달/BottomSheet
+

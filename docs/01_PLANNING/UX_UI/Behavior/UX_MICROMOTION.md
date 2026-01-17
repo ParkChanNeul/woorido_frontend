@@ -233,6 +233,7 @@
 
 ## 관련 문서
 
-- [DESIGN_TOKENS.md](./DESIGN_TOKENS.md) - 모션 토큰
+- [DESIGN_TOKENS.md](../../../02_ENGINEERING/Frontend/DesignSystem/DESIGN_TOKENS.md) - 모션 토큰
 - [UX_INTERACTIONS.md](./UX_INTERACTIONS.md) - 인터랙션 패턴
-- [WDS_FEEDBACK.md](./WDS_FEEDBACK.md) - 피드백 컴포넌트
+- [WDS_FEEDBACK.md](../../../02_ENGINEERING/Frontend/DesignSystem/WDS_FEEDBACK.md) - 피드백 컴포넌트
+

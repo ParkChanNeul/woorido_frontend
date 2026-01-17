@@ -207,8 +207,9 @@ stateDiagram-v2
 
 ## 관련 문서
 
-- [UX_STRATEGY.md](../../01_PLANNING/UX_UI/UX_STRATEGY.md) - UX 전략 및 원칙
-- [UX_SCENARIOS.md](../../01_PLANNING/UX_UI/UX_SCENARIOS.md) - 15개 시나리오
-- [UX_EMOTION_MAP.md](../../01_PLANNING/UX_UI/UX_EMOTION_MAP.md) - 감정 맵핑
-- [WDS_FEEDBACK.md](./WDS_FEEDBACK.md) - 피드백 컴포넌트
-- [IA_SPECIFICATION.md](../../01_PLANNING/UX_UI/IA_SPECIFICATION.md) - 정보 구조
+- [UX_STRATEGY.md](../Strategy/UX_STRATEGY.md) - UX 전략 및 원칙
+- [UX_SCENARIOS.md](../Strategy/UX_SCENARIOS.md) - 15개 시나리오
+- [UX_EMOTION_MAP.md](../Strategy/UX_EMOTION_MAP.md) - 감정 맵핑
+- [WDS_FEEDBACK.md](../../../02_ENGINEERING/Frontend/DesignSystem/WDS_FEEDBACK.md) - 피드백 컴포넌트
+- [IA_SPECIFICATION.md](../Architecture/IA_SPECIFICATION.md) - 정보 구조
+
