@@ -1,0 +1,890 @@
+{
+    "core": {
+        "other": {
+            "name": {
+                "$value": "WooriDo Design System",
+                "$type": "other"
+            },
+            "version": {
+                "$value": "2.0.0",
+                "$type": "other"
+            },
+            "brand": {
+                "name": {
+                    "$value": "WooriDo (우리두)",
+                    "$type": "other"
+                },
+                "description": {
+                    "$value": "Community Challenge Platform",
+                    "$type": "other"
+                },
+                "primaryColor": {
+                    "$value": "{colors.primary.orange500}",
+                    "$type": "other"
+                }
+            }
+        },
+        "fontFamilies": {
+            "sans": {
+                "$value": "Pretendard Variable",
+                "$type": "fontFamilies",
+                "$description": "기본 본문 폰트"
+            },
+            "mono": {
+                "$value": "JetBrains Mono",
+                "$type": "fontFamilies",
+                "$description": "코드/숫자 폰트"
+            }
+        },
+        "fontWeights": {
+            "regular": {
+                "$value": "Regular",
+                "$type": "fontWeights",
+                "$description": "400"
+            },
+            "medium": {
+                "$value": "Medium",
+                "$type": "fontWeights",
+                "$description": "500"
+            },
+            "semibold": {
+                "$value": "SemiBold",
+                "$type": "fontWeights",
+                "$description": "600"
+            },
+            "bold": {
+                "$value": "Bold",
+                "$type": "fontWeights",
+                "$description": "700"
+            }
+        },
+        "fontSizes": {
+            "w1": {
+                "$value": "28px",
+                "$type": "fontSizes",
+                "$description": "마케팅 헤드라인"
+            },
+            "w2": {
+                "$value": "24px",
+                "$type": "fontSizes",
+                "$description": "화면 타이틀"
+            },
+            "w3": {
+                "$value": "20px",
+                "$type": "fontSizes",
+                "$description": "섹션 헤더"
+            },
+            "w4": {
+                "$value": "17px",
+                "$type": "fontSizes",
+                "$description": "본문 (Default)"
+            },
+            "w5": {
+                "$value": "15px",
+                "$type": "fontSizes",
+                "$description": "보조 본문"
+            },
+            "w6": {
+                "$value": "13px",
+                "$type": "fontSizes",
+                "$description": "캡션, 라벨"
+            },
+            "w7": {
+                "$value": "11px",
+                "$type": "fontSizes",
+                "$description": "작은 캡션"
+            }
+        },
+        "lineHeights": {
+            "tight": {
+                "$value": "135%",
+                "$type": "lineHeights",
+                "$description": "헤드라인용"
+            },
+            "snug": {
+                "$value": "140%",
+                "$type": "lineHeights"
+            },
+            "normal": {
+                "$value": "145%",
+                "$type": "lineHeights"
+            },
+            "relaxed": {
+                "$value": "150%",
+                "$type": "lineHeights"
+            },
+            "loose": {
+                "$value": "155%",
+                "$type": "lineHeights",
+                "$description": "본문용"
+            }
+        },
+        "letterSpacing": {
+            "normal": {
+                "$value": "0%",
+                "$type": "letterSpacing"
+            },
+            "financial": {
+                "$value": "-2%",
+                "$type": "letterSpacing",
+                "$description": "금액 표시용 타이트 자간"
+            }
+        },
+        "paragraphSpacing": {
+            "none": {
+                "$value": "0px",
+                "$type": "paragraphSpacing"
+            },
+            "normal": {
+                "$value": "16px",
+                "$type": "paragraphSpacing"
+            }
+        },
+        "textCase": {
+            "none": {
+                "$value": "none",
+                "$type": "textCase"
+            },
+            "uppercase": {
+                "$value": "uppercase",
+                "$type": "textCase"
+            }
+        },
+        "textDecoration": {
+            "none": {
+                "$value": "none",
+                "$type": "textDecoration"
+            },
+            "underline": {
+                "$value": "underline",
+                "$type": "textDecoration"
+            },
+            "lineThrough": {
+                "$value": "line-through",
+                "$type": "textDecoration"
+            }
+        },
+        "colors": {
+            "primary": {
+                "orange50": {
+                    "$value": "#FFF7ED",
+                    "$type": "color",
+                    "$description": "가장 연한 배경"
+                },
+                "orange100": {
+                    "$value": "#FFEDD5",
+                    "$type": "color",
+                    "$description": "Container 배경"
+                },
+                "orange200": {
+                    "$value": "#FED7AA",
+                    "$type": "color",
+                    "$description": "Hover 배경"
+                },
+                "orange300": {
+                    "$value": "#FDBA74",
+                    "$type": "color"
+                },
+                "orange400": {
+                    "$value": "#FB923C",
+                    "$type": "color",
+                    "$description": "Secondary"
+                },
+                "orange500": {
+                    "$value": "#E9481E",
+                    "$type": "color",
+                    "$description": "Primary (로고)"
+                },
+                "orange600": {
+                    "$value": "#D43D16",
+                    "$type": "color",
+                    "$description": "Hover 상태"
+                },
+                "orange700": {
+                    "$value": "#BF310E",
+                    "$type": "color",
+                    "$description": "Active/Pressed"
+                },
+                "orange800": {
+                    "$value": "#9A2A0B",
+                    "$type": "color"
+                },
+                "orange900": {
+                    "$value": "#7C2D12",
+                    "$type": "color",
+                    "$description": "가장 진한"
+                }
+            },
+            "grey": {
+                "grey50": {
+                    "$value": "#FAFAF9",
+                    "$type": "color",
+                    "$description": "앱 배경"
+                },
+                "grey100": {
+                    "$value": "#F5F5F4",
+                    "$type": "color",
+                    "$description": "카드/섹션 배경"
+                },
+                "grey200": {
+                    "$value": "#E7E5E4",
+                    "$type": "color",
+                    "$description": "Divider"
+                },
+                "grey300": {
+                    "$value": "#D6D3D1",
+                    "$type": "color",
+                    "$description": "Border"
+                },
+                "grey400": {
+                    "$value": "#A8A29E",
+                    "$type": "color",
+                    "$description": "Placeholder"
+                },
+                "grey500": {
+                    "$value": "#78716C",
+                    "$type": "color",
+                    "$description": "Disabled Text"
+                },
+                "grey600": {
+                    "$value": "#57534E",
+                    "$type": "color",
+                    "$description": "Sub Text"
+                },
+                "grey700": {
+                    "$value": "#44403C",
+                    "$type": "color"
+                },
+                "grey800": {
+                    "$value": "#292524",
+                    "$type": "color"
+                },
+                "grey900": {
+                    "$value": "#1C1917",
+                    "$type": "color",
+                    "$description": "Main Text"
+                },
+                "white": {
+                    "$value": "#FFFFFF",
+                    "$type": "color"
+                }
+            },
+            "status": {
+                "success": {
+                    "$value": "#16A34A",
+                    "$type": "color",
+                    "$description": "성공, 완료"
+                },
+                "warning": {
+                    "$value": "#F59E0B",
+                    "$type": "color",
+                    "$description": "경고, 주의"
+                },
+                "error": {
+                    "$value": "#DC2626",
+                    "$type": "color",
+                    "$description": "에러, 실패"
+                },
+                "info": {
+                    "$value": "{colors.primary.orange500}",
+                    "$type": "color",
+                    "$description": "정보 (Primary 활용)"
+                }
+            },
+            "financial": {
+                "income": {
+                    "$value": "#F59E0B",
+                    "$type": "color",
+                    "$description": "입금, 충전, 이익 (+)"
+                },
+                "expense": {
+                    "$value": "#1C1917",
+                    "$type": "color",
+                    "$description": "지출, 출금 (-)"
+                },
+                "locked": {
+                    "$value": "#78716C",
+                    "$type": "color",
+                    "$description": "보증금, 잠긴 금액"
+                }
+            },
+            "brix": {
+                "honey": {
+                    "$value": "#F59E0B",
+                    "$type": "color",
+                    "$description": "60+ 🍯"
+                },
+                "grape": {
+                    "$value": "#9333EA",
+                    "$type": "color",
+                    "$description": "40~60 🍇"
+                },
+                "apple": {
+                    "$value": "#F43F5E",
+                    "$type": "color",
+                    "$description": "25~40 🍎"
+                },
+                "mandarin": {
+                    "$value": "#E9481E",
+                    "$type": "color",
+                    "$description": "12~25 🍊"
+                },
+                "tomato": {
+                    "$value": "#FCA5A5",
+                    "$type": "color",
+                    "$description": "0~12 🍅"
+                },
+                "bitter": {
+                    "$value": "#14532D",
+                    "$type": "color",
+                    "$description": "<0 🥒"
+                }
+            },
+            "badge": {
+                "blue": {
+                    "$value": "#3B82F6",
+                    "$type": "color"
+                },
+                "blueWeak": {
+                    "$value": "#DBEAFE",
+                    "$type": "color"
+                },
+                "purple": {
+                    "$value": "#9333EA",
+                    "$type": "color"
+                },
+                "purpleWeak": {
+                    "$value": "#F3E8FF",
+                    "$type": "color"
+                },
+                "gold": {
+                    "$value": "#F59E0B",
+                    "$type": "color"
+                },
+                "goldWeak": {
+                    "$value": "#FEF3C7",
+                    "$type": "color"
+                },
+                "greenWeak": {
+                    "$value": "#DCFCE7",
+                    "$type": "color"
+                },
+                "redWeak": {
+                    "$value": "#FEE2E2",
+                    "$type": "color"
+                }
+            }
+        },
+        "borderRadius": {
+            "sm": {
+                "$value": "8px",
+                "$type": "borderRadius",
+                "$description": "버튼, 인풋, 작은 요소"
+            },
+            "md": {
+                "$value": "12px",
+                "$type": "borderRadius",
+                "$description": "칩, 토스트"
+            },
+            "lg": {
+                "$value": "20px",
+                "$type": "borderRadius",
+                "$description": "카드"
+            },
+            "xl": {
+                "$value": "24px",
+                "$type": "borderRadius",
+                "$description": "바텀시트, 모달"
+            },
+            "full": {
+                "$value": "9999px",
+                "$type": "borderRadius",
+                "$description": "뱃지, 아바타, 원형 버튼"
+            }
+        },
+        "borderWidth": {
+            "thin": {
+                "$value": "1px",
+                "$type": "borderWidth"
+            },
+            "medium": {
+                "$value": "2px",
+                "$type": "borderWidth",
+                "$description": "Focus ring"
+            }
+        },
+        "spacing": {
+            "0": {
+                "$value": "0px",
+                "$type": "spacing"
+            },
+            "1": {
+                "$value": "4px",
+                "$type": "spacing"
+            },
+            "2": {
+                "$value": "8px",
+                "$type": "spacing"
+            },
+            "3": {
+                "$value": "12px",
+                "$type": "spacing"
+            },
+            "4": {
+                "$value": "16px",
+                "$type": "spacing"
+            },
+            "5": {
+                "$value": "20px",
+                "$type": "spacing"
+            },
+            "6": {
+                "$value": "24px",
+                "$type": "spacing"
+            },
+            "8": {
+                "$value": "32px",
+                "$type": "spacing"
+            },
+            "10": {
+                "$value": "40px",
+                "$type": "spacing"
+            },
+            "12": {
+                "$value": "48px",
+                "$type": "spacing"
+            },
+            "16": {
+                "$value": "64px",
+                "$type": "spacing"
+            }
+        },
+        "sizing": {
+            "avatar": {
+                "xs": {
+                    "$value": "24px",
+                    "$type": "sizing"
+                },
+                "sm": {
+                    "$value": "32px",
+                    "$type": "sizing"
+                },
+                "md": {
+                    "$value": "40px",
+                    "$type": "sizing"
+                },
+                "lg": {
+                    "$value": "56px",
+                    "$type": "sizing"
+                },
+                "xl": {
+                    "$value": "80px",
+                    "$type": "sizing"
+                }
+            },
+            "icon": {
+                "sm": {
+                    "$value": "16px",
+                    "$type": "sizing"
+                },
+                "md": {
+                    "$value": "20px",
+                    "$type": "sizing"
+                },
+                "lg": {
+                    "$value": "24px",
+                    "$type": "sizing"
+                }
+            }
+        },
+        "opacity": {
+            "disabled": {
+                "$value": "0.5",
+                "$type": "opacity",
+                "$description": "비활성 상태"
+            },
+            "hover": {
+                "$value": "0.8",
+                "$type": "opacity"
+            },
+            "overlay": {
+                "$value": "0.5",
+                "$type": "opacity",
+                "$description": "오버레이 배경"
+            }
+        },
+        "boxShadow": {
+            "sm": {
+                "$value": {
+                    "x": "0",
+                    "y": "1",
+                    "blur": "3",
+                    "spread": "0",
+                    "color": "rgba(0,0,0,0.06)",
+                    "type": "dropShadow"
+                },
+                "$type": "boxShadow",
+                "$description": "기본 카드"
+            },
+            "md": {
+                "$value": {
+                    "x": "0",
+                    "y": "4",
+                    "blur": "12",
+                    "spread": "0",
+                    "color": "rgba(0,0,0,0.08)",
+                    "type": "dropShadow"
+                },
+                "$type": "boxShadow",
+                "$description": "호버 카드, 드롭다운"
+            },
+            "lg": {
+                "$value": {
+                    "x": "0",
+                    "y": "8",
+                    "blur": "24",
+                    "spread": "0",
+                    "color": "rgba(0,0,0,0.12)",
+                    "type": "dropShadow"
+                },
+                "$type": "boxShadow",
+                "$description": "모달, 바텀시트"
+            },
+            "xl": {
+                "$value": {
+                    "x": "0",
+                    "y": "16",
+                    "blur": "48",
+                    "spread": "0",
+                    "color": "rgba(0,0,0,0.16)",
+                    "type": "dropShadow"
+                },
+                "$type": "boxShadow",
+                "$description": "오버레이"
+            }
+        },
+        "dimension": {
+            "breakpoint": {
+                "mobile": {
+                    "$value": "0px",
+                    "$type": "dimension",
+                    "$description": "기본 (모바일)"
+                },
+                "tablet": {
+                    "$value": "768px",
+                    "$type": "dimension",
+                    "$description": "태블릿"
+                },
+                "desktop": {
+                    "$value": "1280px",
+                    "$type": "dimension",
+                    "$description": "데스크탑"
+                }
+            }
+        },
+        "number": {
+            "duration": {
+                "fast": {
+                    "$value": 150,
+                    "$type": "number",
+                    "$description": "호버, 토글 (ms)"
+                },
+                "normal": {
+                    "$value": 250,
+                    "$type": "number",
+                    "$description": "전환, 페이드 (ms)"
+                },
+                "slow": {
+                    "$value": 400,
+                    "$type": "number",
+                    "$description": "모달, 페이지 전환 (ms)"
+                }
+            }
+        },
+        "text": {
+            "easing": {
+                "standard": {
+                    "$value": "cubic-bezier(0.4, 0, 0.2, 1)",
+                    "$type": "text",
+                    "$description": "기본 이징"
+                },
+                "spring": {
+                    "$value": "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    "$type": "text",
+                    "$description": "바운스 효과"
+                },
+                "easeOut": {
+                    "$value": "cubic-bezier(0, 0, 0.2, 1)",
+                    "$type": "text",
+                    "$description": "진입 효과"
+                },
+                "easeIn": {
+                    "$value": "cubic-bezier(0.4, 0, 1, 1)",
+                    "$type": "text",
+                    "$description": "퇴장 효과"
+                }
+            }
+        }
+    },
+    "light": {
+        "semantic": {
+            "background": {
+                "$value": "{core.colors.grey.grey50}",
+                "$type": "color",
+                "$description": "전체 배경"
+            },
+            "surface": {
+                "$value": "{core.colors.grey.white}",
+                "$type": "color",
+                "$description": "카드 표면"
+            },
+            "surfaceGrey": {
+                "$value": "{core.colors.grey.grey100}",
+                "$type": "color",
+                "$description": "회색 표면"
+            },
+            "textPrimary": {
+                "$value": "{core.colors.grey.grey900}",
+                "$type": "color",
+                "$description": "본문 텍스트"
+            },
+            "textSecondary": {
+                "$value": "{core.colors.grey.grey600}",
+                "$type": "color",
+                "$description": "보조 텍스트"
+            },
+            "textDisabled": {
+                "$value": "{core.colors.grey.grey500}",
+                "$type": "color",
+                "$description": "비활성 텍스트"
+            },
+            "border": {
+                "$value": "{core.colors.grey.grey300}",
+                "$type": "color",
+                "$description": "기본 테두리"
+            },
+            "divider": {
+                "$value": "{core.colors.grey.grey200}",
+                "$type": "color",
+                "$description": "구분선"
+            }
+        }
+    },
+    "dark": {
+        "semantic": {
+            "background": {
+                "$value": "{core.colors.grey.grey900}",
+                "$type": "color",
+                "$description": "전체 배경"
+            },
+            "surface": {
+                "$value": "{core.colors.grey.grey800}",
+                "$type": "color",
+                "$description": "카드 표면"
+            },
+            "surfaceGrey": {
+                "$value": "{core.colors.grey.grey700}",
+                "$type": "color",
+                "$description": "회색 표면"
+            },
+            "textPrimary": {
+                "$value": "{core.colors.grey.grey50}",
+                "$type": "color",
+                "$description": "본문 텍스트"
+            },
+            "textSecondary": {
+                "$value": "{core.colors.grey.grey400}",
+                "$type": "color",
+                "$description": "보조 텍스트"
+            },
+            "textDisabled": {
+                "$value": "{core.colors.grey.grey500}",
+                "$type": "color",
+                "$description": "비활성 텍스트"
+            },
+            "border": {
+                "$value": "{core.colors.grey.grey600}",
+                "$type": "color",
+                "$description": "기본 테두리"
+            },
+            "divider": {
+                "$value": "{core.colors.grey.grey700}",
+                "$type": "color",
+                "$description": "구분선"
+            }
+        }
+    },
+    "theme": {
+        "typography": {
+            "w1": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.bold}",
+                    "fontSize": "{core.fontSizes.w1}",
+                    "lineHeight": "{core.lineHeights.tight}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "마케팅 헤드라인"
+            },
+            "w2": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.semibold}",
+                    "fontSize": "{core.fontSizes.w2}",
+                    "lineHeight": "{core.lineHeights.snug}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "화면 타이틀"
+            },
+            "w3": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.semibold}",
+                    "fontSize": "{core.fontSizes.w3}",
+                    "lineHeight": "{core.lineHeights.normal}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "섹션 헤더"
+            },
+            "w4": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.regular}",
+                    "fontSize": "{core.fontSizes.w4}",
+                    "lineHeight": "{core.lineHeights.loose}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "본문 (Default)"
+            },
+            "w5": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.regular}",
+                    "fontSize": "{core.fontSizes.w5}",
+                    "lineHeight": "{core.lineHeights.relaxed}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "보조 본문"
+            },
+            "w6": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.medium}",
+                    "fontSize": "{core.fontSizes.w6}",
+                    "lineHeight": "{core.lineHeights.snug}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "캡션, 라벨"
+            },
+            "w7": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.medium}",
+                    "fontSize": "{core.fontSizes.w7}",
+                    "lineHeight": "{core.lineHeights.tight}",
+                    "letterSpacing": "{core.letterSpacing.normal}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "작은 캡션"
+            },
+            "financialLarge": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.semibold}",
+                    "fontSize": "{core.fontSizes.w1}",
+                    "lineHeight": "{core.lineHeights.tight}",
+                    "letterSpacing": "{core.letterSpacing.financial}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "총 잔액 (tabular-nums)"
+            },
+            "financialMedium": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.semibold}",
+                    "fontSize": "{core.fontSizes.w3}",
+                    "lineHeight": "{core.lineHeights.tight}",
+                    "letterSpacing": "{core.letterSpacing.financial}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "거래 금액 (tabular-nums)"
+            },
+            "financialSmall": {
+                "$value": {
+                    "fontFamily": "{core.fontFamilies.sans}",
+                    "fontWeight": "{core.fontWeights.semibold}",
+                    "fontSize": "{core.fontSizes.w5}",
+                    "lineHeight": "{core.lineHeights.tight}",
+                    "letterSpacing": "{core.letterSpacing.financial}",
+                    "paragraphSpacing": "{core.paragraphSpacing.none}",
+                    "textCase": "{core.textCase.none}",
+                    "textDecoration": "{core.textDecoration.none}"
+                },
+                "$type": "typography",
+                "$description": "인라인 금액 (tabular-nums)"
+            }
+        },
+        "border": {
+            "default": {
+                "$value": {
+                    "color": "{core.colors.grey.grey300}",
+                    "width": "{core.borderWidth.thin}",
+                    "style": "solid"
+                },
+                "$type": "border",
+                "$description": "기본 테두리"
+            },
+            "focus": {
+                "$value": {
+                    "color": "{core.colors.primary.orange500}",
+                    "width": "{core.borderWidth.medium}",
+                    "style": "solid"
+                },
+                "$type": "border",
+                "$description": "포커스 링"
+            },
+            "error": {
+                "$value": {
+                    "color": "{core.colors.status.error}",
+                    "width": "{core.borderWidth.thin}",
+                    "style": "solid"
+                },
+                "$type": "border",
+                "$description": "에러 상태"
+            }
+        }
+    }
+}
