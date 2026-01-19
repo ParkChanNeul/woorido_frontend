@@ -197,22 +197,72 @@ export function CreateChallengeForm() {
 
 <!-- CSS 변수로 정의된 WDS 토큰 참조 -->
 
-**Colors:**
+**Colors (Primary & Grey):**
 - `--color-orange-500` (#E9481E) - Primary brand
-- `--color-grey-*` - Warm grey scale
-- `--color-success/warning/error` - Status
+- `--color-orange-600` (#D43D16) - Hover state
+- `--color-grey-50` ~ `--color-grey-900` - Warm grey scale
+- `--color-success` (#16A34A) / `--color-warning` (#F59E0B) / `--color-error` (#DC2626)
+
+**Financial Colors:**
+- `--color-income` (#F59E0B) - 입금, 충전, 이익 (+)
+- `--color-expense` (#1C1917) - 지출, 출금 (-)
+- `--color-locked` (#78716C) - 보증금, 잠긴 금액
+
+**Brix Colors (당도 시스템):**
+- `--color-brix-honey` (#F59E0B) - 60+ 🍯
+- `--color-brix-grape` (#9333EA) - 40~60 🍇
+- `--color-brix-apple` (#F43F5E) - 25~40 🍎
+- `--color-brix-mandarin` (#E9481E) - 12~25 🍊
+- `--color-brix-tomato` (#FCA5A5) - 0~12 🍅
+- `--color-brix-bitter` (#14532D) - <0 🥒
 
 **Typography:**
-- `--font-w1` ~ `--font-w7` - Text scale
-- `--font-financial-*` - Money display
+- `--font-w1` (28px/Bold) - 마케팅 헤드라인
+- `--font-w2` (24px/SemiBold) - 화면 타이틀
+- `--font-w3` (20px/SemiBold) - 섹션 헤더
+- `--font-w4` (17px/Regular) - 본문 (Default)
+- `--font-w5` (15px/Regular) - 보조 본문
+- `--font-w6` (13px/Medium) - 캡션, 라벨
+- `--font-w7` (11px/Medium) - 작은 캡션
+- `--font-financial-large/medium/small` - 금액 표시 (tabular-nums)
 
 **Shape:**
-- `--radius-sm/md/lg/xl/full` - Border radius
+- `--radius-sm` (8px) / `--radius-md` (12px) / `--radius-lg` (20px) / `--radius-xl` (24px)
 - `--shadow-sm/md/lg/xl` - Elevation
 
 **Motion:**
-- `--motion-duration-fast/normal/slow`
+- `--motion-duration-fast` (150ms) / `--motion-duration-normal` (250ms) / `--motion-duration-slow` (400ms)
 - `--motion-ease-standard/decel/accel/spring`
+
+### 2.5 Overlay Libraries
+
+<!-- BottomSheet, Toast, Animation 라이브러리 -->
+
+| 용도 | 라이브러리 | 사용법 |
+|------|------------|--------|
+| BottomSheet | `vaul` | `<Drawer.Root>` |
+| Toast | `sonner` | `toast('메시지')` |
+| Animation | `framer-motion` | `<motion.div>` |
+
+```tsx
+// BottomSheet 예시
+import { Drawer } from 'vaul';
+
+<Drawer.Root>
+  <Drawer.Trigger>Open</Drawer.Trigger>
+  <Drawer.Portal>
+    <Drawer.Overlay className={styles.overlay} />
+    <Drawer.Content className={styles.content}>
+      {/* Content */}
+    </Drawer.Content>
+  </Drawer.Portal>
+</Drawer.Root>
+
+// Toast 예시
+import { toast } from 'sonner';
+toast.success('저장되었습니다');
+toast.error('오류가 발생했습니다');
+```
 
 ---
 
