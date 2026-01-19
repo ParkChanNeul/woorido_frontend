@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WDS Viewer v2.0 - WooriDo Design System</title>
+
+  <!-- Pretendard Font -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+
+  <style>
+    /* ===== CSS VARIABLES (from wds-tokens.json) ===== */
+    :root {
+      /* Primary (Mandarin Orange) */
+      --color-orange-50: #FFF7ED;
+      --color-orange-100: #FFEDD5;
+      --color-orange-200: #FED7AA;
+      --color-orange-300: #FDBA74;
+      --color-orange-400: #FB923C;
+      --color-orange-500: #E9481E;
+      --color-orange-600: #D43D16;
+      --color-orange-700: #BF310E;
+      --color-orange-800: #9A2A0B;
+      --color-orange-900: #7C2D12;
+
+      /* Grey (Warm Stone) */
+      --color-grey-50: #FAFAF9;
+      --color-grey-100: #F5F5F4;
+      --color-grey-200: #E7E5E4;
+      --color-grey-300: #D6D3D1;
+      --color-grey-400: #A8A29E;
+      --color-grey-500: #78716C;
+      --color-grey-600: #57534E;
+      --color-grey-700: #44403C;
+      --color-grey-800: #292524;
+      --color-grey-900: #1C1917;
+
+      /* Status */
+      --color-success: #16A34A;
+      --color-warning: #F59E0B;
+      --color-error: #DC2626;
+      --color-info: #E9481E;
+
+      /* Financial */
+      --color-income: #F59E0B;
+      --color-expense: #1C1917;
+      --color-locked: #78716C;
+
+      /* Brix */
+      --color-brix-honey: #F59E0B;
+      --color-brix-grape: #9333EA;
+      --color-brix-apple: #F43F5E;
+      --color-brix-mandarin: #E9481E;
+      --color-brix-tomato: #FCA5A5;
+      --color-brix-bitter: #14532D;
+
+      /* Semantic (Light Mode) */
+      --color-background: var(--color-grey-50);
+      --color-surface: #FFFFFF;
+      --color-surface-grey: var(--color-grey-100);
+      --color-text-primary: var(--color-grey-900);
+      --color-text-secondary: var(--color-grey-600);
+      --color-text-disabled: var(--color-grey-500);
+      --color-border: var(--color-grey-300);
+      --color-divider: var(--color-grey-200);
+
+      /* Shape */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+
+      /* Shadow */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+
+      /* Motion */
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-decel: cubic-bezier(0, 0, 0.2, 1);
+      --ease-accel: cubic-bezier(0.4, 0, 1, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      /* Typography */
+      --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --color-background: var(--color-grey-900);
+      --color-surface: var(--color-grey-800);
+      --color-surface-grey: var(--color-grey-700);
+      --color-text-primary: var(--color-grey-50);
+      --color-text-secondary: var(--color-grey-400);
+      --color-border: var(--color-grey-600);
+      --color-divider: var(--color-grey-700);
+    }
+
+    /* ===== RESET & BASE ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--color-text-primary);
+      background: var(--color-background);
+      min-height: 100vh;
+      transition: background var(--duration-normal) var(--ease-standard),
+        color var(--duration-normal) var(--ease-standard);
+    }
+
+    /* ===== LAYOUT ===== */
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--color-divider);
+      position: sticky;
+      top: 0;
+      background: var(--color-background);
+      z-index: 100;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--color-surface-grey);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .theme-toggle:hover {
+      background: var(--color-orange-100);
+      border-color: var(--color-orange-500);
+    }
+
+    /* UX Pilot Button */
+    .ux-pilot-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--color-orange-500);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .ux-pilot-btn:hover {
+      background: var(--color-orange-600);
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      padding: 16px 0;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--color-divider);
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .tab-btn:hover {
+      background: var(--color-surface-grey);
+      color: var(--color-text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--color-orange-100);
+      color: var(--color-orange-500);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      padding: 24px 0;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .subsection-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 24px 0 16px;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== COLOR PALETTE ===== */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .color-card {
+      padding: 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .color-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .color-swatch {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      border: 1px solid var(--color-divider);
+    }
+
+    .color-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .color-value {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .typo-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .typo-item {
+      padding: 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-md);
+    }
+
+    .typo-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+    }
+
+    .typo-w1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .typo-w2 {
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .typo-w3 {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .typo-w4 {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.55;
+    }
+
+    .typo-w5 {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    .typo-w6 {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .typo-w7 {
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .financial-text {
+      font-weight: 600;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .financial-lg {
+      font-size: 28px;
+    }
+
+    .financial-md {
+      font-size: 20px;
+    }
+
+    .financial-sm {
+      font-size: 15px;
+    }
+
+    /* ===== SHAPE & SHADOW ===== */
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .shape-card {
+      padding: 20px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      text-align: center;
+    }
+
+    .shape-preview {
+      width: 80px;
+      height: 80px;
+      background: var(--color-orange-500);
+      margin: 0 auto 12px;
+    }
+
+    .shadow-preview {
+      width: 80px;
+      height: 80px;
+      background: var(--color-surface);
+      margin: 0 auto 12px;
+      border-radius: var(--radius-md);
+    }
+
+    /* ===== MOTION ===== */
+    .motion-demo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .motion-card {
+      padding: 20px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .motion-box {
+      width: 60px;
+      height: 60px;
+      background: var(--color-orange-500);
+      border-radius: var(--radius-sm);
+      margin: 0 auto 16px;
+      cursor: pointer;
+    }
+
+    .motion-box:hover {
+      transform: scale(1.1);
+    }
+
+    .motion-box.fast {
+      transition: transform var(--duration-fast) var(--ease-standard);
+    }
+
+    .motion-box.normal {
+      transition: transform var(--duration-normal) var(--ease-standard);
+    }
+
+    .motion-box.slow {
+      transition: transform var(--duration-slow) var(--ease-standard);
+    }
+
+    .motion-box.spring {
+      transition: transform var(--duration-normal) var(--ease-spring);
+    }
+
+    .motion-box.decel {
+      transition: transform var(--duration-normal) var(--ease-decel);
+    }
+
+    /* ===== COMPONENTS: Foundation ===== */
+    .component-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .btn-primary {
+      background: var(--color-orange-500);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-orange-600);
+    }
+
+    .btn-primary:active {
+      background: var(--color-orange-700);
+    }
+
+    .btn-secondary {
+      background: var(--color-grey-100);
+      color: var(--color-grey-900);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-grey-200);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-orange-500);
+    }
+
+    .btn-ghost:hover {
+      background: var(--color-orange-50);
+    }
+
+    .btn-danger {
+      background: var(--color-error);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      opacity: 0.9;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 17px;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius-full);
+    }
+
+    .badge-fill-orange {
+      background: var(--color-orange-500);
+      color: white;
+    }
+
+    .badge-fill-green {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .badge-fill-red {
+      background: var(--color-error);
+      color: white;
+    }
+
+    .badge-fill-grey {
+      background: var(--color-grey-500);
+      color: white;
+    }
+
+    .badge-fill-purple {
+      background: var(--color-brix-grape);
+      color: white;
+    }
+
+    .badge-fill-gold {
+      background: var(--color-brix-honey);
+      color: white;
+    }
+
+    .badge-weak-orange {
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+    }
+
+    .badge-weak-green {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .badge-weak-red {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    .badge-weak-grey {
+      background: var(--color-grey-100);
+      color: var(--color-grey-700);
+    }
+
+    /* Avatar */
+    .avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+      font-weight: 600;
+      overflow: hidden;
+    }
+
+    .avatar-xs {
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+    }
+
+    .avatar-sm {
+      width: 32px;
+      height: 32px;
+      font-size: 13px;
+    }
+
+    .avatar-md {
+      width: 40px;
+      height: 40px;
+      font-size: 15px;
+    }
+
+    .avatar-lg {
+      width: 56px;
+      height: 56px;
+      font-size: 17px;
+    }
+
+    .avatar-xl {
+      width: 80px;
+      height: 80px;
+      font-size: 20px;
+    }
+
+    /* Chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .chip:hover {
+      background: var(--color-surface-grey);
+    }
+
+    .chip.selected {
+      background: var(--color-orange-100);
+      border-color: var(--color-orange-500);
+      color: var(--color-orange-700);
+    }
+
+    /* Input */
+    .input {
+      padding: 12px 16px;
+      font-size: 15px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      width: 100%;
+      max-width: 300px;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--color-orange-500);
+      box-shadow: 0 0 0 3px var(--color-orange-100);
+    }
+
+    .input::placeholder {
+      color: var(--color-grey-400);
+    }
+
+    /* ===== FEEDBACK ===== */
+    .skeleton {
+      background: linear-gradient(90deg, var(--color-grey-200) 25%, var(--color-grey-100) 50%, var(--color-grey-200) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-wave 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    @keyframes skeleton-wave {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--color-grey-200);
+      border-top-color: var(--color-orange-500);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spinner-sm {
+      width: 16px;
+      height: 16px;
+      border-width: 2px;
+    }
+
+    .spinner-lg {
+      width: 48px;
+      height: 48px;
+      border-width: 4px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--color-grey-200);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-orange-500);
+      border-radius: var(--radius-full);
+      transition: width var(--duration-normal) var(--ease-standard);
+    }
+
+    .progress-success .progress-fill {
+      background: var(--color-success);
+    }
+
+    .progress-warning .progress-fill {
+      background: var(--color-warning);
+    }
+
+    /* ===== DOMAIN: Brix ===== */
+    .brix-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+    }
+
+    .brix-honey {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .brix-grape {
+      background: #F3E8FF;
+      color: #6B21A8;
+    }
+
+    .brix-apple {
+      background: #FCE7F3;
+      color: #9D174D;
+    }
+
+    .brix-mandarin {
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+    }
+
+    .brix-tomato {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    .brix-bitter {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    /* Financial Text */
+    .financial {
+      font-weight: 600;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .financial-income {
+      color: var(--color-income);
+    }
+
+    .financial-expense {
+      color: var(--color-expense);
+    }
+
+    .financial-locked {
+      color: var(--color-locked);
+    }
+
+    /* Status Badges */
+    .status-recruiting {
+      background: var(--color-orange-500);
+      color: white;
+    }
+
+    .status-active {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .status-paused {
+      background: var(--color-grey-200);
+      color: var(--color-grey-700);
+    }
+
+    .status-closed {
+      background: var(--color-grey-200);
+      color: var(--color-grey-700);
+    }
+
+    /* ===== NAVIGATION ===== */
+    .bottom-nav-demo {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      font-size: 11px;
+      color: var(--color-grey-500);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .nav-item:hover {
+      color: var(--color-grey-700);
+    }
+
+    .nav-item.active {
+      color: var(--color-orange-500);
+    }
+
+    .nav-icon {
+      font-size: 24px;
+    }
+
+    .segmented-control {
+      display: inline-flex;
+      padding: 4px;
+      background: var(--color-grey-100);
+      border-radius: var(--radius-sm);
+    }
+
+    .segment-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      border-radius: calc(var(--radius-sm) - 2px);
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .segment-btn.active {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ===== TOAST ===== */
+    .toast-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 400px;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      border-left: 4px solid;
+    }
+
+    .toast-success {
+      border-left-color: var(--color-success);
+    }
+
+    .toast-error {
+      border-left-color: var(--color-error);
+    }
+
+    .toast-warning {
+      border-left-color: var(--color-warning);
+    }
+
+    .toast-info {
+      border-left-color: var(--color-orange-500);
+    }
+
+    /* ===== UTILITIES ===== */
+    .copy-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 12px 24px;
+      background: var(--color-grey-900);
+      color: white;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      opacity: 0;
+      transition: all var(--duration-normal) var(--ease-spring);
+      z-index: 1000;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 2px 6px;
+      background: var(--color-surface-grey);
+      border-radius: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .tab-nav {
+        gap: 2px;
+      }
+
+      .tab-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+    }
+
+    /* ===== OVERLAY ===== */
+    .modal-demo {
+      padding: 24px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      max-width: 480px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-divider);
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+    }
+
+    .modal-body {
+      padding: 16px 0;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-divider);
+    }
+
+    .bottomsheet-demo {
+      background: var(--color-surface);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: 16px;
+      box-shadow: var(--shadow-xl);
+      max-width: 400px;
+    }
+
+    .bottomsheet-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--color-grey-300);
+      border-radius: var(--radius-full);
+      margin: 0 auto 16px;
+    }
+
+    .tooltip-demo {
+      position: relative;
+      display: inline-block;
+      padding: 8px 12px;
+      background: var(--color-grey-900);
+      color: white;
+      font-size: 13px;
+      border-radius: var(--radius-sm);
+    }
+
+    .tooltip-demo::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--color-grey-900);
+    }
+
+    /* ===== FORM ===== */
+    .form-field {
+      margin-bottom: 20px;
+      max-width: 400px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .form-error {
+      font-size: 11px;
+      color: var(--color-error);
+      margin-top: 4px;
+    }
+
+    .amount-input-wrapper {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0 16px;
+      background: var(--color-surface);
+    }
+
+    .amount-input-wrapper:focus-within {
+      border-color: var(--color-orange-500);
+      box-shadow: 0 0 0 3px var(--color-orange-100);
+    }
+
+    .amount-input {
+      flex: 1;
+      border: none;
+      padding: 12px 0;
+      font-size: 20px;
+      font-weight: 600;
+      font-feature-settings: "tnum";
+      text-align: right;
+      background: transparent;
+      color: var(--color-text-primary);
+    }
+
+    .amount-input:focus {
+      outline: none;
+    }
+
+    .amount-suffix {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      margin-left: 8px;
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preset-btn {
+      padding: 8px 16px;
+      background: var(--color-grey-100);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .select-wrapper {
+      position: relative;
+      max-width: 300px;
+    }
+
+    .select-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .select-dropdown {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      margin-top: 4px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .select-option {
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+
+    .select-option:hover {
+      background: var(--color-grey-100);
+    }
+
+    .select-option.selected {
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+    }
+
+    .textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 15px;
+      resize: vertical;
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+    }
+
+    .textarea:focus {
+      outline: none;
+      border-color: var(--color-orange-500);
+      box-shadow: 0 0 0 3px var(--color-orange-100);
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .checkbox-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--color-border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .checkbox-box.checked {
+      background: var(--color-orange-500);
+      border-color: var(--color-orange-500);
+      color: white;
+    }
+
+    /* ===== CARDS ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .group-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .group-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .group-card-thumb {
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(135deg, var(--color-orange-100), var(--color-orange-200));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    .group-card-body {
+      padding: 16px;
+    }
+
+    .group-card-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .group-card-meta {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .group-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vote-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .vote-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .vote-card-title {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .vote-progress {
+      margin: 12px 0;
+    }
+
+    .vote-bar {
+      height: 12px;
+      background: var(--color-grey-200);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .vote-fill {
+      height: 100%;
+      background: var(--color-success);
+      border-radius: var(--radius-full);
+    }
+
+    .vote-threshold {
+      position: absolute;
+      left: 70%;
+      top: -4px;
+      bottom: -4px;
+      width: 2px;
+      background: var(--color-grey-900);
+    }
+
+    .vote-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, var(--color-orange-500), var(--color-orange-600));
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      color: white;
+    }
+
+    .balance-label {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 700;
+      font-feature-settings: "tnum";
+      margin: 8px 0;
+    }
+
+    .balance-sub {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .balance-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .balance-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .meeting-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .meeting-date {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .ledger-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-divider);
+    }
+
+    .ledger-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ledger-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--color-grey-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    /* ===== EMPTY & ALERT ===== */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .empty-desc {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .alert-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+    }
+
+    .alert-warning {
+      background: #FEF3C7;
+    }
+
+    .alert-error {
+      background: #FEE2E2;
+    }
+
+    .alert-info {
+      background: var(--color-orange-100);
+    }
+
+    .alert-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .alert-desc {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    .countdown {
+      font-size: 24px;
+      font-weight: 600;
+      font-feature-settings: "tnum";
+    }
+
+    .countdown.urgent {
+      color: var(--color-warning);
+    }
+
+    .countdown.critical {
+      color: var(--color-error);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--color-divider);
+      margin: 16px 0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    .spacing-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .spacing-box {
+      background: var(--color-orange-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--color-orange-700);
+    }
+
+    .breakpoint-grid {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .breakpoint-card {
+      padding: 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-md);
+      min-width: 150px;
+    }
+
+    .breakpoint-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .breakpoint-range {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <span>🍊</span>
+        <span>WDS Viewer v2.0</span>
+      </div>
+      <div class="header-actions">
+        <button class="ux-pilot-btn" onclick="copyUxPilotContext()">
+          📋 UX Pilot 컨텍스트 복사
+        </button>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span id="theme-icon">☀️</span>
+          <span id="theme-label">Light</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="colors">🎨 Colors</button>
+      <button class="tab-btn" data-tab="typography">🔤 Typography</button>
+      <button class="tab-btn" data-tab="shape">📐 Shape</button>
+      <button class="tab-btn" data-tab="motion">✨ Motion</button>
+      <button class="tab-btn" data-tab="foundation">🧱 Foundation</button>
+      <button class="tab-btn" data-tab="overlay">📦 Overlay</button>
+      <button class="tab-btn" data-tab="form">📝 Form</button>
+      <button class="tab-btn" data-tab="feedback">💬 Feedback</button>
+      <button class="tab-btn" data-tab="domain">🏷️ Domain</button>
+      <button class="tab-btn" data-tab="cards">🃏 Cards</button>
+      <button class="tab-btn" data-tab="navigation">🧭 Navigation</button>
+      <button class="tab-btn" data-tab="ledger">📊 Ledger</button>
+      <button class="tab-btn" data-tab="calendar">📅 Calendar</button>
+      <button class="tab-btn" data-tab="responsive">📱 Responsive</button>
+    </nav>
+
+    <!-- Tab: Colors -->
+    <section class="tab-content active" id="colors">
+      <h2 class="section-title">Colors</h2>
+
+      <h3 class="subsection-title">Primary (Mandarin Orange)</h3>
+      <div class="color-grid" id="primary-colors"></div>
+
+      <h3 class="subsection-title">Grey (Warm Stone)</h3>
+      <div class="color-grid" id="grey-colors"></div>
+
+      <h3 class="subsection-title">Status</h3>
+      <div class="color-grid" id="status-colors"></div>
+
+      <h3 class="subsection-title">Financial</h3>
+      <div class="color-grid" id="financial-colors"></div>
+
+      <h3 class="subsection-title">Brix (당도)</h3>
+      <div class="color-grid" id="brix-colors"></div>
+    </section>
+
+    <!-- Tab: Typography -->
+    <section class="tab-content" id="typography">
+      <h2 class="section-title">Typography</h2>
+
+      <h3 class="subsection-title">Type Scale</h3>
+      <div class="typo-scale">
+        <div class="typo-item">
+          <div class="typo-label">w1 · 28px · Bold · Marketing Headline</div>
+          <div class="typo-w1">우리두와 함께하는 커뮤니티 챌린지</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">w2 · 24px · SemiBold · Screen Title</div>
+          <div class="typo-w2">책벌레들 - 독서 챌린지</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">w3 · 20px · SemiBold · Section Header</div>
+          <div class="typo-w3">이번 달 장부 현황</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">w4 · 17px · Regular · Body (Default)</div>
+          <div class="typo-w4">오늘 독서 모임에서 읽은 책은 정말 인상 깊었어요. 다음 모임이 기대됩니다.</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">w5 · 15px · Regular · Sub Body</div>
+          <div class="typo-w5">월 회비 100,000원 · 매주 토요일 오후 2시</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">w6 · 13px · Medium · Caption, Label</div>
+          <div class="typo-w6">2026-01-19 · 8명 참여중</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">w7 · 11px · Medium · Small Caption</div>
+          <div class="typo-w7">마지막 업데이트: 방금 전</div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Financial Typography (Tabular Nums)</h3>
+      <div class="typo-scale">
+        <div class="typo-item">
+          <div class="typo-label">financialLarge · 28px · 총 잔액</div>
+          <div class="financial financial-lg">₩3,200,000</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">financialMedium · 20px · 거래 금액</div>
+          <div class="financial financial-md financial-income">+500,000원</div>
+          <div class="financial financial-md financial-expense">-150,000원</div>
+        </div>
+        <div class="typo-item">
+          <div class="typo-label">financialSmall · 15px · 인라인 금액</div>
+          <div class="financial financial-sm financial-locked">보증금 100,000원</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Shape -->
+    <section class="tab-content" id="shape">
+      <h2 class="section-title">Shape & Shadow</h2>
+
+      <h3 class="subsection-title">Border Radius</h3>
+      <div class="shape-grid">
+        <div class="shape-card">
+          <div class="shape-preview" style="border-radius: var(--radius-sm)"></div>
+          <div class="typo-w6">radiusSm</div>
+          <div class="code">8px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-preview" style="border-radius: var(--radius-md)"></div>
+          <div class="typo-w6">radiusMd</div>
+          <div class="code">12px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-preview" style="border-radius: var(--radius-lg)"></div>
+          <div class="typo-w6">radiusLg</div>
+          <div class="code">20px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-preview" style="border-radius: var(--radius-xl)"></div>
+          <div class="typo-w6">radiusXl</div>
+          <div class="code">24px</div>
+        </div>
+        <div class="shape-card">
+          <div class="shape-preview" style="border-radius: var(--radius-full)"></div>
+          <div class="typo-w6">radiusFull</div>
+          <div class="code">9999px</div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Shadow (Elevation)</h3>
+      <div class="shape-grid">
+        <div class="shape-card">
+          <div class="shadow-preview" style="box-shadow: var(--shadow-sm)"></div>
+          <div class="typo-w6">shadowSm</div>
+          <div class="code">기본 카드</div>
+        </div>
+        <div class="shape-card">
+          <div class="shadow-preview" style="box-shadow: var(--shadow-md)"></div>
+          <div class="typo-w6">shadowMd</div>
+          <div class="code">호버, 드롭다운</div>
+        </div>
+        <div class="shape-card">
+          <div class="shadow-preview" style="box-shadow: var(--shadow-lg)"></div>
+          <div class="typo-w6">shadowLg</div>
+          <div class="code">모달, 바텀시트</div>
+        </div>
+        <div class="shape-card">
+          <div class="shadow-preview" style="box-shadow: var(--shadow-xl)"></div>
+          <div class="typo-w6">shadowXl</div>
+          <div class="code">오버레이</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Motion -->
+    <section class="tab-content" id="motion">
+      <h2 class="section-title">Motion (Hover to preview)</h2>
+
+      <h3 class="subsection-title">Duration</h3>
+      <div class="motion-demo">
+        <div class="motion-card">
+          <div class="motion-box fast"></div>
+          <div class="typo-w6">durationFast</div>
+          <div class="code">150ms</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-box normal"></div>
+          <div class="typo-w6">durationNormal</div>
+          <div class="code">250ms</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-box slow"></div>
+          <div class="typo-w6">durationSlow</div>
+          <div class="code">400ms</div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Easing</h3>
+      <div class="motion-demo">
+        <div class="motion-card">
+          <div class="motion-box normal"></div>
+          <div class="typo-w6">easeStandard</div>
+          <div class="code">기본 이징</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-box spring"></div>
+          <div class="typo-w6">easeSpring</div>
+          <div class="code">바운스 효과</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-box decel"></div>
+          <div class="typo-w6">easeDecel</div>
+          <div class="code">진입 효과</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Foundation -->
+    <section class="tab-content" id="foundation">
+      <h2 class="section-title">Foundation Components</h2>
+
+      <h3 class="subsection-title">Buttons</h3>
+      <div class="component-group">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn btn-danger">Danger</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+      <div class="component-group">
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary">Medium</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+      </div>
+
+      <h3 class="subsection-title">Badges</h3>
+      <div class="component-group">
+        <span class="badge badge-fill-orange">모집 중</span>
+        <span class="badge badge-fill-green">진행 중</span>
+        <span class="badge badge-fill-red">긴급</span>
+        <span class="badge badge-fill-grey">종료</span>
+        <span class="badge badge-fill-purple">프리미엄</span>
+        <span class="badge badge-fill-gold">인증</span>
+      </div>
+      <div class="component-group">
+        <span class="badge badge-weak-orange">모집 중</span>
+        <span class="badge badge-weak-green">완료</span>
+        <span class="badge badge-weak-red">취소</span>
+        <span class="badge badge-weak-grey">대기</span>
+      </div>
+
+      <h3 class="subsection-title">Avatars</h3>
+      <div class="component-group">
+        <div class="avatar avatar-xs">김</div>
+        <div class="avatar avatar-sm">김</div>
+        <div class="avatar avatar-md">김</div>
+        <div class="avatar avatar-lg">김</div>
+        <div class="avatar avatar-xl">김</div>
+      </div>
+
+      <h3 class="subsection-title">Chips</h3>
+      <div class="component-group">
+        <span class="chip selected">전체</span>
+        <span class="chip">취미</span>
+        <span class="chip">스터디</span>
+        <span class="chip">운동</span>
+        <span class="chip">저축</span>
+      </div>
+
+      <h3 class="subsection-title">Input</h3>
+      <div class="component-group">
+        <input type="text" class="input" placeholder="검색어를 입력하세요">
+      </div>
+    </section>
+
+    <!-- Tab: Feedback -->
+    <section class="tab-content" id="feedback">
+      <h2 class="section-title">Feedback Components</h2>
+
+      <h3 class="subsection-title">Skeleton</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 400px;">
+        <div class="skeleton" style="height: 20px; width: 60%"></div>
+        <div class="skeleton" style="height: 20px; width: 100%"></div>
+        <div class="skeleton" style="height: 20px; width: 80%"></div>
+        <div class="skeleton" style="height: 120px; width: 100%"></div>
+      </div>
+
+      <h3 class="subsection-title">Spinner</h3>
+      <div class="component-group">
+        <div class="spinner spinner-sm"></div>
+        <div class="spinner"></div>
+        <div class="spinner spinner-lg"></div>
+      </div>
+
+      <h3 class="subsection-title">Progress Bar</h3>
+      <div style="display: flex; flex-direction: column; gap: 16px; max-width: 400px;">
+        <div>
+          <div class="typo-w6" style="margin-bottom: 8px">Default (65%)</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 65%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="typo-w6" style="margin-bottom: 8px">Success (100%)</div>
+          <div class="progress-bar progress-success">
+            <div class="progress-fill" style="width: 100%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="typo-w6" style="margin-bottom: 8px">Warning (30%)</div>
+          <div class="progress-bar progress-warning">
+            <div class="progress-fill" style="width: 30%"></div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Toast</h3>
+      <div class="toast-demo">
+        <div class="toast toast-success">
+          <span>✓</span>
+          <span>충전이 완료되었습니다</span>
+        </div>
+        <div class="toast toast-error">
+          <span>✕</span>
+          <span>잔액이 부족합니다</span>
+        </div>
+        <div class="toast toast-warning">
+          <span>⚠</span>
+          <span>투표 마감이 3시간 남았습니다</span>
+        </div>
+        <div class="toast toast-info">
+          <span>ℹ</span>
+          <span>새로운 게시글이 등록되었습니다</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Domain -->
+    <section class="tab-content" id="domain">
+      <h2 class="section-title">Domain Components</h2>
+
+      <h3 class="subsection-title">Brix Badge (당도)</h3>
+      <div class="component-group">
+        <span class="brix-badge brix-honey">🍯 65.5</span>
+        <span class="brix-badge brix-grape">🍇 42.0</span>
+        <span class="brix-badge brix-apple">🍎 28.3</span>
+        <span class="brix-badge brix-mandarin">🍊 15.0</span>
+        <span class="brix-badge brix-tomato">🍅 8.2</span>
+        <span class="brix-badge brix-bitter">🥒 -5.0</span>
+      </div>
+
+      <h3 class="subsection-title">Financial Text</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="financial financial-lg">₩3,200,000</div>
+        <div class="financial financial-md financial-income">+500,000원 (입금)</div>
+        <div class="financial financial-md financial-expense">-150,000원 (지출)</div>
+        <div class="financial financial-sm financial-locked">🔒 100,000원 (보증금)</div>
+      </div>
+
+      <h3 class="subsection-title">Status Badge</h3>
+      <div class="component-group">
+        <span class="badge status-recruiting">📢 모집 중</span>
+        <span class="badge status-active">✅ 진행 중</span>
+        <span class="badge status-paused">⏸️ 일시 정지</span>
+        <span class="badge status-closed">🔒 종료</span>
+      </div>
+
+      <h3 class="subsection-title">Vote Status</h3>
+      <div class="component-group">
+        <span class="badge badge-fill-orange">🗳️ 투표 중</span>
+        <span class="badge badge-fill-green">✓ 승인</span>
+        <span class="badge badge-fill-red">✕ 반려</span>
+        <span class="badge badge-weak-grey">⏳ 만료</span>
+      </div>
+
+      <h3 class="subsection-title">PostCard (게시글 카드)</h3>
+      <div
+        style="max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div class="avatar avatar-sm">김</div>
+          <div>
+            <div style="font-weight: 600; font-size: 15px;">김철수</div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">2시간 전</div>
+          </div>
+        </div>
+        <div style="font-size: 15px; line-height: 1.6; margin-bottom: 12px;">오늘 정기모임 정말 재밌었어요! 다음 모임이 기대됩니다 📚</div>
+        <div style="display: flex; gap: 16px; font-size: 13px; color: var(--color-text-secondary);">
+          <span>❤️ 12</span>
+          <span>💬 3</span>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">AttendanceStatusBadge</h3>
+      <div class="component-group">
+        <span class="badge badge-fill-green">✓ 참석</span>
+        <span class="badge badge-fill-red">✕ 불참</span>
+        <span class="badge badge-weak-orange">❓ 미정</span>
+        <span class="badge badge-weak-grey">📍 지각</span>
+      </div>
+
+      <h3 class="subsection-title">MemberStatusBadge</h3>
+      <div class="component-group">
+        <span class="badge badge-fill-orange">👑 모임장</span>
+        <span class="badge badge-fill-purple">⭐ 운영진</span>
+        <span class="badge badge-weak-green">✅ 정회원</span>
+        <span class="badge badge-weak-grey">🕐 신규</span>
+        <span class="badge badge-fill-red">🚫 정지</span>
+      </div>
+    </section>
+
+    <!-- Tab: Navigation -->
+    <section class="tab-content" id="navigation">
+      <h2 class="section-title">Navigation Components</h2>
+
+      <h3 class="subsection-title">Bottom Navigation</h3>
+      <div class="bottom-nav-demo">
+        <div class="nav-item active">
+          <span class="nav-icon">🏠</span>
+          <span>홈</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">🔍</span>
+          <span>탐색</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">➕</span>
+          <span>생성</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>내 모임</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span>MY</span>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Segmented Control</h3>
+      <div class="component-group">
+        <div class="segmented-control">
+          <button class="segment-btn active">피드</button>
+          <button class="segment-btn">장부</button>
+          <button class="segment-btn">투표</button>
+          <button class="segment-btn">모임</button>
+          <button class="segment-btn">멤버</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Header</h3>
+      <div
+        style="background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; max-width: 500px;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--color-divider);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 20px;">←</span>
+            <span style="font-weight: 600; font-size: 17px;">책벌레들</span>
+          </div>
+          <div style="display: flex; gap: 16px;">
+            <span>🔔</span>
+            <span>⚙️</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">SideNav (Desktop)</h3>
+      <div
+        style="width: 240px; background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); padding: 16px;">
+        <div style="padding: 12px; margin-bottom: 8px; font-weight: 600; color: var(--color-orange-500);">🍊 WOORIDO
+        </div>
+        <div
+          style="padding: 12px; background: var(--color-orange-100); border-radius: var(--radius-sm); margin-bottom: 4px; font-weight: 500; color: var(--color-orange-700);">
+          🏠 홈</div>
+        <div style="padding: 12px; margin-bottom: 4px; color: var(--color-text-secondary);">🔍 탐색</div>
+        <div style="padding: 12px; margin-bottom: 4px; color: var(--color-text-secondary);">📋 내 모임</div>
+        <div style="padding: 12px; margin-bottom: 4px; color: var(--color-text-secondary);">👤 프로필</div>
+        <div style="height: 1px; background: var(--color-divider); margin: 12px 0;"></div>
+        <div style="padding: 12px; color: var(--color-text-secondary);">⚙️ 설정</div>
+      </div>
+
+      <h3 class="subsection-title">Breadcrumb</h3>
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+        <span style="color: var(--color-text-secondary); cursor: pointer;">홈</span>
+        <span style="color: var(--color-grey-400);">›</span>
+        <span style="color: var(--color-text-secondary); cursor: pointer;">내 모임</span>
+        <span style="color: var(--color-grey-400);">›</span>
+        <span style="color: var(--color-text-secondary); cursor: pointer;">책벌레들</span>
+        <span style="color: var(--color-grey-400);">›</span>
+        <span style="font-weight: 500;">장부</span>
+      </div>
+    </section>
+
+    <!-- Tab: Overlay -->
+    <section class="tab-content" id="overlay">
+      <h2 class="section-title">Overlay Components</h2>
+
+      <h3 class="subsection-title">Modal</h3>
+      <div class="modal-demo">
+        <div class="modal-header">
+          <span class="modal-title">지출 승인 요청</span>
+          <button class="modal-close">×</button>
+        </div>
+        <div class="modal-body">
+          <p>2월 정기모임 간식비 50,000원을 승인하시겠습니까?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary">승인</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">BottomSheet</h3>
+      <div class="bottomsheet-demo">
+        <div class="bottomsheet-handle"></div>
+        <h3 style="margin-bottom: 16px;">카테고리 선택</h3>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <div class="checkbox-box checked">✓</div><span>취미</span>
+          </div>
+          <div class="checkbox-item">
+            <div class="checkbox-box"></div><span>스터디</span>
+          </div>
+          <div class="checkbox-item">
+            <div class="checkbox-box"></div><span>운동</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Tooltip</h3>
+      <div style="padding: 24px;">
+        <div class="tooltip-demo">보증금은 탈퇴 시 전액 환불됩니다</div>
+      </div>
+    </section>
+
+    <!-- Tab: Form -->
+    <section class="tab-content" id="form">
+      <h2 class="section-title">Form Components</h2>
+
+      <h3 class="subsection-title">AmountInput</h3>
+      <div class="form-field">
+        <label class="form-label">충전 금액</label>
+        <div class="amount-input-wrapper">
+          <input type="text" class="amount-input" value="100,000" id="amount-input">
+          <span class="amount-suffix">원</span>
+        </div>
+        <div class="preset-btns">
+          <button class="preset-btn">+1만</button>
+          <button class="preset-btn">+5만</button>
+          <button class="preset-btn">+10만</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Select</h3>
+      <div class="form-field">
+        <label class="form-label">카테고리</label>
+        <div class="select-wrapper">
+          <div class="select-trigger">
+            <span>취미</span>
+            <span>▼</span>
+          </div>
+          <div class="select-dropdown">
+            <div class="select-option selected">취미</div>
+            <div class="select-option">스터디</div>
+            <div class="select-option">운동</div>
+            <div class="select-option">저축</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">TextArea</h3>
+      <div class="form-field">
+        <label class="form-label">지출 사유</label>
+        <textarea class="textarea" placeholder="지출 사유를 입력하세요">2월 정기모임 장소 대관비용입니다.</textarea>
+        <div class="char-count">33/200</div>
+      </div>
+
+      <h3 class="subsection-title">CheckboxGroup</h3>
+      <div class="form-field">
+        <label class="form-label">알림 설정</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <div class="checkbox-box checked">✓</div><span>투표 시작 알림</span>
+          </div>
+          <div class="checkbox-item">
+            <div class="checkbox-box checked">✓</div><span>투표 마감 알림</span>
+          </div>
+          <div class="checkbox-item">
+            <div class="checkbox-box"></div><span>새 게시글 알림</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">ImageUpload</h3>
+      <div class="form-field">
+        <label class="form-label">영수증 첨부</label>
+        <div
+          style="border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: 32px; text-align: center; background: var(--color-surface); cursor: pointer;">
+          <div style="font-size: 48px; margin-bottom: 12px;">📷</div>
+          <div style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">이미지를 드래그하거나 클릭하세요</div>
+          <div style="font-size: 13px; color: var(--color-text-secondary);">PNG, JPG 최대 5MB</div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <div
+            style="width: 80px; height: 80px; background: var(--color-grey-100); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; position: relative;">
+            <span style="font-size: 32px;">🧾</span>
+            <div
+              style="position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: var(--color-error); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">
+              ×</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">FormField (with validation)</h3>
+      <div class="form-field">
+        <label class="form-label">모임 이름 <span style="color: var(--color-error);">*</span></label>
+        <input type="text" class="input" value="책벌레들" style="max-width: 100%; border-color: var(--color-success);">
+        <div style="font-size: 11px; color: var(--color-success); margin-top: 4px;">✓ 사용 가능한 이름입니다</div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">초대 코드 <span style="color: var(--color-error);">*</span></label>
+        <input type="text" class="input" value="abc" style="max-width: 100%; border-color: var(--color-error);">
+        <div class="form-error">✕ 최소 6자 이상 입력해주세요</div>
+      </div>
+    </section>
+
+    <!-- Tab: Cards -->
+    <section class="tab-content" id="cards">
+      <h2 class="section-title">Domain Cards</h2>
+
+      <h3 class="subsection-title">GroupCard (챌린지 카드)</h3>
+      <div class="card-grid">
+        <div class="group-card">
+          <div class="group-card-thumb">📚</div>
+          <div class="group-card-body">
+            <div class="group-card-title">책벌레들</div>
+            <div class="group-card-meta">월 100,000원 · 매주 토요일</div>
+            <div class="group-card-footer">
+              <span class="badge badge-fill-green">진행 중</span>
+              <span class="brix-badge brix-grape">🍇 42.5</span>
+            </div>
+          </div>
+        </div>
+        <div class="group-card">
+          <div class="group-card-thumb">🏃</div>
+          <div class="group-card-body">
+            <div class="group-card-title">러닝크루</div>
+            <div class="group-card-meta">월 50,000원 · 매주 일요일</div>
+            <div class="group-card-footer">
+              <span class="badge badge-fill-orange">모집 중</span>
+              <span class="brix-badge brix-honey">🍯 62.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">VoteCard (투표 카드)</h3>
+      <div class="vote-card" style="max-width: 400px;">
+        <div class="vote-card-header">
+          <div>
+            <span class="badge badge-fill-orange" style="margin-bottom: 8px;">💰 지출</span>
+            <div class="vote-card-title">2월 정기모임 간식비</div>
+          </div>
+          <span class="financial financial-md">50,000원</span>
+        </div>
+        <div class="vote-progress">
+          <div class="vote-bar">
+            <div class="vote-fill" style="width: 75%;"></div>
+            <div class="vote-threshold"></div>
+          </div>
+          <div class="vote-labels"><span>찬성 75%</span><span>기준 70%</span></div>
+        </div>
+        <div class="component-group">
+          <button class="btn btn-primary btn-sm">👍 찬성</button>
+          <button class="btn btn-secondary btn-sm">👎 반대</button>
+          <button class="btn btn-ghost btn-sm">🤷 기권</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">BalanceCard (잔액 카드)</h3>
+      <div class="balance-card" style="max-width: 400px;">
+        <div class="balance-label">우리두 어카운트</div>
+        <div class="balance-amount">₩500,000</div>
+        <div class="balance-sub"><span>🔒 락 잔액</span><span>200,000원</span></div>
+        <div class="balance-actions">
+          <button class="balance-btn">충전</button>
+          <button class="balance-btn">출금</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">MeetingCard (정기 모임)</h3>
+      <div class="meeting-card" style="max-width: 400px;">
+        <div class="meeting-date">📅 2026-02-15 (토) 14:00</div>
+        <div style="font-size: 17px; font-weight: 600; margin-bottom: 8px;">2월 영화 상영회</div>
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px;">📍 강남 OO카페</div>
+        <div class="component-group">
+          <span class="badge badge-fill-green">확정</span>
+          <span style="font-size: 13px;">참석 8/10</span>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">LedgerEntry (장부 항목)</h3>
+      <div
+        style="max-width: 400px; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden;">
+        <div class="ledger-entry">
+          <div class="ledger-info">
+            <div class="ledger-icon">🍔</div>
+            <div>
+              <div style="font-weight: 600;">정기모임 간식비</div>
+              <div style="font-size: 13px; color: var(--color-text-secondary);">2026-01-15</div>
+            </div>
+          </div>
+          <span class="financial financial-sm financial-expense">-50,000원</span>
+        </div>
+        <div class="ledger-entry">
+          <div class="ledger-info">
+            <div class="ledger-icon">💰</div>
+            <div>
+              <div style="font-weight: 600;">1월 회비 입금</div>
+              <div style="font-size: 13px; color: var(--color-text-secondary);">2026-01-01</div>
+            </div>
+          </div>
+          <span class="financial financial-sm financial-income">+100,000원</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Ledger -->
+    <section class="tab-content" id="ledger">
+      <h2 class="section-title">Ledger Components</h2>
+
+      <h3 class="subsection-title">LedgerSummaryCard</h3>
+      <div
+        style="max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm);">
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">책벌레들 총 잔액</div>
+        <div class="financial financial-lg">₩3,200,000</div>
+        <div
+          style="display: flex; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-divider);">
+          <div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">이번 달 수입</div>
+            <div class="financial financial-sm financial-income">+800,000</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">이번 달 지출</div>
+            <div class="financial financial-sm financial-expense">-150,000</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">ChartWrapper (도형 차트)</h3>
+      <div
+        style="max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm);">
+        <div style="font-size: 15px; font-weight: 600; margin-bottom: 16px;">카테고리별 지출</div>
+        <div style="display: flex; height: 120px; gap: 8px; align-items: flex-end;">
+          <div style="flex: 1; background: var(--color-orange-500); border-radius: 4px 4px 0 0; height: 100%;"></div>
+          <div style="flex: 1; background: var(--color-orange-400); border-radius: 4px 4px 0 0; height: 70%;"></div>
+          <div style="flex: 1; background: var(--color-orange-300); border-radius: 4px 4px 0 0; height: 45%;"></div>
+          <div style="flex: 1; background: var(--color-orange-200); border-radius: 4px 4px 0 0; height: 30%;"></div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 11px; color: var(--color-text-secondary);">
+          <div style="flex: 1; text-align: center;">모임비</div>
+          <div style="flex: 1; text-align: center;">식비</div>
+          <div style="flex: 1; text-align: center;">대관료</div>
+          <div style="flex: 1; text-align: center;">기타</div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">InsightCard (AI 분석)</h3>
+      <div
+        style="max-width: 400px; background: linear-gradient(135deg, var(--color-orange-50), var(--color-surface)); border: 1px solid var(--color-orange-200); border-radius: var(--radius-lg); padding: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+          <span style="font-size: 24px;">🔍</span>
+          <span style="font-weight: 600;">이번 달 분석</span>
+        </div>
+        <p style="font-size: 15px; line-height: 1.6;">지난달 대비 지출이 15% 감소했어요. 모임비 절약이 가장 큰 기여를 했습니다.</p>
+      </div>
+
+      <h3 class="subsection-title">BarcodeCard (바코드 결제 대기)</h3>
+      <div
+        style="max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--color-orange-500);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 13px; color: var(--color-text-secondary);">승인됨 - 바코드 결제 대기</div>
+            <div style="font-size: 17px; font-weight: 600;">2월 정기모임 간식비</div>
+          </div>
+          <span class="financial financial-md">50,000원</span>
+        </div>
+        <button class="btn btn-primary btn-sm" style="margin-top: 12px; width: 100%;">📱 바코드 보기</button>
+      </div>
+
+      <h3 class="subsection-title">TransactionTimeline</h3>
+      <div style="max-width: 400px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--color-text-secondary); padding: 8px 0;">2026년 1월
+        </div>
+        <div style="border-left: 2px solid var(--color-divider); padding-left: 16px; margin-left: 8px;">
+          <div style="position: relative; padding: 12px 0;">
+            <div
+              style="position: absolute; left: -22px; width: 12px; height: 12px; background: var(--color-orange-500); border-radius: 50%;">
+            </div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">01/15</div>
+            <div style="font-weight: 600;">정기모임 간식비</div>
+            <span class="financial financial-sm financial-expense">-50,000원</span>
+          </div>
+          <div style="position: relative; padding: 12px 0;">
+            <div
+              style="position: absolute; left: -22px; width: 12px; height: 12px; background: var(--color-success); border-radius: 50%;">
+            </div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">01/01</div>
+            <div style="font-weight: 600;">1월 회비 입금 (8명)</div>
+            <span class="financial financial-sm financial-income">+800,000원</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">BarcodeModal</h3>
+      <div
+        style="max-width: 320px; background: var(--color-surface); border-radius: var(--radius-xl); padding: 24px; box-shadow: var(--shadow-lg); text-align: center;">
+        <div style="font-size: 17px; font-weight: 600; margin-bottom: 8px;">2월 정기모임 간식비</div>
+        <div class="financial financial-lg" style="margin-bottom: 20px;">50,000원</div>
+        <div style="background: white; padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <div style="display: flex; gap: 2px; justify-content: center;">
+              <div style="width: 3px; height: 60px; background: black;"></div>
+              <div style="width: 2px; height: 60px; background: black;"></div>
+              <div style="width: 4px; height: 60px; background: white;"></div>
+              <div style="width: 3px; height: 60px; background: black;"></div>
+              <div style="width: 2px; height: 60px; background: white;"></div>
+              <div style="width: 3px; height: 60px; background: black;"></div>
+              <div style="width: 4px; height: 60px; background: white;"></div>
+              <div style="width: 2px; height: 60px; background: black;"></div>
+              <div style="width: 3px; height: 60px; background: white;"></div>
+              <div style="width: 3px; height: 60px; background: black;"></div>
+              <div style="width: 2px; height: 60px; background: white;"></div>
+              <div style="width: 4px; height: 60px; background: black;"></div>
+              <div style="width: 2px; height: 60px; background: white;"></div>
+              <div style="width: 3px; height: 60px; background: black;"></div>
+            </div>
+            <div style="font-size: 11px; font-family: monospace; margin-top: 8px;">1234 5678 9012</div>
+          </div>
+        </div>
+        <div style="font-size: 13px; color: var(--color-text-secondary);">유효기간: 2026-01-20 23:59</div>
+        <div style="font-size: 11px; color: var(--color-warning); margin-top: 8px;">⚠️ 화면을 캡처하지 마세요</div>
+      </div>
+    </section>
+
+    <!-- Tab: Calendar -->
+    <section class="tab-content" id="calendar">
+      <h2 class="section-title">Calendar Components</h2>
+
+      <h3 class="subsection-title">MiniCalendar</h3>
+      <div
+        style="max-width: 280px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <button style="background: none; border: none; font-size: 20px; cursor: pointer;">‹</button>
+          <span style="font-weight: 600;">2026년 1월</span>
+          <button style="background: none; border: none; font-size: 20px; cursor: pointer;">›</button>
+        </div>
+        <div
+          style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 13px;">
+          <div style="color: var(--color-error);">일</div>
+          <div>월</div>
+          <div>화</div>
+          <div>수</div>
+          <div>목</div>
+          <div>금</div>
+          <div style="color: #3B82F6;">토</div>
+          <div style="color: var(--color-grey-400);">29</div>
+          <div style="color: var(--color-grey-400);">30</div>
+          <div style="color: var(--color-grey-400);">31</div>
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div>10</div>
+          <div>11</div>
+          <div>12</div>
+          <div>13</div>
+          <div>14</div>
+          <div
+            style="background: var(--color-orange-500); color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; margin: auto;">
+            15</div>
+          <div>16</div>
+          <div>17</div>
+          <div style="position: relative;">18<div
+              style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--color-success); border-radius: 50%;">
+            </div>
+          </div>
+          <div style="position: relative;">19<div
+              style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--color-orange-500); border-radius: 50%;">
+            </div>
+          </div>
+          <div>20</div>
+          <div>21</div>
+          <div>22</div>
+          <div>23</div>
+          <div>24</div>
+          <div>25</div>
+          <div>26</div>
+          <div>27</div>
+          <div>28</div>
+          <div>29</div>
+          <div>30</div>
+          <div>31</div>
+          <div></div>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 12px; font-size: 11px;">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div style="width: 8px; height: 8px; background: var(--color-success); border-radius: 50%;"></div>모임
+          </div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div style="width: 8px; height: 8px; background: var(--color-orange-500); border-radius: 50%;"></div>장부
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">DatePicker</h3>
+      <div style="max-width: 300px;">
+        <label class="form-label">날짜 선택</label>
+        <div
+          style="display: flex; align-items: center; padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); cursor: pointer;">
+          <span style="flex: 1;">2026-01-19</span>
+          <span>📅</span>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">DateRangePicker</h3>
+      <div style="max-width: 400px;">
+        <label class="form-label">기간 선택</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <div
+            style="flex: 1; padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
+            2026-01-01</div>
+          <span>~</span>
+          <div
+            style="flex: 1; padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
+            2026-01-31</div>
+        </div>
+        <div class="preset-btns" style="margin-top: 8px;">
+          <button class="preset-btn">이번 주</button>
+          <button class="preset-btn">이번 달</button>
+          <button class="preset-btn">최근 3개월</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">UpcomingEventCard</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 400px;">
+        <div
+          style="display: flex; gap: 12px; padding: 16px; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+          <div
+            style="width: 48px; height: 48px; background: var(--color-success); border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+            <div style="font-size: 11px;">1월</div>
+            <div style="font-size: 17px; font-weight: 700;">18</div>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600;">1월 정기 독서 모임</div>
+            <div style="font-size: 13px; color: var(--color-text-secondary);">📍 강남 OO카페 · 14:00</div>
+          </div>
+          <span class="badge badge-fill-green">D-3</span>
+        </div>
+        <div
+          style="display: flex; gap: 12px; padding: 16px; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border-left: 3px solid var(--color-warning);">
+          <div
+            style="width: 48px; height: 48px; background: var(--color-warning); border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+            <div style="font-size: 11px;">1월</div>
+            <div style="font-size: 17px; font-weight: 700;">19</div>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600;">간식비 투표 마감</div>
+            <div style="font-size: 13px; color: var(--color-text-secondary);">🗳️ 50,000원 지출 승인</div>
+          </div>
+          <span class="badge badge-fill-orange">D-1</span>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">EventCalendar (월간 뷰)</h3>
+      <div
+        style="max-width: 500px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <button style="background: none; border: none; font-size: 20px; cursor: pointer;">‹</button>
+          <span style="font-weight: 600; font-size: 17px;">2026년 1월</span>
+          <button style="background: none; border: none; font-size: 20px; cursor: pointer;">›</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 13px;">
+          <div style="text-align: center; padding: 8px; color: var(--color-error); font-weight: 500;">일</div>
+          <div style="text-align: center; padding: 8px; font-weight: 500;">월</div>
+          <div style="text-align: center; padding: 8px; font-weight: 500;">화</div>
+          <div style="text-align: center; padding: 8px; font-weight: 500;">수</div>
+          <div style="text-align: center; padding: 8px; font-weight: 500;">목</div>
+          <div style="text-align: center; padding: 8px; font-weight: 500;">금</div>
+          <div style="text-align: center; padding: 8px; color: #3B82F6; font-weight: 500;">토</div>
+          <!-- Row 1 -->
+          <div style="text-align: center; padding: 8px; color: var(--color-grey-400);">29</div>
+          <div style="text-align: center; padding: 8px; color: var(--color-grey-400);">30</div>
+          <div style="text-align: center; padding: 8px; color: var(--color-grey-400);">31</div>
+          <div style="text-align: center; padding: 8px;">1</div>
+          <div style="text-align: center; padding: 8px;">2</div>
+          <div style="text-align: center; padding: 8px;">3</div>
+          <div style="text-align: center; padding: 8px;">4</div>
+          <!-- Row with event -->
+          <div style="text-align: center; padding: 8px;">5</div>
+          <div style="text-align: center; padding: 8px;">6</div>
+          <div style="text-align: center; padding: 8px;">7</div>
+          <div style="text-align: center; padding: 8px;">8</div>
+          <div style="text-align: center; padding: 8px;">9</div>
+          <div style="text-align: center; padding: 8px;">10</div>
+          <div style="text-align: center; padding: 8px;">11</div>
+          <!-- Row with events -->
+          <div style="text-align: center; padding: 8px;">12</div>
+          <div style="text-align: center; padding: 8px;">13</div>
+          <div style="text-align: center; padding: 8px;">14</div>
+          <div
+            style="text-align: center; padding: 4px 8px; background: var(--color-orange-500); color: white; border-radius: var(--radius-sm);">
+            15<div style="font-size: 9px;">오늘</div>
+          </div>
+          <div style="text-align: center; padding: 8px;">16</div>
+          <div style="text-align: center; padding: 8px;">17</div>
+          <div
+            style="text-align: center; padding: 4px 8px; background: var(--color-success); color: white; border-radius: var(--radius-sm);">
+            18<div style="font-size: 9px;">모임</div>
+          </div>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-divider);">
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📅 1월 18일 (토)</div>
+          <div
+            style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--color-grey-100); border-radius: var(--radius-sm); font-size: 13px;">
+            <div style="width: 4px; height: 24px; background: var(--color-success); border-radius: 2px;"></div>
+            <div>
+              <div style="font-weight: 500;">1월 정기 독서 모임</div>
+              <div style="color: var(--color-text-secondary);">14:00 ~ 17:00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Responsive -->
+    <section class="tab-content" id="responsive">
+      <h2 class="section-title">Responsive Guidelines</h2>
+
+      <h3 class="subsection-title">Breakpoints</h3>
+      <div class="breakpoint-grid">
+        <div class="breakpoint-card">
+          <div class="breakpoint-name">📱 Mobile</div>
+          <div class="breakpoint-range">0 ~ 767px</div>
+        </div>
+        <div class="breakpoint-card">
+          <div class="breakpoint-name">📱 Tablet</div>
+          <div class="breakpoint-range">768 ~ 1279px</div>
+        </div>
+        <div class="breakpoint-card">
+          <div class="breakpoint-name">💻 Desktop</div>
+          <div class="breakpoint-range">1280px +</div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Spacing System</h3>
+      <div class="spacing-grid">
+        <div class="spacing-box" style="width: 4px; height: 4px;">1</div>
+        <div class="spacing-box" style="width: 8px; height: 8px;">2</div>
+        <div class="spacing-box" style="width: 12px; height: 12px;">3</div>
+        <div class="spacing-box" style="width: 16px; height: 16px;">4</div>
+        <div class="spacing-box" style="width: 20px; height: 20px;">5</div>
+        <div class="spacing-box" style="width: 24px; height: 24px;">6</div>
+        <div class="spacing-box" style="width: 32px; height: 32px;">8</div>
+        <div class="spacing-box" style="width: 40px; height: 40px;">10</div>
+        <div class="spacing-box" style="width: 48px; height: 48px;">12</div>
+      </div>
+
+      <h3 class="subsection-title">Touch Target (최소 44px)</h3>
+      <div class="component-group">
+        <div
+          style="width: 44px; height: 44px; background: var(--color-orange-100); border: 2px dashed var(--color-orange-500); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;">
+          44</div>
+        <div
+          style="width: 48px; height: 48px; background: var(--color-success); color: white; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;">
+          OK</div>
+      </div>
+
+      <h3 class="subsection-title">EmptyState</h3>
+      <div class="empty-state" style="max-width: 400px;">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">아직 게시글이 없어요</div>
+        <div class="empty-desc">첫 번째 게시글을 작성해보세요!</div>
+        <button class="btn btn-primary">게시글 작성</button>
+      </div>
+
+      <h3 class="subsection-title">AlertBanner</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 500px;">
+        <div class="alert-banner alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-content">
+            <div class="alert-title">투표 마감 임박</div>
+            <div class="alert-desc">3시간 후 투표가 마감됩니다</div>
+          </div>
+        </div>
+        <div class="alert-banner alert-error">
+          <span class="alert-icon">🚨</span>
+          <div class="alert-content">
+            <div class="alert-title">잔액 부족</div>
+            <div class="alert-desc">다음 결제일까지 충전이 필요합니다</div>
+          </div>
+        </div>
+        <div class="alert-banner alert-info">
+          <span class="alert-icon">🔔</span>
+          <div class="alert-content">
+            <div class="alert-title">새로운 투표</div>
+            <div class="alert-desc">2월 정기모임 간식비 승인 투표가 시작되었습니다</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">CountdownTimer</h3>
+      <div class="component-group">
+        <span class="countdown">23:45:30</span>
+        <span class="countdown urgent">02:30:00</span>
+        <span class="countdown critical">00:15:00</span>
+      </div>
+
+      <h3 class="subsection-title">Divider</h3>
+      <div style="max-width: 400px;">
+        <p>섹션 A 내용</p>
+        <div class="divider"></div>
+        <p>섹션 B 내용</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Copy Toast -->
+  <div class="copy-toast" id="copy-toast">✓ 복사되었습니다</div>
+
+  <script>
+    // Color Data
+    const colorData = {
+      primary: [
+        { name: 'orange50', value: '#FFF7ED', desc: '가장 연한 배경' },
+        { name: 'orange100', value: '#FFEDD5', desc: 'Container 배경' },
+        { name: 'orange200', value: '#FED7AA', desc: 'Hover 배경' },
+        { name: 'orange300', value: '#FDBA74', desc: '-' },
+        { name: 'orange400', value: '#FB923C', desc: 'Secondary' },
+        { name: 'orange500', value: '#E9481E', desc: 'Primary (로고)' },
+        { name: 'orange600', value: '#D43D16', desc: 'Hover 상태' },
+        { name: 'orange700', value: '#BF310E', desc: 'Active/Pressed' },
+        { name: 'orange800', value: '#9A2A0B', desc: '-' },
+        { name: 'orange900', value: '#7C2D12', desc: '가장 진한' },
+      ],
+      grey: [
+        { name: 'grey50', value: '#FAFAF9', desc: '앱 배경' },
+        { name: 'grey100', value: '#F5F5F4', desc: '카드/섹션 배경' },
+        { name: 'grey200', value: '#E7E5E4', desc: 'Divider' },
+        { name: 'grey300', value: '#D6D3D1', desc: 'Border' },
+        { name: 'grey400', value: '#A8A29E', desc: 'Placeholder' },
+        { name: 'grey500', value: '#78716C', desc: 'Disabled Text' },
+        { name: 'grey600', value: '#57534E', desc: 'Sub Text' },
+        { name: 'grey700', value: '#44403C', desc: '-' },
+        { name: 'grey800', value: '#292524', desc: '-' },
+        { name: 'grey900', value: '#1C1917', desc: 'Main Text' },
+      ],
+      status: [
+        { name: 'success', value: '#16A34A', desc: '성공, 완료' },
+        { name: 'warning', value: '#F59E0B', desc: '경고, 주의' },
+        { name: 'error', value: '#DC2626', desc: '에러, 실패' },
+        { name: 'info', value: '#E9481E', desc: '정보' },
+      ],
+      financial: [
+        { name: 'income', value: '#F59E0B', desc: '입금, 충전 (+)' },
+        { name: 'expense', value: '#1C1917', desc: '지출, 출금 (-)' },
+        { name: 'locked', value: '#78716C', desc: '보증금, 잠김' },
+      ],
+      brix: [
+        { name: 'brixHoney', value: '#F59E0B', desc: '🍯 60+' },
+        { name: 'brixGrape', value: '#9333EA', desc: '🍇 40~60' },
+        { name: 'brixApple', value: '#F43F5E', desc: '🍎 25~40' },
+        { name: 'brixMandarin', value: '#E9481E', desc: '🍊 12~25' },
+        { name: 'brixTomato', value: '#FCA5A5', desc: '🍅 0~12' },
+        { name: 'brixBitter', value: '#14532D', desc: '🥒 <0' },
+      ],
+    };
+
+    // Render Color Palettes
+    function renderColorGrid(containerId, colors) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = colors.map(c => `
+        <div class="color-card" onclick="copyColor('${c.value}', '${c.name}')">
+          <div class="color-swatch" style="background: ${c.value}"></div>
+          <div class="color-name">${c.name}</div>
+          <div class="color-value">${c.value}</div>
+        </div>
+      `).join('');
+    }
+
+    renderColorGrid('primary-colors', colorData.primary);
+    renderColorGrid('grey-colors', colorData.grey);
+    renderColorGrid('status-colors', colorData.status);
+    renderColorGrid('financial-colors', colorData.financial);
+    renderColorGrid('brix-colors', colorData.brix);
+
+    // Copy Color
+    function copyColor(value, name) {
+      navigator.clipboard.writeText(value);
+      showToast(`${name}: ${value} 복사됨`);
+    }
+
+    // Show Toast
+    function showToast(message) {
+      const toast = document.getElementById('copy-toast');
+      toast.textContent = '✓ ' + message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      document.getElementById('theme-icon').textContent = next === 'light' ? '☀️' : '🌙';
+      document.getElementById('theme-label').textContent = next === 'light' ? 'Light' : 'Dark';
+    }
+
+    // Tab Navigation
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Segmented Control
+    document.querySelectorAll('.segment-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Bottom Nav
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+    // UX Pilot Context Copy
+    function copyUxPilotContext() {
+      const context = `Platform: Web application (responsive, mobile-first)
+Brand: WOORIDO (우리두) - Community Challenge Platform
+Brand Color: #E9481E (Orange)
+Font: Pretendard (Korean)
+Design Style: Modern, clean, trustworthy finance app
+Key UX Principles: Transparency, Democracy, Trust, Accessibility, Delight`;
+      navigator.clipboard.writeText(context);
+      showToast('UX Pilot 컨텍스트 복사됨');
+    }
+  </script>
+</body>
+
+</html>
