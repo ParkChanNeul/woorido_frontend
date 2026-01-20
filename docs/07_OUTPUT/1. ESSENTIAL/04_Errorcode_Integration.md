@@ -68,6 +68,7 @@
 | 400  | ACCOUNT_005 | 일일 출금 한도를 초과했습니다         | POST /accounts/withdraw           |
 | 400  | ACCOUNT_006 | 월간 출금 한도를 초과했습니다         | POST /accounts/withdraw           |
 | 400  | ACCOUNT_007 | 충전 금액은 10,000원 단위여야 합니다  | POST /accounts/charge             |
+| 400  | ACCOUNT_008 | 결제 수단은 CARD 또는 BANK_TRANSFER 만 가능합니다.  | POST /accounts/charge             |
 
 ### 2.4 챌린지 (CHALLENGE)
 
