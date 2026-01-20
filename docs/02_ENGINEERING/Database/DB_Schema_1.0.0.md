@@ -83,12 +83,19 @@ suspension_reason            VARCHAR2(500)                              정지 �
 created_at                   TIMESTAMP        NN                        생성일
 updated_at                   TIMESTAMP        NN                        수정일
 last_login_at                TIMESTAMP                                  마지막 로그인
+agreed_terms                 CHAR(1)                        'N'         이용약관 동의
+agreed_privacy               CHAR(1)                        'N'         개인정보 동의
+agreed_marketing             CHAR(1)                        'N'         마케팅 동의
+terms_agreed_at              TIMESTAMP                                  약관 동의 시점
 
 [컬럼값 정의]
   - gender          : M(남성), F(여성), O(기타)
   - social_provider : GOOGLE, KAKAO, NAVER
   - account_status  : ACTIVE(활성), SUSPENDED(정지), BANNED(차단), WITHDRAWN(탈퇴)
   - is_verified     : Y(인증완료), N(미인증)
+  - agreed_terms    : Y(동의), N(미동의)
+  - agreed_privacy  : Y(동의), N(미동의)
+  - agreed_marketing: Y(동의), N(미동의)
 
 [Indexes]
   - UK_users_email (email)
@@ -189,6 +196,36 @@ updated_at                  TIMESTAMP        NN                        수정일
 [Indexes]
   - UK_user_scores_user_id (user_id)
   - IDX_user_scores_total_score (total_score)
+
+[Foreign Keys]
+  - user_id → users.id
+
+
+--------------------------------------------------------------------------------
+1.5 refresh_tokens (리프레시 토큰)
+--------------------------------------------------------------------------------
+
+※ 보안 권장: users 테이블 분리로 토큰 노출 방지, 빈번한 토큰 갱신 시 users 테이블 락 방지
+
+컬럼명              데이터타입        제약조건      기본값    설명
+------------------------------------------------------------------------------------------
+id                 VARCHAR2(36)     PK                      토큰 ID (UUID)
+user_id            VARCHAR2(36)     FK, NN                  사용자 ID
+token              VARCHAR2(500)    UK, NN                  리프레시 토큰 (해시 저장 권장)
+device_info        VARCHAR2(500)                            디바이스 정보 (User-Agent)
+ip_address         VARCHAR2(45)                             발급 시 IP 주소
+expires_at         TIMESTAMP        NN                      만료 시간 (14일)
+created_at         TIMESTAMP        NN                      생성일
+last_used_at       TIMESTAMP                                마지막 사용 시간
+is_revoked         CHAR(1)                        'N'       수동 무효화 여부
+
+[컬럼값 정의]
+  - is_revoked : Y(무효화됨), N(유효)
+
+[Indexes]
+  - UK_refresh_tokens_token (token)
+  - IDX_refresh_tokens_user_id (user_id)
+  - IDX_refresh_tokens_expires_at (expires_at)
 
 [Foreign Keys]
   - user_id → users.id

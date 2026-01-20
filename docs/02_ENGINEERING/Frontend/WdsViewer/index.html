@@ -102,6 +102,37 @@
       --color-text-secondary: var(--color-grey-400);
       --color-border: var(--color-grey-600);
       --color-divider: var(--color-grey-700);
+
+      /* Financial 색상 반전 (다크모드에서 지출 텍스트 가시성) */
+      --color-expense: #F5F5F4;
+      /* grey-100 */
+    }
+
+    /* Alert Banner 텍스트 색상 고정 (다크모드에서도 검정 유지) */
+    .alert-banner .alert-title,
+    .alert-banner .alert-desc {
+      color: #1C1917 !important;
+    }
+
+    /* InsightCard 다크모드 조정 */
+    [data-theme="dark"] .insight-card {
+      background: linear-gradient(135deg, #374151, #1F2937) !important;
+      color: white !important;
+    }
+
+    [data-theme="dark"] .insight-card * {
+      color: white !important;
+    }
+
+    /* LedgerSummaryCard / LedgerEntry 다크모드 지출 텍스트 */
+    [data-theme="dark"] .financial-expense {
+      color: var(--color-grey-100) !important;
+    }
+
+    /* EventCalendar 다크모드 미니바 텍스트 */
+    [data-theme="dark"] .event-mini-bar,
+    [data-theme="dark"] .event-mini-bar * {
+      color: var(--color-grey-900) !important;
     }
 
     /* ===== RESET & BASE ===== */
@@ -1496,6 +1527,446 @@
       }
     }
 
+    /* ===== LIKE ANIMATION ===== */
+    .like-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+      font-size: 15px;
+    }
+
+    .like-btn:hover {
+      border-color: var(--color-error);
+    }
+
+    .like-btn.liked {
+      background: #FEE2E2;
+      border-color: var(--color-error);
+      color: var(--color-error);
+    }
+
+    .like-btn.liked .like-icon {
+      animation: like-bounce 400ms var(--ease-spring);
+    }
+
+    @keyframes like-bounce {
+      0% {
+        transform: scale(1);
+      }
+
+      25% {
+        transform: scale(0.8);
+      }
+
+      50% {
+        transform: scale(1.3);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .like-particles {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      pointer-events: none;
+    }
+
+    .like-particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: var(--color-error);
+      border-radius: 50%;
+      animation: particle-burst 600ms ease-out forwards;
+    }
+
+    @keyframes particle-burst {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* ===== CONFETTI ANIMATION ===== */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      animation: confetti-fall 3s ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* ===== SHAKE ANIMATION ===== */
+    .shake-error {
+      animation: shake 400ms ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-10px);
+      }
+
+      40% {
+        transform: translateX(10px);
+      }
+
+      60% {
+        transform: translateX(-10px);
+      }
+
+      80% {
+        transform: translateX(10px);
+      }
+    }
+
+    /* ===== PULL TO REFRESH ===== */
+    .pull-refresh-demo {
+      position: relative;
+      height: 200px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .pull-refresh-indicator {
+      position: absolute;
+      top: -48px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform var(--duration-normal) var(--ease-spring);
+    }
+
+    .pull-refresh-demo.pulling .pull-refresh-indicator {
+      transform: translateX(-50%) translateY(60px);
+    }
+
+    .pull-refresh-demo.refreshing .pull-refresh-indicator {
+      transform: translateX(-50%) translateY(60px);
+    }
+
+    .pull-refresh-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--color-grey-200);
+      border-top-color: var(--color-orange-500);
+      border-radius: 50%;
+    }
+
+    .pull-refresh-demo.refreshing .pull-refresh-spinner {
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ===== SWIPE ACTION ===== */
+    .swipe-demo-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+    }
+
+    .swipe-action-left {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 80px;
+      background: var(--color-error);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      transform: translateX(-100%);
+      transition: transform var(--duration-fast) var(--ease-standard);
+    }
+
+    .swipe-action-right {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 80px;
+      background: var(--color-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      transform: translateX(100%);
+      transition: transform var(--duration-fast) var(--ease-standard);
+    }
+
+    .swipe-item {
+      background: var(--color-surface);
+      padding: 16px;
+      border: 1px solid var(--color-divider);
+      transform: translateX(0);
+      transition: transform var(--duration-fast) var(--ease-standard);
+      cursor: grab;
+    }
+
+    .swipe-demo-container.swiped-left .swipe-action-left {
+      transform: translateX(0);
+    }
+
+    .swipe-demo-container.swiped-left .swipe-item {
+      transform: translateX(80px);
+    }
+
+    .swipe-demo-container.swiped-right .swipe-action-right {
+      transform: translateX(0);
+    }
+
+    .swipe-demo-container.swiped-right .swipe-item {
+      transform: translateX(-80px);
+    }
+
+    /* ===== STATUS ALERT BANNERS ===== */
+    .alert-status-vote {
+      background: var(--color-orange-100);
+      border-left: 4px solid var(--color-orange-500);
+    }
+
+    .alert-status-payment {
+      background: #FEF3C7;
+      border-left: 4px solid var(--color-warning);
+    }
+
+    .alert-status-revoked {
+      background: #FEE2E2;
+      border-left: 4px solid var(--color-error);
+    }
+
+    .alert-status-success {
+      background: #DCFCE7;
+      border-left: 4px solid var(--color-success);
+    }
+
+    /* ===== DEPOSIT LOCK CARD ===== */
+    .deposit-lock-card {
+      background: linear-gradient(135deg, var(--color-grey-800), var(--color-grey-900));
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .deposit-lock-card::before {
+      content: '🔒';
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      font-size: 120px;
+      opacity: 0.1;
+    }
+
+    .deposit-lock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .deposit-lock-label {
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    .deposit-lock-amount {
+      font-size: 28px;
+      font-weight: 700;
+      font-feature-settings: "tnum";
+      margin-bottom: 8px;
+    }
+
+    .deposit-lock-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .deposit-lock-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    /* ===== ENTRY FEE MODAL ===== */
+    .entry-fee-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-divider);
+    }
+
+    .entry-fee-row.total {
+      border-bottom: none;
+      font-weight: 600;
+      font-size: 17px;
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 2px solid var(--color-grey-300);
+    }
+
+    .entry-fee-highlight {
+      color: var(--color-orange-500);
+      font-weight: 600;
+    }
+
+    /* ===== LIVE COUNTDOWN ===== */
+    .countdown-live {
+      font-size: 24px;
+      font-weight: 600;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown-live.urgent {
+      color: var(--color-warning);
+    }
+
+    .countdown-live.critical {
+      color: var(--color-error);
+      animation: countdown-blink 1s infinite;
+    }
+
+    @keyframes countdown-blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* ===== BUTTON LOADING ===== */
+    .btn-loading {
+      position: relative;
+      color: transparent !important;
+      pointer-events: none;
+    }
+
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ===== AVATAR STATUS ===== */
+    .avatar-status {
+      position: relative;
+    }
+
+    .avatar-status::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      border: 2px solid var(--color-surface);
+      border-radius: 50%;
+    }
+
+    .avatar-status.online::after {
+      background: var(--color-success);
+    }
+
+    .avatar-status.offline::after {
+      background: var(--color-grey-400);
+    }
+
+    .avatar-status.away::after {
+      background: var(--color-warning);
+    }
+
+    .avatar-status.busy::after {
+      background: var(--color-error);
+    }
+
+    /* ===== CHIP REMOVABLE ===== */
+    .chip-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-grey-300);
+      color: var(--color-grey-600);
+      font-size: 10px;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .chip-remove:hover {
+      background: var(--color-error);
+      color: white;
+    }
+
     .divider {
       height: 1px;
       background: var(--color-divider);
@@ -1755,6 +2226,47 @@
           <div class="code">진입 효과</div>
         </div>
       </div>
+
+      <h3 class="subsection-title">Pull to Refresh (Click to simulate)</h3>
+      <div class="pull-refresh-demo" id="pull-refresh-demo" onclick="simulatePullRefresh()">
+        <div class="pull-refresh-indicator">
+          <div class="pull-refresh-spinner"></div>
+          <div style="font-size: 11px; color: var(--color-text-secondary);">새로고침 중...</div>
+        </div>
+        <div style="padding: 20px; text-align: center;">
+          <div style="color: var(--color-text-secondary); margin-bottom: 12px;">👆 클릭하여 Pull to Refresh 시뮬레이션</div>
+          <div class="typo-w6">피드 콘텐츠</div>
+          <p style="color: var(--color-text-secondary); font-size: 13px; margin-top: 8px;">당겨서 새로고침 · 진동 피드백 (10ms) ·
+            Spinner 회전</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Swipe Actions (Click to toggle)</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 400px;">
+        <div class="swipe-demo-container" id="swipe-demo-left" onclick="toggleSwipe('swipe-demo-left')">
+          <div class="swipe-action-left">🗑️</div>
+          <div class="swipe-action-right">✓</div>
+          <div class="swipe-item">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 24px;">🔔</span>
+              <div>
+                <div style="font-weight: 500;">새로운 투표가 있습니다</div>
+                <div style="font-size: 13px; color: var(--color-text-secondary);">책벌레들 · 2시간 전</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); text-align: center;">
+          ← 좌측 스와이프: 삭제 · 우측 스와이프: 읽음 처리 →
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Confetti 축하 효과 (Click to trigger)</h3>
+      <div class="component-group">
+        <button class="btn btn-primary" onclick="triggerConfetti()">🎉 가입 완료 축하!</button>
+        <button class="btn btn-secondary" onclick="triggerConfetti()">🎊 1년 완주!</button>
+        <button class="btn btn-ghost" onclick="triggerConfetti()">✨ 투표 승인!</button>
+      </div>
     </section>
 
     <!-- Tab: Foundation -->
@@ -1809,9 +2321,34 @@
         <span class="chip">저축</span>
       </div>
 
+      <h3 class="subsection-title">Chips (Removable)</h3>
+      <div class="component-group">
+        <span class="chip">서울 <span class="chip-remove">×</span></span>
+        <span class="chip selected">독서 <span class="chip-remove">×</span></span>
+        <span class="chip">운동 <span class="chip-remove">×</span></span>
+      </div>
+
       <h3 class="subsection-title">Input</h3>
       <div class="component-group">
         <input type="text" class="input" placeholder="검색어를 입력하세요">
+      </div>
+
+      <h3 class="subsection-title">Button Loading States</h3>
+      <div class="component-group">
+        <button class="btn btn-primary btn-loading">처리 중...</button>
+        <button class="btn btn-secondary btn-loading">로딩</button>
+        <button class="btn btn-danger btn-loading">삭제 중...</button>
+      </div>
+
+      <h3 class="subsection-title">Avatar Status Indicators</h3>
+      <div class="component-group">
+        <div class="avatar avatar-md avatar-status online">김</div>
+        <div class="avatar avatar-md avatar-status offline">이</div>
+        <div class="avatar avatar-md avatar-status away">박</div>
+        <div class="avatar avatar-md avatar-status busy">최</div>
+      </div>
+      <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: 8px;">
+        🟢 온라인 · ⚫ 오프라인 · 🟡 자리비움 · 🔴 바쁨
       </div>
     </section>
 
@@ -1875,6 +2412,58 @@
           <span>새로운 게시글이 등록되었습니다</span>
         </div>
       </div>
+
+      <h3 class="subsection-title">Toast with Emotion-based Copy (UX_EMOTION_MAP)</h3>
+      <div class="toast-demo">
+        <div class="toast toast-success">
+          <span>🎉</span>
+          <span>환영합니다! 책벌레들과 함께해요</span>
+        </div>
+        <div class="toast toast-error">
+          <span>💫</span>
+          <span>다시 시도해보세요. 금액은 청구되지 않았어요.</span>
+        </div>
+        <div class="toast toast-info">
+          <span>🙌</span>
+          <span>다시 돌아오셨네요! 권한이 복구되었어요</span>
+        </div>
+        <div class="toast toast-warning">
+          <span>🗳️</span>
+          <span>여러분의 의견이 필요해요!</span>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Status Alert Banners (IA_SPECIFICATION)</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 500px;">
+        <div class="alert-banner alert-status-vote">
+          <span class="alert-icon">📋</span>
+          <div class="alert-content">
+            <div class="alert-title">책벌레들: 투표 1건 진행 중</div>
+            <div class="alert-desc">2월 정기모임 간식비 승인 투표에 참여해주세요</div>
+          </div>
+        </div>
+        <div class="alert-banner alert-status-payment">
+          <span class="alert-icon">💰</span>
+          <div class="alert-content">
+            <div class="alert-title">영화광들: 서포트 납입일 D-3</div>
+            <div class="alert-desc">잔액이 부족합니다. 100,000원 충전 필요</div>
+          </div>
+        </div>
+        <div class="alert-banner alert-status-revoked">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-content">
+            <div class="alert-title">권한이 제한되었습니다</div>
+            <div class="alert-desc">잠시 권한이 제한되었어요. 충전하면 바로 복구!</div>
+          </div>
+        </div>
+        <div class="alert-banner alert-status-success">
+          <span class="alert-icon">✅</span>
+          <div class="alert-content">
+            <div class="alert-title">권한이 복구되었습니다</div>
+            <div class="alert-desc">이제 투표 및 게시글 작성이 가능합니다</div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Tab: Domain -->
@@ -1932,12 +2521,10 @@
         </div>
       </div>
 
-      <h3 class="subsection-title">AttendanceStatusBadge</h3>
+      <h3 class="subsection-title">AttendanceStatusBadge (API: ATTENDING | NOT_ATTENDING)</h3>
       <div class="component-group">
         <span class="badge badge-fill-green">✓ 참석</span>
         <span class="badge badge-fill-red">✕ 불참</span>
-        <span class="badge badge-weak-orange">❓ 미정</span>
-        <span class="badge badge-weak-grey">📍 지각</span>
       </div>
 
       <h3 class="subsection-title">MemberStatusBadge</h3>
@@ -1948,13 +2535,65 @@
         <span class="badge badge-weak-grey">🕐 신규</span>
         <span class="badge badge-fill-red">🚫 정지</span>
       </div>
+
+      <h3 class="subsection-title">Like Animation (Click to toggle)</h3>
+      <div class="component-group">
+        <button class="like-btn" id="like-btn-1" onclick="toggleLike('like-btn-1')">
+          <span class="like-icon">🤍</span>
+          <span class="like-count">12</span>
+          <div class="like-particles" id="particles-1"></div>
+        </button>
+        <button class="like-btn liked" id="like-btn-2" onclick="toggleLike('like-btn-2')">
+          <span class="like-icon">❤️</span>
+          <span class="like-count">42</span>
+          <div class="like-particles" id="particles-2"></div>
+        </button>
+      </div>
+      <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: 8px;">
+        UX_MICROMOTION: scale(0.8→1.3→1) + 파티클 분산 (400ms)
+      </div>
+
+      <h3 class="subsection-title">Entry Fee Calculation (IA_SPECIFICATION)</h3>
+      <div
+        style="max-width: 400px; background: var(--color-surface); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm);">
+        <div style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">📚 책벌레들 가입하기</div>
+        <div class="entry-fee-row">
+          <span>보증금 락 (1개월)</span>
+          <span class="financial financial-sm">100,000 크레딧</span>
+        </div>
+        <div class="entry-fee-row">
+          <span>입회비 <span class="entry-fee-highlight">⭐ 신규</span></span>
+          <span class="financial financial-sm">375,000 크레딧</span>
+        </div>
+        <div class="entry-fee-row total">
+          <span>총 필요 금액</span>
+          <span class="financial financial-md">475,000 크레딧</span>
+        </div>
+        <div
+          style="margin-top: 16px; padding: 12px; background: var(--color-grey-100); border-radius: var(--radius-sm); font-size: 13px; color: var(--color-text-secondary);">
+          ℹ️ 입회비 = 기존 오픈 잔액 / (현재 인원 - 1)
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">가입하기</button>
+      </div>
     </section>
 
     <!-- Tab: Navigation -->
     <section class="tab-content" id="navigation">
       <h2 class="section-title">Navigation Components</h2>
 
-      <h3 class="subsection-title">Bottom Navigation</h3>
+      <h3 class="subsection-title">SearchBar</h3>
+      <div style="max-width: 400px;">
+        <div
+          style="display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-full);">
+          <span style="color: var(--color-text-secondary);">🔍</span>
+          <input type="text" placeholder="챌린지, 유저 검색..."
+            style="flex: 1; border: none; outline: none; background: transparent; font-size: 15px; color: var(--color-text-primary);">
+          <button
+            style="background: none; border: none; color: var(--color-grey-400); cursor: pointer; font-size: 18px;">×</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Bottom Navigation (📱 Mobile Only)</h3>
       <div class="bottom-nav-demo">
         <div class="nav-item active">
           <span class="nav-icon">🏠</span>
@@ -1978,7 +2617,7 @@
         </div>
       </div>
 
-      <h3 class="subsection-title">Segmented Control</h3>
+      <h3 class="subsection-title">Challenge Tab Navigation (피드/장부/투표/모임/멤버)</h3>
       <div class="component-group">
         <div class="segmented-control">
           <button class="segment-btn active">피드</button>
@@ -1986,6 +2625,24 @@
           <button class="segment-btn">투표</button>
           <button class="segment-btn">모임</button>
           <button class="segment-btn">멤버</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Ledger Tab Navigation (요약/내역/통계)</h3>
+      <div class="component-group">
+        <div class="segmented-control">
+          <button class="segment-btn active">요약</button>
+          <button class="segment-btn">거래 내역</button>
+          <button class="segment-btn">통계</button>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Admin Tab Navigation (관리자용)</h3>
+      <div class="component-group">
+        <div class="segmented-control">
+          <button class="segment-btn active">대시보드</button>
+          <button class="segment-btn">정산 관리</button>
+          <button class="segment-btn">신고 접수</button>
         </div>
       </div>
 
@@ -2005,7 +2662,7 @@
         </div>
       </div>
 
-      <h3 class="subsection-title">SideNav (Desktop)</h3>
+      <h3 class="subsection-title">SideNav (💻 Desktop Only)</h3>
       <div
         style="width: 240px; background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); padding: 16px;">
         <div style="padding: 12px; margin-bottom: 8px; font-weight: 600; color: var(--color-orange-500);">🍊 WOORIDO
@@ -2175,7 +2832,7 @@
           <div class="group-card-thumb">📚</div>
           <div class="group-card-body">
             <div class="group-card-title">책벌레들</div>
-            <div class="group-card-meta">월 100,000원 · 매주 토요일</div>
+            <div class="group-card-meta">월 100,000원 · 매주 토요일 · 👤 8/10명</div>
             <div class="group-card-footer">
               <span class="badge badge-fill-green">진행 중</span>
               <span class="brix-badge brix-grape">🍇 42.5</span>
@@ -2214,7 +2871,6 @@
         <div class="component-group">
           <button class="btn btn-primary btn-sm">👍 찬성</button>
           <button class="btn btn-secondary btn-sm">👎 반대</button>
-          <button class="btn btn-ghost btn-sm">🤷 기권</button>
         </div>
       </div>
 
@@ -2307,7 +2963,7 @@
       </div>
 
       <h3 class="subsection-title">InsightCard (AI 분석)</h3>
-      <div
+      <div class="insight-card"
         style="max-width: 400px; background: linear-gradient(135deg, var(--color-orange-50), var(--color-surface)); border: 1px solid var(--color-orange-200); border-radius: var(--radius-lg); padding: 16px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
           <span style="font-size: 24px;">🔍</span>
@@ -2380,7 +3036,6 @@
           </div>
         </div>
         <div style="font-size: 13px; color: var(--color-text-secondary);">유효기간: 2026-01-20 23:59</div>
-        <div style="font-size: 11px; color: var(--color-warning); margin-top: 8px;">⚠️ 화면을 캡처하지 마세요</div>
       </div>
     </section>
 
@@ -2567,7 +3222,7 @@
         </div>
         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-divider);">
           <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📅 1월 18일 (토)</div>
-          <div
+          <div class="event-mini-bar"
             style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--color-grey-100); border-radius: var(--radius-sm); font-size: 13px;">
             <div style="width: 4px; height: 24px; background: var(--color-success); border-radius: 2px;"></div>
             <div>
@@ -2800,6 +3455,91 @@ Design Style: Modern, clean, trustworthy finance app
 Key UX Principles: Transparency, Democracy, Trust, Accessibility, Delight`;
       navigator.clipboard.writeText(context);
       showToast('UX Pilot 컨텍스트 복사됨');
+    }
+
+    // Confetti Effect (UX_MICROMOTION)
+    function triggerConfetti() {
+      const container = document.createElement('div');
+      container.className = 'confetti-container';
+      document.body.appendChild(container);
+
+      const colors = ['#E9481E', '#F59E0B', '#16A34A', '#9333EA', '#3B82F6', '#F43F5E'];
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+        container.appendChild(confetti);
+      }
+
+      showToast('🎉 축하합니다!');
+      setTimeout(() => container.remove(), 4000);
+    }
+
+    // Like Animation (UX_MICROMOTION §4.1)
+    function toggleLike(id) {
+      const btn = document.getElementById(id);
+      const icon = btn.querySelector('.like-icon');
+      const count = btn.querySelector('.like-count');
+      const particlesContainer = btn.querySelector('.like-particles');
+      const isLiked = btn.classList.contains('liked');
+
+      if (isLiked) {
+        btn.classList.remove('liked');
+        icon.textContent = '🤍';
+        count.textContent = parseInt(count.textContent) - 1;
+      } else {
+        btn.classList.add('liked');
+        icon.textContent = '❤️';
+        count.textContent = parseInt(count.textContent) + 1;
+
+        // Create particles
+        particlesContainer.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'like-particle';
+          const angle = (360 / 6) * i;
+          const tx = Math.cos(angle * Math.PI / 180) * 30 + 'px';
+          const ty = Math.sin(angle * Math.PI / 180) * 30 + 'px';
+          particle.style.setProperty('--tx', tx);
+          particle.style.setProperty('--ty', ty);
+          particlesContainer.appendChild(particle);
+        }
+
+        setTimeout(() => particlesContainer.innerHTML = '', 600);
+      }
+    }
+
+    // Pull to Refresh Simulation (UX_INTERACTIONS §1.1)
+    function simulatePullRefresh() {
+      const demo = document.getElementById('pull-refresh-demo');
+      demo.classList.add('pulling');
+
+      setTimeout(() => {
+        demo.classList.remove('pulling');
+        demo.classList.add('refreshing');
+
+        setTimeout(() => {
+          demo.classList.remove('refreshing');
+          showToast('새로고침 완료');
+        }, 1500);
+      }, 300);
+    }
+
+    // Swipe Action Toggle (UX_INTERACTIONS §1.3)
+    let swipeState = 0; // 0: center, 1: left, 2: right
+    function toggleSwipe(id) {
+      const container = document.getElementById(id);
+      swipeState = (swipeState + 1) % 3;
+
+      container.classList.remove('swiped-left', 'swiped-right');
+      if (swipeState === 1) {
+        container.classList.add('swiped-left');
+      } else if (swipeState === 2) {
+        container.classList.add('swiped-right');
+      }
     }
   </script>
 </body>

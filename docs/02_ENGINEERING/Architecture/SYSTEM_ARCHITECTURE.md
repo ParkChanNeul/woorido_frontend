@@ -410,6 +410,10 @@ sequenceDiagram
 
 ### 3.4 추천 알고리즘 - Django가 로컬 DB + ES 활용
 
+> [!IMPORTANT]
+> **[PostDemo 기능]** 이 섹션의 Django 로컬 DB (PostgreSQL) 및 sync_* 테이블은 MVP/DemoDay 이후에 적용됩니다.
+> MVP 시점에는 Django가 DB 연결 없이 Spring Boot API 응답 데이터만 활용하여 분석/추천합니다.
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -448,6 +452,10 @@ sequenceDiagram
 ```
 
 ### 3.5 데이터 동기화 (Oracle → Spring Boot → Django → Elasticsearch)
+
+> [!IMPORTANT]
+> **[PostDemo 기능]** 이 섹션의 Django 로컬 DB 동기화 아키텍처는 MVP/DemoDay 이후에 적용됩니다.
+> MVP 시점에는 Django가 Spring Boot API를 실시간 호출하여 필요한 데이터를 가져옵니다 (로컬 DB 캐싱 없음).
 
 ```mermaid
 sequenceDiagram
@@ -677,6 +685,10 @@ def search_challenges(keyword, filters):
 
 ## 5. 추천 시스템 상세 (Django 알고리즘 + Elasticsearch)
 
+> [!IMPORTANT]
+> **[PostDemo 기능]** 이 섹션의 Django 로컬 DB (sync_members, sync_transactions 등) 기반 추천 시스템은 MVP/DemoDay 이후에 적용됩니다.
+> MVP 시점에는 Django가 Spring Boot API 호출을 통해 실시간으로 데이터를 받아 분석합니다.
+
 ### 5.1 추천 알고리즘 파이프라인
 
 ```
@@ -880,6 +892,9 @@ class HybridRecommender:
 
 ### 5.3 인덱싱 프로세스 (Django 로컬 DB → Elasticsearch)
 
+> [!IMPORTANT]
+> **[PostDemo 기능]** Django 로컬 DB 기반 인덱싱은 MVP/DemoDay 이후 적용됩니다.
+
 ```python
 # Django search/indexers.py
 
@@ -1037,7 +1052,7 @@ CREATE INDEX idx_transactions_challenge ON transactions(challenge_id, created_at
 
 **Django 로컬 DB 인덱스** (SQLite/PostgreSQL):
 ```sql
--- Spring Boot 데이터 동기화용
+-- Spring Boot 데이터 동기화용 (PostDemo 이후 반영)
 CREATE INDEX idx_sync_challenges_updated ON sync_challenges(updated_at);
 CREATE INDEX idx_sync_members_user ON sync_members(user_id);
 CREATE INDEX idx_sync_transactions_challenge ON sync_transactions(challenge_id);
@@ -1061,6 +1076,9 @@ CREATE INDEX idx_sync_transactions_challenge ON sync_transactions(challenge_id);
 - Pagination: OFFSET/FETCH 대신 Cursor-based (created_at)
 
 ## 8. 배포 아키텍처 (Demo Day)
+
+> [!NOTE]
+> **[PostDemo 항목]** `django-db (PostgreSQL)` 컨테이너와 관련 볼륨 마운트(`/data/postgres`)는 MVP/DemoDay 이후 적용됩니다.
 
 ```
 AWS EC2 Instance (t3.large)

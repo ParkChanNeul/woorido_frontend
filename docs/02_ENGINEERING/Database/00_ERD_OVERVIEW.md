@@ -5,7 +5,7 @@
 **대상 DBMS**: Oracle 21c XE
 **ORM**: mybatis-spring-boot-starter 3.0.3
 **트랜잭션 관리**: Spring Boot 3.2.3 (@Transactional)
-**총 테이블**: 32개
+**총 테이블**: 33개
 
 > 📖 정책 기준: [POLICY_DEFINITION.md](../../01_PLANNING/Product/POLICY_DEFINITION.md)
 > 📖 기준 문서: [DB_Schema_1.0.0.md](../DB_Schema_1.0.0.md)
@@ -20,7 +20,7 @@ ERD 문서는 도메인별로 분할되어 관리됩니다.
 | 문서 | 설명 | 테이블 |
 |------|------|--------|
 | [00_ERD_OVERVIEW.md](./00_ERD_OVERVIEW.md) | 아키텍처 개요, 결정사항 | - |
-| [01_SCHEMA_USER.md](./01_SCHEMA_USER.md) | 사용자 도메인 | users, accounts, account_transactions, user_scores |
+| [01_SCHEMA_USER.md](./01_SCHEMA_USER.md) | 사용자 도메인 | users, accounts, account_transactions, user_scores, refresh_tokens |
 | [02_SCHEMA_CHALLENGE.md](./02_SCHEMA_CHALLENGE.md) | 챌린지 도메인 | challenges, challenge_members |
 | [03_SCHEMA_MEETING.md](./03_SCHEMA_MEETING.md) | 정기 모임 도메인 | meetings, meeting_votes, meeting_vote_records |
 | [04_SCHEMA_SNS.md](./04_SCHEMA_SNS.md) | SNS 도메인 | posts, post_images, post_likes, comments, comment_likes |
@@ -153,5 +153,5 @@ public boolean isNewUser(User user) {
 
 ---
 
-**최종 수정**: 2026-01-13
+**최종 수정**: 2026-01-20
 **작성자**: AI-Assisted Development Team
