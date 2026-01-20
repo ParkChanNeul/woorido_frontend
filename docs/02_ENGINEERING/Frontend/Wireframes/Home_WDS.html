@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WOORIDO - 홈</title>
+
+  <!-- Pretendard Font (WDS) -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+
+  <style>
+    /* ===== CSS VARIABLES (EXACT COPY FROM WDS index.html) ===== */
+    :root {
+      /* Primary (Mandarin Orange) */
+      --color-orange-50: #FFF7ED;
+      --color-orange-100: #FFEDD5;
+      --color-orange-200: #FED7AA;
+      --color-orange-300: #FDBA74;
+      --color-orange-400: #FB923C;
+      --color-orange-500: #E9481E;
+      --color-orange-600: #D43D16;
+      --color-orange-700: #BF310E;
+      --color-orange-800: #9A2A0B;
+      --color-orange-900: #7C2D12;
+
+      /* Grey (Warm Stone) */
+      --color-grey-50: #FAFAF9;
+      --color-grey-100: #F5F5F4;
+      --color-grey-200: #E7E5E4;
+      --color-grey-300: #D6D3D1;
+      --color-grey-400: #A8A29E;
+      --color-grey-500: #78716C;
+      --color-grey-600: #57534E;
+      --color-grey-700: #44403C;
+      --color-grey-800: #292524;
+      --color-grey-900: #1C1917;
+
+      /* Status */
+      --color-success: #16A34A;
+      --color-warning: #F59E0B;
+      --color-error: #DC2626;
+      --color-info: #E9481E;
+
+      /* Brix */
+      --color-brix-honey: #F59E0B;
+      --color-brix-grape: #9333EA;
+      --color-brix-apple: #F43F5E;
+      --color-brix-mandarin: #E9481E;
+
+      /* Semantic */
+      --color-background: var(--color-grey-50);
+      --color-surface: #FFFFFF;
+      --color-surface-grey: var(--color-grey-100);
+      --color-text-primary: var(--color-grey-900);
+      --color-text-secondary: var(--color-grey-600);
+      --color-text-disabled: var(--color-grey-500);
+      --color-border: var(--color-grey-300);
+      --color-divider: var(--color-grey-200);
+
+      /* Shape (EXACT WDS VALUES) */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+
+      /* Shadow */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+
+      /* Motion */
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      /* Typography */
+      --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    /* ===== RESET ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--color-text-primary);
+      background: var(--color-background);
+      min-height: 100vh;
+    }
+
+    /* ===== LAYOUT (Desktop 1200px like WDS Viewer) ===== */
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ===== HEADER (EXACT FROM WDS) ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--color-divider);
+      position: sticky;
+      top: 0;
+      background: var(--color-background);
+      z-index: 100;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Brix Badge (EXACT FROM WDS) */
+    .brix-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+    }
+
+    .brix-honey {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .brix-grape {
+      background: #F3E8FF;
+      color: #6B21A8;
+    }
+
+    /* Balance Chip */
+    .balance-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 600;
+      font-feature-settings: "tnum";
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .balance-chip:hover {
+      background: var(--color-orange-100);
+      border-color: var(--color-orange-500);
+    }
+
+    /* Avatar (EXACT FROM WDS) */
+    .avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+      font-weight: 600;
+      overflow: hidden;
+    }
+
+    .avatar-md {
+      width: 40px;
+      height: 40px;
+      font-size: 15px;
+    }
+
+    /* ===== HERO SLIDER ===== */
+    .hero-section {
+      padding: 24px 0;
+    }
+
+    .hero-slider {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+
+    .hero-slides {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .hero-slide {
+      flex-shrink: 0;
+      width: 100%;
+      height: 240px;
+      background: linear-gradient(135deg, var(--color-orange-500), var(--color-orange-600));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 48px;
+      color: white;
+    }
+
+    .hero-slide.slide-2 {
+      background: linear-gradient(135deg, #9333EA, #7C3AED);
+    }
+
+    .hero-slide.slide-3 {
+      background: linear-gradient(135deg, var(--color-success), #22C55E);
+    }
+
+    .hero-content {
+      max-width: 500px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      opacity: 0.9;
+    }
+
+    .hero-emoji {
+      font-size: 100px;
+    }
+
+    .hero-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .hero-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .hero-dot.active {
+      background: white;
+      width: 28px;
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      padding: 32px 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .section-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-orange-500);
+      text-decoration: none;
+    }
+
+    .section-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== GROUP CARD (EXACT FROM WDS index.html) ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .group-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .group-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .group-card-thumb {
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(135deg, var(--color-orange-100), var(--color-orange-200));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      position: relative;
+    }
+
+    .group-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .group-card-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    .group-card-body {
+      padding: 16px;
+    }
+
+    .group-card-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .group-card-meta {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .group-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Status Badge (EXACT FROM WDS) */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius-full);
+    }
+
+    .badge-fill-orange {
+      background: var(--color-orange-500);
+      color: white;
+    }
+
+    .badge-fill-green {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .badge-weak-grey {
+      background: var(--color-grey-100);
+      color: var(--color-grey-700);
+    }
+
+    /* ===== BOTTOM NAV DEMO (EXACT FROM WDS index.html) ===== */
+    .bottom-nav-demo {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg);
+      max-width: 480px;
+      margin: 32px auto;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      font-size: 11px;
+      color: var(--color-grey-500);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .nav-item:hover {
+      color: var(--color-grey-700);
+    }
+
+    .nav-item.active {
+      color: var(--color-orange-500);
+    }
+
+    .nav-icon {
+      font-size: 24px;
+    }
+
+    /* ===== POPULAR LIST ===== */
+    .popular-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .popular-card {
+      display: flex;
+      gap: 20px;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .popular-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .popular-thumb {
+      width: 140px;
+      height: 120px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--color-orange-100), var(--color-orange-200));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      flex-shrink: 0;
+    }
+
+    .popular-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .popular-tag {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: var(--radius-sm);
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+      margin-bottom: 8px;
+    }
+
+    .popular-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .popular-desc {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .popular-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .popular-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    /* Button (EXACT FROM WDS) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .btn-primary {
+      background: var(--color-orange-500);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-orange-600);
+    }
+
+    .btn-secondary {
+      background: var(--color-grey-100);
+      color: var(--color-grey-900);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-grey-200);
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Header (WDS Style) -->
+    <header class="header">
+      <div class="header-title">
+        <span>🍊</span>
+        <span>WOORIDO</span>
+      </div>
+      <div class="header-actions">
+        <!-- Brix Badge -->
+        <span class="brix-badge brix-honey">🍯 68.5</span>
+        <!-- Balance Chip -->
+        <div class="balance-chip">
+          <span>💳</span>
+          <span>₩1,250,000</span>
+        </div>
+        <!-- Avatar -->
+        <div class="avatar avatar-md">김</div>
+      </div>
+    </header>
+
+    <!-- Hero Slider Banner -->
+    <section class="hero-section">
+      <div class="hero-slider">
+        <div class="hero-slides">
+          <!-- Slide 1: Trust Triangle 핵심 -->
+          <div class="hero-slide">
+            <div class="hero-content">
+              <span class="hero-tag">🔥 신뢰의 삼각형</span>
+              <div class="hero-title">먹튀 걱정 없는 모임 통장</div>
+              <div class="hero-desc">선충전 락 + 투표 승인 + 장부 투명화. 모든 지출은 멤버 동의 필요!</div>
+            </div>
+            <div class="hero-emoji">🔐</div>
+          </div>
+          <!-- Slide 2: SNS 커뮤니티 -->
+          <div class="hero-slide slide-2">
+            <div class="hero-content">
+              <span class="hero-tag">💬 SNS 커뮤니티</span>
+              <div class="hero-title">피드로 소통하는 챌린지</div>
+              <div class="hero-desc">피드, 댓글, 좋아요로 멤버들과 활발하게 교류해요</div>
+            </div>
+            <div class="hero-emoji">📱</div>
+          </div>
+          <!-- Slide 3: 정기 모임 -->
+          <div class="hero-slide slide-3">
+            <div class="hero-content">
+              <span class="hero-tag">📅 정기 모임</span>
+              <div class="hero-title">함께 만나요, 오프라인에서</div>
+              <div class="hero-desc">투표로 모임을 정하고, 참석자만 지출 승인에 참여해요</div>
+            </div>
+            <div class="hero-emoji">🤝</div>
+          </div>
+        </div>
+        <div class="hero-dots">
+          <div class="hero-dot active"></div>
+          <div class="hero-dot"></div>
+          <div class="hero-dot"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- My Challenges Section -->
+    <section class="section">
+      <div class="section-header">
+        <h1 class="section-title">내 챌린지</h1>
+        <a href="#" class="section-link">전체보기 →</a>
+      </div>
+      <div class="card-grid">
+        <!-- Card 1: 독서 챌린지 -->
+        <div class="group-card">
+          <div class="group-card-thumb">
+            <span class="group-card-badge">
+              <span class="brix-badge brix-honey">🍯 72.5</span>
+            </span>
+            📚
+          </div>
+          <div class="group-card-body">
+            <div class="group-card-title">책벌레들</div>
+            <div class="group-card-meta">매주 토요일 14:00 · 서포트 10만원</div>
+            <div class="group-card-footer">
+              <span class="badge badge-fill-green">진행 중</span>
+              <span style="font-size: 13px; color: var(--color-text-secondary);">👤 8/10명</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2: 운동 챌린지 -->
+        <div class="group-card">
+          <div class="group-card-thumb" style="background: linear-gradient(135deg, #F3E8FF, #E9D5FF);">
+            <span class="group-card-badge">
+              <span class="brix-badge brix-grape">🍇 45.0</span>
+            </span>
+            🏃
+          </div>
+          <div class="group-card-body">
+            <div class="group-card-title">러닝크루</div>
+            <div class="group-card-meta">매주 일요일 07:00 · 서포트 5만원</div>
+            <div class="group-card-footer">
+              <span class="badge badge-fill-orange">모집 중</span>
+              <span style="font-size: 13px; color: var(--color-text-secondary);">👤 5/12명</span>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3: 영화 챌린지 -->
+        <div class="group-card">
+          <div class="group-card-thumb" style="background: linear-gradient(135deg, #DCFCE7, #BBF7D0);">
+            <span class="group-card-badge">
+              <span class="brix-badge" style="background: #DCFCE7; color: #166534;">🍎 28.0</span>
+            </span>
+            🎬
+          </div>
+          <div class="group-card-body">
+            <div class="group-card-title">영화광들</div>
+            <div class="group-card-meta">격주 금요일 19:00 · 서포트 10만원</div>
+            <div class="group-card-footer">
+              <span class="badge badge-fill-green">진행 중</span>
+              <span style="font-size: 13px; color: var(--color-text-secondary);">👤 12/15명</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Challenges Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">인기 챌린지</h2>
+      </div>
+      <div class="popular-list">
+        <!-- Popular 1: 취미 챌린지 -->
+        <article class="popular-card">
+          <div class="popular-thumb" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A);">🎸</div>
+          <div class="popular-content">
+            <div>
+              <span class="popular-tag">🔥 트렌딩</span>
+              <h3 class="popular-title">기타 동호회</h3>
+              <p class="popular-desc">매주 토요일 모여서 합주해요! 보증금으로 무단 이탈 방지, 정기 모임 장소비는 투표로 승인</p>
+            </div>
+            <div class="popular-footer">
+              <div class="popular-stats">
+                <span>👀 1.2천 조회</span>
+                <span>👤 450명 참여</span>
+              </div>
+              <button class="btn btn-primary btn-sm">참여하기</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Popular 2: 스터디 챌린지 -->
+        <article class="popular-card">
+          <div class="popular-thumb">📖</div>
+          <div class="popular-content">
+            <div>
+              <span class="popular-tag" style="background: #DBEAFE; color: #1D4ED8;">스터디</span>
+              <h3 class="popular-title">독서 마라톤</h3>
+              <p class="popular-desc">한 달 2권 완독! 서포트는 모임 운영에 사용, 장부로 전액 공개되니 안심</p>
+            </div>
+            <div class="popular-footer">
+              <div class="popular-stats">
+                <span>👀 890 조회</span>
+                <span>👤 120명 참여</span>
+              </div>
+              <button class="btn btn-secondary btn-sm">상세보기</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Bottom Nav Demo (WDS Exact Copy) -->
+    <nav class="bottom-nav-demo">
+      <div class="nav-item active">
+        <span class="nav-icon">🏠</span>
+        <span>홈</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🔍</span>
+        <span>탐색</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon"
+          style="background: var(--color-orange-500); color: white; width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">➕</span>
+        <span></span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">📋</span>
+        <span>장부</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span>MY</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Simple Slider Script -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelector('.hero-slides');
+    const dots = document.querySelectorAll('.hero-dot');
+    const totalSlides = 3;
+
+    function goToSlide(index) {
+      currentSlide = index;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      goToSlide(currentSlide);
+    }, 4000);
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => goToSlide(i));
+    });
+  </script>
+</body>
+
+</html>

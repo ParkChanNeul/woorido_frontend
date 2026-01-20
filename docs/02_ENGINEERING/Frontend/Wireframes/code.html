@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WOORIDO - Home</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e94820",
+                        "background-light": "#FAFAF9", 
+                        "background-dark": "#211411",
+                        "neutral-dark": "#1b100e",
+                        "neutral-soft": "#995c4d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-neutral-dark font-display min-h-screen flex flex-col items-center">
+<!-- Main Container -->
+<div class="layout-container flex w-full max-w-[960px] grow flex-col pb-24">
+<!-- Header -->
+<header class="sticky top-0 z-20 flex items-center justify-between border-b border-gray-100 bg-background-light/95 backdrop-blur-sm px-6 py-4 dark:border-gray-800 dark:bg-background-dark/95">
+<div class="flex items-center gap-2">
+<!-- Logo Icon -->
+<div class="flex items-center justify-center size-8 rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-xl">savings</span>
+</div>
+<h2 class="text-xl font-extrabold tracking-tight text-neutral-dark dark:text-white">WOORIDO</h2>
+</div>
+<div class="flex items-center gap-4">
+<!-- Balance Chip -->
+<button class="flex items-center gap-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2 shadow-sm transition-transform hover:scale-105">
+<span class="material-symbols-outlined text-primary text-lg">account_balance_wallet</span>
+<span class="text-sm font-bold text-neutral-dark dark:text-white">₩ 1,250,000</span>
+</button>
+<!-- User Avatar -->
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm cursor-pointer" data-alt="User profile picture showing a smiling person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuByuwi_9yyDBXys-dHxLDDM6oXSgu2_ePT8JtUKFRrOJp47t6yLJdJqnb_LycA6A6Vz3Up9cfsxVN5hEhCmjSaWLrdhAYHhEhBDKGAiwrdTxWBVAFJSIMZBHNyhNwDf_07yWcZ4665U81G0VaylTyyvpFWhrrGwViGb_dFZuzIySRw804VDhC9y5nLacCXNPcIg5UPaTOjGA9cDw_oiyI2o-a4LvmgqijY8_Uf2sv0m1FQ7t3Qr_WMRWd7iclViFAdB5rGBtdMCZuA");'>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex flex-col gap-8 px-6 pt-6">
+<!-- My Challenges Section -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h1 class="text-2xl font-bold leading-tight tracking-tight text-neutral-dark dark:text-white">My Challenges</h1>
+<button class="text-sm font-medium text-primary hover:text-orange-700">View All</button>
+</div>
+<!-- Horizontal Scroll Container -->
+<div class="no-scrollbar -mx-6 flex overflow-x-auto px-6 pb-4 pt-1">
+<div class="flex gap-4">
+<!-- Card 1 -->
+<div class="group relative flex w-[280px] flex-none flex-col gap-3 rounded-xl bg-white dark:bg-gray-800 p-3 shadow-sm transition-all hover:shadow-md cursor-pointer border border-transparent hover:border-primary/20">
+<div class="relative w-full overflow-hidden rounded-lg aspect-video">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Morning sunrise view with coffee cup" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDIRhMwRbVrY2OLpF81kLeF-t397SAApN7TpjZKfUSswr5kcbSEQerlV1bGVVX18L5mqX_gHaE4jSNW7gcr9daD4pajncCPXfV15M4UXKzvnueYiVfVyDA_2Rn03Ww_FtJJC21bXVvpeO9W6zrjGlwMT_xxDyFI2xnFNesKhebvfPNnaJFdQyGuJx19cJEySRW5zs6wjM_OqzxqLElUDgCVa3X96z1H6Od53ZMgqCkpsq8MxF4ln5HsyPz2_F2mKktKMjrcCPMg2Lo");'>
+</div>
+<div class="absolute right-2 top-2 rounded-md bg-white/90 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md dark:bg-black/60 shadow-sm">
+                                    500 Brix
+                                </div>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-lg font-bold text-neutral-dark dark:text-white truncate">Morning Miracle Routine</h3>
+<div class="flex items-center gap-1 text-sm text-neutral-soft dark:text-gray-400">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>5 Members</span>
+</div>
+</div>
+<!-- Progress Bar Mockup -->
+<div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+<div class="h-full w-[65%] rounded-full bg-primary"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative flex w-[280px] flex-none flex-col gap-3 rounded-xl bg-white dark:bg-gray-800 p-3 shadow-sm transition-all hover:shadow-md cursor-pointer border border-transparent hover:border-primary/20">
+<div class="relative w-full overflow-hidden rounded-lg aspect-video">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Person rejecting a cup of coffee gesture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBYWgi_7hAX4TTVQ6Uxs8-SEmPAJBaT6EtKtQCN79iWc6DtYc_Fxi7ua4wLjzRgHzJsbmZhtIQGOb7AUz2WQCsKE__EJy044MCyVm55ki1NHT2fBnTdert8nO77Q_KENkMFpQHLwleU5c6bEgnSgQz8Z4s7LdVsBK8oT3iuJ7h8XO4dWT0M3Tmewo_uav7q3aC9qYahdRfhXi80kuXASLDfqArRZyNsagMfPIHHhD65sUfIUFz-jW2nCHSa6ZVoXidECguw72R_Jk0");'>
+</div>
+<div class="absolute right-2 top-2 rounded-md bg-white/90 px-2 py-1 text-xs font-bold text-primary backdrop-blur-md dark:bg-black/60 shadow-sm">
+                                    1,200 Brix
+                                </div>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-lg font-bold text-neutral-dark dark:text-white truncate">No Coffee Challenge</h3>
+<div class="flex items-center gap-1 text-sm text-neutral-soft dark:text-gray-400">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>12 Members</span>
+</div>
+</div>
+<div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+<div class="h-full w-[30%] rounded-full bg-primary"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative flex w-[280px] flex-none flex-col gap-3 rounded-xl bg-white dark:bg-gray-800 p-3 shadow-sm transition-all hover:shadow-md cursor-pointer border border-transparent hover:border-primary/20">
+<div class="relative w-full overflow-hidden rounded-lg aspect-video">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Sneakers running on a pavement" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAr9XDrJ5EWsnJYmZ2cFLvC-YYjou7VdH__gjpm6dPgBYPk_doJlNHmnLnoLn_8kK_OMa3NORDoZqQJo6ptRtkQB8zbpeMKQ32wEeqC2MxQkGPmfMQ7Sh8jjXkMoZ-jQ2a5Wcugo717y_NyRjXOXblaZTh0NRVGnz-9uXMzXA2i7WUw7VibhW_HAyLjE-x5gFe4hSU2ZCSOT32uHKoX-u4hsCpRA9vO9vBDId97G18gfATd5rkf4dZMLi_vckSJVBcm_uPNSeBUv3Y");'>
+</div>
+<div class="absolute right-2 top-2 rounded-md bg-green-100 px-2 py-1 text-xs font-bold text-green-700 shadow-sm">
+                                    Free
+                                </div>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-lg font-bold text-neutral-dark dark:text-white truncate">10k Steps Daily</h3>
+<div class="flex items-center gap-1 text-sm text-neutral-soft dark:text-gray-400">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>8 Members</span>
+</div>
+</div>
+<div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+<div class="h-full w-[85%] rounded-full bg-primary"></div>
+</div>
+</div>
+<!-- Add New Placeholder -->
+<div class="flex w-[100px] flex-none flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-transparent p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<div class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-xs font-bold text-primary">Join New</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Popular Challenges Section -->
+<section class="flex flex-col gap-4">
+<h2 class="text-2xl font-bold leading-tight tracking-tight text-neutral-dark dark:text-white">Popular Challenges</h2>
+<div class="flex flex-col gap-4">
+<!-- List Item 1 -->
+<article class="flex flex-col sm:flex-row gap-4 rounded-xl bg-white dark:bg-gray-800 p-4 shadow-sm transition-all hover:shadow-md cursor-pointer border border-transparent hover:border-primary/10">
+<div class="h-48 w-full sm:h-auto sm:w-48 shrink-0 overflow-hidden rounded-lg bg-gray-200">
+<div class="h-full w-full bg-cover bg-center" data-alt="Piggy bank with coins stacked around" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJFMs36914vfHH8e-u9sjsnv7c6wAR2KXGXjNGe7W4jIWY4jJARgUAnB-YqIyyb_5FtpKVj0O1dtc4SK2DFZxdTl-PhjOKWzgo1hgIVNb_uVFbNtt2bPoPTBKzFe4NtSGE0rM3s78xuiJ7vzd5lEPvDnWQpjLyJvFiaiWXg8owNsh4GUImcUaJ7cyIiOMGhn_q4T432XfgOLfjgpDDs8wUzTGgXf5Fhjw_N7fC8zdut_GZUX_zeMbJav5qNiFDrItJiE9CxJZ0TmY");'>
+</div>
+</div>
+<div class="flex flex-1 flex-col justify-between py-1">
+<div class="flex flex-col gap-2">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="rounded bg-orange-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Trending</span>
+</div>
+<h3 class="text-lg font-bold text-neutral-dark dark:text-white">Save 1M Won in 30 Days</h3>
+<p class="text-sm text-neutral-soft dark:text-gray-400 line-clamp-2 mt-1">Join 450 others in this high-intensity savings sprint. Track your daily spending and save together.</p>
+</div>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700">
+<div class="flex items-center gap-3 text-xs font-medium text-neutral-soft dark:text-gray-400">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">visibility</span>
+<span>1.2k views</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">groups</span>
+<span>450 joined</span>
+</div>
+</div>
+<button class="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-orange-700">Join Now</button>
+</div>
+</div>
+</article>
+<!-- List Item 2 -->
+<article class="flex flex-col sm:flex-row gap-4 rounded-xl bg-white dark:bg-gray-800 p-4 shadow-sm transition-all hover:shadow-md cursor-pointer border border-transparent hover:border-primary/10">
+<div class="h-48 w-full sm:h-auto sm:w-48 shrink-0 overflow-hidden rounded-lg bg-gray-200">
+<div class="h-full w-full bg-cover bg-center" data-alt="Stock market graph on a tablet screen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDOGxV4b0BWYqv56eUouPJy47Mrh9Ykxuj7Y-vZs4KFTO7-Vpe0WJeIJ7A48UUbvvpkpnkbykxW8dS3SB6kvMef9n53ZADmzdUUQmRQamvr3OgUv5C1FCuoWfoTdOgfqsLvmg9_vb59_lsbURTYY0PLgt4AhjjadHnFnsw4CAS7aEbLUzgabsJTj_pdFUGumJCPN__aytdgMuwa7QpuqJi6D3eZ_W5JK3hcS02reUOHvDOqyeiDQ88vwNJkjEi3lx4F_EoLjH8rKe4");'>
+</div>
+</div>
+<div class="flex flex-1 flex-col justify-between py-1">
+<div class="flex flex-col gap-2">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="rounded bg-blue-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Education</span>
+</div>
+<h3 class="text-lg font-bold text-neutral-dark dark:text-white">Stock Market Study Group</h3>
+<p class="text-sm text-neutral-soft dark:text-gray-400 line-clamp-2 mt-1">Weekly analysis of KOSPI trends. Beginners welcome. We learn, simulate, and grow our portfolios.</p>
+</div>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700">
+<div class="flex items-center gap-3 text-xs font-medium text-neutral-soft dark:text-gray-400">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">visibility</span>
+<span>890 views</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">groups</span>
+<span>120 joined</span>
+</div>
+</div>
+<button class="rounded-lg bg-background-light dark:bg-gray-700 px-4 py-2 text-sm font-bold text-neutral-dark dark:text-white transition-colors hover:bg-gray-200 dark:hover:bg-gray-600">Details</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Floating -->
+<div class="fixed bottom-6 left-1/2 z-50 w-full max-w-[400px] -translate-x-1/2 px-4">
+<nav class="flex h-16 w-full items-center justify-around rounded-full bg-neutral-dark/90 backdrop-blur-md shadow-xl px-2 dark:bg-white/90">
+<a class="group flex flex-col items-center justify-center gap-1 p-2 w-16" href="#">
+<span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">home</span>
+<span class="text-[10px] font-bold text-primary">Home</span>
+</a>
+<a class="group flex flex-col items-center justify-center gap-1 p-2 w-16 text-gray-400 hover:text-white dark:text-gray-500 dark:hover:text-black transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">search</span>
+<span class="text-[10px] font-medium">Search</span>
+</a>
+<!-- Middle FAB-like item (optional emphasis) -->
+<div class="relative -top-6">
+<button class="flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 hover:shadow-primary/50">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<a class="group flex flex-col items-center justify-center gap-1 p-2 w-16 text-gray-400 hover:text-white dark:text-gray-500 dark:hover:text-black transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Wallet</span>
+</a>
+<a class="group flex flex-col items-center justify-center gap-1 p-2 w-16 text-gray-400 hover:text-white dark:text-gray-500 dark:hover:text-black transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</nav>
+</div>
+</div>
+</body></html>
