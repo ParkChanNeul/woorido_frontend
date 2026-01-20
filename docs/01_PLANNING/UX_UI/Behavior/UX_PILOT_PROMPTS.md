@@ -37,7 +37,7 @@ Create a mobile wireframe for WOORIDO Home Screen.
      * Challenge name (bold)
      * Status badge (진행 중 / 모집 중)
      * Meta: 월 금액 + 정기 모임 일정
-     * Footer: Member count (👥 8/10) + Brix badge (🍯 42.5)
+     * Footer: Member count (� 8/10명) + Brix badge (🍯 42.5)
 
 3. **Section: 인기 챌린지 (Popular Challenges)**
    - Section title with "더보기 →" link
@@ -156,7 +156,7 @@ Create a mobile wireframe for WOORIDO Challenge Detail Feed Tab.
    - Settings gear icon
 
 2. **Tab Bar**
-   - 5 tabs: 피드(active), 장부, 투표, 모임, 설정
+   - 5 tabs: 피드(active), 장부, 투표, 모임, 멤버
    - Orange underline on active
 
 3. **Pinned Notice**
@@ -274,7 +274,7 @@ Create a mobile wireframe for WOORIDO Challenge Detail Vote Tab.
      * Type badge (지출 / 모임 / 강퇴)
      * Title
      * Amount (for expense)
-     * Progress bar (agree/disagree/abstain)
+     * Progress bar (agree/disagree)
      * Threshold line (e.g., 70%)
      * Remaining time
      * My vote status
@@ -288,7 +288,7 @@ Create a mobile wireframe for WOORIDO Challenge Detail Vote Tab.
 
 ## Interactions
 - Tap VoteCard → Vote detail with cast options
-- Tap 찬성/반대/기권 → Submit vote with animation
+- Tap 찬성/반대 → Submit vote with animation
 ```
 
 ---

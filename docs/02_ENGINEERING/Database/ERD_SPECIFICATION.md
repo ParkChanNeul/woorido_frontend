@@ -404,6 +404,7 @@ CREATE TABLE users (
   email VARCHAR2(100) UNIQUE NOT NULL,
   password_hash VARCHAR2(255),
   name VARCHAR2(50) NOT NULL,
+  nickname VARCHAR2(50),                          -- 닉네임 (표시명)
   phone VARCHAR2(20),
   profile_image_url VARCHAR2(500),
   birth_date DATE,
@@ -422,6 +423,13 @@ CREATE TABLE users (
   suspended_at TIMESTAMP,
   suspended_until TIMESTAMP,
   suspension_reason VARCHAR2(500),
+  
+  -- 약관 동의 (P-001, P-002)
+  agreed_terms CHAR(1) DEFAULT 'N' CHECK (agreed_terms IN ('Y', 'N')),
+  agreed_privacy CHAR(1) DEFAULT 'N' CHECK (agreed_privacy IN ('Y', 'N')),
+  agreed_marketing CHAR(1) DEFAULT 'N' CHECK (agreed_marketing IN ('Y', 'N')),
+  terms_agreed_at TIMESTAMP,                      -- 약관 동의 시점
+  
   created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
   last_login_at TIMESTAMP,
@@ -505,6 +513,29 @@ CREATE TABLE user_scores (
 );
 
 CREATE INDEX idx_user_scores_total_score ON user_scores(total_score);
+```
+
+#### 3.1.5 refresh_tokens (리프레시 토큰)
+
+> 보안 권장: users 테이블 분리로 토큰 노출 방지, 빈번한 토큰 갱신 시 users 테이블 락 방지
+
+```sql
+CREATE TABLE refresh_tokens (
+  id VARCHAR2(36) PRIMARY KEY,                    -- 토큰 ID (UUID)
+  user_id VARCHAR2(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token VARCHAR2(500) NOT NULL,                   -- 리프레시 토큰 (해시 저장 권장)
+  device_info VARCHAR2(500),                      -- 디바이스 정보 (User-Agent 등)
+  ip_address VARCHAR2(45),                        -- 발급 시 IP 주소
+  expires_at TIMESTAMP NOT NULL,                  -- 만료 시간 (14일)
+  created_at TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  last_used_at TIMESTAMP,                         -- 마지막 사용 시간
+  is_revoked CHAR(1) DEFAULT 'N' CHECK (is_revoked IN ('Y', 'N'))  -- 수동 무효화 여부
+);
+
+CREATE INDEX idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
+CREATE INDEX idx_refresh_tokens_expires_at ON refresh_tokens(expires_at);
+CREATE UNIQUE INDEX uk_refresh_tokens_token ON refresh_tokens(token);
 ```
 
 ---

@@ -10,6 +10,9 @@ WOORIDO는 다음 핵심 원칙을 따릅니다.
 
 첫째, Spring Boot가 메인 백엔드로서 모든 비즈니스 로직과 Oracle DB Write/Read를 담당합니다. 둘째, Django는 서브 백엔드로서 알고리즘, 연산, 검색만 담당하며 Oracle에 직접 접근하지 않습니다. 셋째, 데이터 동기화는 Spring Boot에서 Django로 REST API/Webhook을 통해 이루어집니다. 넷째, Elasticsearch는 Django만 접근하며 검색/추천 엔진으로 활용됩니다.
 
+> [!IMPORTANT]
+> **[PostDemo 기능]** 본 문서의 Django 로컬 DB (PostgreSQL 15), sync_* 테이블, django-db 컨테이너 관련 내용은 MVP/DemoDay 이후에 적용됩니다. MVP 시점에는 Django가 DB 연결 없이 Spring Boot API를 통해 실시간 데이터를 받아 처리합니다.
+
 2. 전체 시스템 아키텍처
 2.1 시스템 구조도 (Mermaid)
 graph TB
