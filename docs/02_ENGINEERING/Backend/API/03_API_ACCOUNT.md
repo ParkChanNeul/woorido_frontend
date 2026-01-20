@@ -215,6 +215,7 @@ curl -X POST https://api.woorido.com/api/v1/accounts/charge \
 |------|------|--------|
 | 400 | ACCOUNT_002 | 충전 금액은 10,000원 이상이어야 합니다 |
 | 400 | ACCOUNT_007 | 충전 금액은 10,000원 단위여야 합니다 |
+| 400 | ACCOUNT_008 | 결제 수단은 CARD 또는 BANK_TRANSFER 만 가능합니다 |
 
 ---
 

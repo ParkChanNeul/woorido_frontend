@@ -891,6 +891,7 @@ HTTP    코드           메시지
 ─────   ────────────   ─────────────────────────────────────
 400     ACCOUNT_002    충전 금액은 10,000원 이상이어야 합니다
 400     ACCOUNT_007    충전 금액은 10,000원 단위여야 합니다
+400     ACCOUNT_008    결제 수단은 CARD 또는 BANK_TRANSFER 만 가능합니다
 
 ## 018 POST /accounts/charge/callback
 충전 콜백 (내부 API)
@@ -4865,6 +4866,7 @@ ACCOUNT_005   400     잔액이 부족합니다
 ACCOUNT_006   400     일일 출금 한도를 초과했습니다
 ACCOUNT_007   404     존재하지 않는 거래입니다
 ACCOUNT_008   400     월간 출금 한도를 초과했습니다
+ACCOUNT_009   400     결제 수단은 CARD 또는 BANK_TRANSFER 만 가능합니다
 
 CHALLENGE 에러
 코드          HTTP    메시지
