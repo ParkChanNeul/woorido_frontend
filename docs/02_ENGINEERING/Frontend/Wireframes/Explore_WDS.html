@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WOORIDO - 탐색</title>
+
+  <!-- Pretendard Font (WDS) -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+
+  <style>
+    /* ===== CSS VARIABLES (EXACT COPY FROM WDS index.html) ===== */
+    :root {
+      /* Primary (Mandarin Orange) */
+      --color-orange-50: #FFF7ED;
+      --color-orange-100: #FFEDD5;
+      --color-orange-200: #FED7AA;
+      --color-orange-300: #FDBA74;
+      --color-orange-400: #FB923C;
+      --color-orange-500: #E9481E;
+      --color-orange-600: #D43D16;
+      --color-orange-700: #BF310E;
+      --color-orange-800: #9A2A0B;
+      --color-orange-900: #7C2D12;
+
+      /* Grey (Warm Stone) */
+      --color-grey-50: #FAFAF9;
+      --color-grey-100: #F5F5F4;
+      --color-grey-200: #E7E5E4;
+      --color-grey-300: #D6D3D1;
+      --color-grey-400: #A8A29E;
+      --color-grey-500: #78716C;
+      --color-grey-600: #57534E;
+      --color-grey-700: #44403C;
+      --color-grey-800: #292524;
+      --color-grey-900: #1C1917;
+
+      /* Status */
+      --color-success: #16A34A;
+      --color-warning: #F59E0B;
+      --color-error: #DC2626;
+      --color-info: #E9481E;
+
+      /* Semantic */
+      --color-background: var(--color-grey-50);
+      --color-surface: #FFFFFF;
+      --color-text-primary: var(--color-grey-900);
+      --color-text-secondary: var(--color-grey-600);
+      --color-border: var(--color-grey-300);
+      --color-divider: var(--color-grey-200);
+
+      /* Shape */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      /* Shadow */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+
+      /* Typography */
+      --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    /* ===== RESET ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--color-text-primary);
+      background: var(--color-background);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ===== HEADER (Updated for Explore) ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--color-divider);
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      height: 72px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      /* Allow expansion */
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      text-decoration: none;
+      cursor: pointer;
+      display: none;
+      /* Hidden on Mobile Explore */
+    }
+
+    /* Search Bar - Full width on mobile */
+    .header-search {
+      display: flex;
+      align-items: center;
+      background: var(--color-grey-100);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .header-search:focus-within {
+      background: white;
+      box-shadow: 0 0 0 2px var(--color-orange-200);
+    }
+
+    .header-search-icon {
+      color: var(--color-grey-500);
+      margin-right: 8px;
+    }
+
+    .header-search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    /* Desktop styles */
+    @media (min-width: 768px) {
+      .header-logo {
+        display: flex;
+      }
+
+      .header-left {
+        flex: 0 0 auto;
+      }
+
+      .header-search {
+        width: 320px;
+      }
+    }
+
+    .header-actions {
+      display: none;
+      align-items: center;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .header-actions {
+        display: flex;
+      }
+    }
+
+    .desktop-create-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      background: var(--color-orange-500);
+      color: white;
+    }
+
+    /* Avatar */
+    .avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      background: var(--color-orange-100);
+      color: var(--color-orange-700);
+      font-weight: 600;
+      overflow: hidden;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      font-size: 15px;
+    }
+
+    /* ===== FILTER CHIPS ===== */
+    .filters-section {
+      position: sticky;
+      top: 72px;
+      /* Below header */
+      background: var(--color-background);
+      z-index: 90;
+      padding: 16px 0;
+      margin: 0 -16px;
+      /* Bleed to edge on mobile */
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      /* Space for scrollbar if any */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    .filter-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip.active {
+      background: var(--color-orange-500);
+      color: white;
+      border-color: var(--color-orange-500);
+    }
+
+    .chip:hover:not(.active) {
+      background: var(--color-grey-100);
+    }
+
+    /* ===== GRID ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      padding-bottom: 100px;
+      margin-top: 16px;
+    }
+
+    /* Card Styles (Reused) */
+    .group-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .group-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .group-card-thumb {
+      width: 100%;
+      height: 160px;
+      /* Taller for explore */
+      background: linear-gradient(135deg, var(--color-orange-100), var(--color-orange-200));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      position: relative;
+    }
+
+    .group-card-body {
+      padding: 16px;
+    }
+
+    .group-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .group-card-meta {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Badge */
+    .badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--color-orange-700);
+      backdrop-filter: blur(4px);
+    }
+
+    /* ===== FLOATING BOTTOM NAV (MOBILE ONLY) ===== */
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-xl);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    @media (min-width: 768px) {
+      .mobile-bottom-nav {
+        display: none;
+      }
+    }
+
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--color-grey-400);
+      cursor: pointer;
+    }
+
+    .mobile-nav-item.active {
+      color: var(--color-orange-500);
+    }
+
+    .mobile-nav-icon {
+      font-size: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="#" class="header-logo"><span>🍊</span><span>WOORIDO</span></a>
+        <!-- Search Bar (Full width on Mobile) -->
+        <div class="header-search">
+          <span class="header-search-icon">🔍</span>
+          <input type="text" class="header-search-input" placeholder="관심사, 챌린지명 검색">
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="desktop-create-btn"><span>➕ 챌린지 생성</span></button>
+        <div class="avatar">김</div>
+      </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="filter-chips">
+        <div class="chip active">전체</div>
+        <div class="chip">💪 건강/운동</div>
+        <div class="chip">💰 자산/재테크</div>
+        <div class="chip">📚 자기계발</div>
+        <div class="chip">🎨 취미/여가</div>
+        <div class="chip">🥗 식습관</div>
+        <div class="chip">🏠 생활습관</div>
+      </div>
+    </section>
+
+    <!-- Results Info -->
+    <div
+      style="font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <span>추천 챌린지</span>
+      <span style="font-size: 14px; color: var(--color-text-secondary); font-weight: 400;">최신순 ▾</span>
+    </div>
+
+    <!-- Grid -->
+    <main class="card-grid">
+      <!-- Card 1 -->
+      <div class="group-card">
+        <div class="group-card-thumb" style="background: linear-gradient(135deg, #FFEDD5, #FDBA74);">
+          ☀️<div class="badge">모집중</div>
+        </div>
+        <div class="group-card-body">
+          <div class="group-card-title">미라클 모닝 6시</div>
+          <div class="group-card-meta">
+            <span>👤 14/20명</span>
+            <span>📅 30일</span>
+          </div>
+          <div style="font-size: 14px; color: var(--color-text-secondary);">
+            아침 시간을 활용해 하루를 알차게 시작해보세요.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="group-card">
+        <div class="group-card-thumb" style="background: linear-gradient(135deg, #DCFCE7, #86EFAC);">
+          🥗<div class="badge">D-2</div>
+        </div>
+        <div class="group-card-body">
+          <div class="group-card-title">하루 한 끼 샐러드</div>
+          <div class="group-card-meta">
+            <span>👤 8/10명</span>
+            <span>📅 14일</span>
+          </div>
+          <div style="font-size: 14px; color: var(--color-text-secondary);">
+            건강한 식습관 만들기 프로젝트
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="group-card">
+        <div class="group-card-thumb" style="background: linear-gradient(135deg, #E0E7FF, #93C5FD);">
+          📘<div class="badge">모집중</div>
+        </div>
+        <div class="group-card-body">
+          <div class="group-card-title">매일 독서 30분</div>
+          <div class="group-card-meta">
+            <span>👤 5/10명</span>
+            <span>📅 21일</span>
+          </div>
+          <div style="font-size: 14px; color: var(--color-text-secondary);">
+            꾸준한 독서 습관을 함께 만들어요.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="group-card">
+        <div class="group-card-thumb" style="background: linear-gradient(135deg, #F3E8FF, #C084FC);">
+          🏃<div class="badge">마감임박</div>
+        </div>
+        <div class="group-card-body">
+          <div class="group-card-title">매일 5km 러닝</div>
+          <div class="group-card-meta">
+            <span>👤 29/30명</span>
+            <span>📅 30일</span>
+          </div>
+          <div style="font-size: 14px; color: var(--color-text-secondary);">
+            함께 달리는 기쁨, 러닝 크루
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="group-card">
+        <div class="group-card-thumb" style="background: linear-gradient(135deg, #FFEDD5, #FB923C);">
+          💰<div class="badge">모집중</div>
+        </div>
+        <div class="group-card-body">
+          <div class="group-card-title">가계부 인증하기</div>
+          <div class="group-card-meta">
+            <span>👤 12/50명</span>
+            <span>📅 30일</span>
+          </div>
+          <div style="font-size: 14px; color: var(--color-text-secondary);">
+            매일 지출 기록하고 절약 습관 기르기
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Floating Bottom Nav -->
+  <nav class="mobile-bottom-nav">
+    <div class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span></div>
+    <div class="mobile-nav-item active"><span class="mobile-nav-icon">🔍</span></div> <!-- Active -->
+    <div class="mobile-nav-item"><span class="mobile-nav-icon"
+        style="color: var(--color-orange-500); font-size: 32px;">➕</span></div>
+    <div class="mobile-nav-item"><span class="mobile-nav-icon">📋</span></div>
+    <div class="mobile-nav-item"><span class="mobile-nav-icon">👤</span></div>
+  </nav>
+
+</body>
+
+</html>
