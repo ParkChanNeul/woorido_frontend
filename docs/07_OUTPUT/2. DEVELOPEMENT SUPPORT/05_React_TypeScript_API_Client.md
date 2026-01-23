@@ -132,7 +132,7 @@ export interface PaginationParams {
 }
 
 export type UserStatus = 'ACTIVE' | 'SUSPENDED' | 'BANNED' | 'WITHDRAWN';
-export type ChallengeStatus = 'RECRUITING' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
+export type ChallengeStatus = 'RECRUITING' | 'IN_PROGRESS' | 'COMPLETED';
 export type ChallengeCategory = 'HOBBY' | 'STUDY' | 'EXERCISE' | 'SAVINGS' | 'TRAVEL' | 'FOOD' | 'CULTURE' | 'OTHER';
 export type MemberRole = 'LEADER' | 'FOLLOWER';
 export type DepositStatus = 'NONE' | 'LOCKED' | 'USED' | 'UNLOCKED';

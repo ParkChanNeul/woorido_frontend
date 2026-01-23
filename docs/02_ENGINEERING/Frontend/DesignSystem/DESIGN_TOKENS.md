@@ -414,6 +414,6 @@ export type Motion = typeof motion;
 
 ## 관련 문서
 
-- [IA_SPECIFICATION.md](../../01_PLANNING/UX_UI/IA_SPECIFICATION.md) - 화면 설계
+- [IA_SPECIFICATION.md](../../../01_PLANNING/UX_UI/Architecture/IA_SPECIFICATION.md) - 화면 설계
 - [FRONTEND_TECH_STACK.md](../FRONTEND_TECH_STACK.md) - 프론트엔드 기술 스택
 

@@ -559,7 +559,7 @@ CREATE TABLE challenges (
   balance NUMBER(19) DEFAULT 0 NOT NULL,
   monthly_fee NUMBER(19) NOT NULL,
   deposit_amount NUMBER(19) NOT NULL,
-  status VARCHAR2(20) DEFAULT 'RECRUITING' CHECK (status IN ('RECRUITING', 'ACTIVE', 'PAUSED', 'CLOSED')),
+  status VARCHAR2(20) DEFAULT 'RECRUITING' CHECK (status IN ('RECRUITING', 'IN_PROGRESS', 'COMPLETED')),
   activated_at TIMESTAMP,
   is_verified CHAR(1) DEFAULT 'N' CHECK (is_verified IN ('Y', 'N')),
   verified_at TIMESTAMP,

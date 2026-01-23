@@ -1,8 +1,8 @@
 # WOORIDO API 명세서 - Overview
 
 > **Version:** v1.0.0
-> **Last Updated:** 2026-01-14
-> **총 API:** 91개 (Spring 82 + Django 9)
+> **Last Updated:** 2026-01-23
+> **총 API:** 92개 (Spring 83 + Django 9)
 > **기준 문서:** API_SCHEMA_1.0.0.md, POLICY_DEFINITION.md, DB_Schema_1.0.0.md
 
 ---

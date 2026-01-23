@@ -117,7 +117,7 @@ interface StatusBadgeProps {
   size?: 'sm' | 'md';
 }
 
-type ChallengeStatus = 'RECRUITING' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
+type ChallengeStatus = 'RECRUITING' | 'IN_PROGRESS' | 'COMPLETED';
 type MeetingStatus = 'SCHEDULED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
 type VoteStatus = 'IN_PROGRESS' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
 ```
@@ -127,14 +127,11 @@ type VoteStatus = 'IN_PROGRESS' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
 | Status | Label | Color | Variant |
 |--------|-------|-------|---------|
 | `RECRUITING` | 모집 중 | orange | fill |
-| `ACTIVE` | 진행 중 | green | fill |
-| `PAUSED` | 일시 정지 | grey | weak |
-| `CLOSED` | 종료 | grey | weak |
+| `IN_PROGRESS` | 진행 중 | green | fill |
+| `COMPLETED` | 종료 | grey | weak |
 | `SCHEDULED` | 예정 | blue | weak |
 | `CONFIRMED` | 확정 | green | fill |
-| `COMPLETED` | 완료 | grey | weak |
 | `CANCELLED` | 취소 | red | weak |
-| `IN_PROGRESS` | 투표 중 | orange | fill |
 | `APPROVED` | 승인 | green | fill |
 | `REJECTED` | 반려 | red | fill |
 | `EXPIRED` | 만료 | grey | weak |
@@ -142,10 +139,10 @@ type VoteStatus = 'IN_PROGRESS' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
 ### Usage
 
 ```tsx
-<StatusBadge status="RECRUITING" />   // 🟠 모집 중
-<StatusBadge status="ACTIVE" />       // 🟢 진행 중
-<StatusBadge status="IN_PROGRESS" />  // 🟠 투표 중
-<StatusBadge status="APPROVED" />     // 🟢 승인
+<StatusBadge status="RECRUITING" />    // 🟠 모집 중
+<StatusBadge status="IN_PROGRESS" />   // 🟢 진행 중
+<StatusBadge status="COMPLETED" />     // ⚪ 종료
+<StatusBadge status="APPROVED" />      // 🟢 승인
 ```
 
 ---
@@ -604,7 +601,7 @@ interface ChallengeStatusBadgeProps {
   size?: 'sm' | 'md';
 }
 
-type ChallengeStatus = 'RECRUITING' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
+type ChallengeStatus = 'RECRUITING' | 'IN_PROGRESS' | 'COMPLETED';
 ```
 
 ### Status Mapping
@@ -612,9 +609,8 @@ type ChallengeStatus = 'RECRUITING' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
 | Status | Label | Color | Icon |
 |--------|-------|-------|------|
 | `RECRUITING` | 모집 중 | `colors.orange500` | 📢 |
-| `ACTIVE` | 진행 중 | `colors.success` | ✅ |
-| `PAUSED` | 일시 정지 | `colors.warning` | ⏸️ |
-| `CLOSED` | 종료 | `colors.grey400` | 🔒 |
+| `IN_PROGRESS` | 진행 중 | `colors.success` | ✅ |
+| `COMPLETED` | 종료 | `colors.grey400` | 🔒 |
 
 ### Usage
 
