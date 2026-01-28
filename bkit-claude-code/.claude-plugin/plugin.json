@@ -1,0 +1,22 @@
+{
+  "name": "bkit",
+  "version": "1.4.2",
+  "description": "Vibecoding Kit - PDCA methodology + Claude Code mastery for AI-native development",
+  "author": {
+    "name": "POPUP STUDIO PTE. LTD.",
+    "email": "contact@popupstudio.ai",
+    "url": "https://popupstudio.ai"
+  },
+  "repository": "https://github.com/popup-studio-ai/bkit-claude-code",
+  "license": "Apache-2.0",
+  "keywords": [
+    "vibecoding",
+    "pdca",
+    "development-pipeline",
+    "ai-native",
+    "fullstack",
+    "multilingual",
+    "baas",
+    "enterprise"
+  ]
+}
