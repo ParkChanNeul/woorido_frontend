@@ -1,0 +1,71 @@
+{
+  "files": {
+    "component": "PascalCase (e.g., UserCard.tsx)",
+    "hook": "camelCase + use (e.g., useAuth.ts)",
+    "store": "camelCase + Store (e.g., appStore.ts)",
+    "api": "camelCase + api (e.g., challengeApi.ts)",
+    "type_def": "PascalCase (e.g., Challenge.types.ts)",
+    "css_module": "Same as component (e.g., Button.module.css)"
+  },
+  "database": {
+    "tables": "snake_case",
+    "columns": "snake_case"
+  },
+  "variables": {
+    "boolean": "is/has/can/should prefix",
+    "handlers": "handle* (definition), on* (props)"
+  },
+  "domain_terms": {
+    "strict_mode": true,
+    "rules": [
+      {
+        "forbidden": [
+          "계모임",
+          "계돈"
+        ],
+        "standard": "Challenge (챌린지)",
+        "reason": "Legal Compliance"
+      },
+      {
+        "forbidden": [
+          "계주",
+          "계원"
+        ],
+        "standard": "Leader (리더), Follower (팔로워)",
+        "reason": "Role Clarity"
+      },
+      {
+        "forbidden": [
+          "회비 납부",
+          "투자"
+        ],
+        "standard": "Support (서포트)",
+        "reason": "Fandom Concept"
+      },
+      {
+        "forbidden": [
+          "지출 요청",
+          "승인"
+        ],
+        "standard": "Open (오픈)",
+        "reason": "Voting Process"
+      },
+      {
+        "forbidden": [
+          "리워드",
+          "수익금"
+        ],
+        "standard": "Benefit (베네핏)",
+        "reason": "Leader Incentive"
+      },
+      {
+        "forbidden": [
+          "포인트",
+          "현금"
+        ],
+        "standard": "Credit (크레딧)",
+        "reason": "Platform Currency"
+      }
+    ]
+  }
+}

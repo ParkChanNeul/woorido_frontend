@@ -1,0 +1,25 @@
+{
+  "project": {
+    "name": "WooriDo",
+    "version": "1.0.0",
+    "strictMode": true
+  },
+  "profiles": {
+    "default": ["_core", "_constants"],
+    "frontend": ["_core/persona.md", "_core/thinking.md", "_domain/ux_emotion.md", "_constants/design_tokens.md"],
+    "backend": ["_core/persona.md", "_core/thinking.md", "_security/fintech_rules.md", "_domain/terminology.md", "_constants/error_codes.md"],
+    "architect": ["_core", "_domain", "_security", "_constants"]
+  },
+  "triggers": {
+    "keywords": {
+      "money|pay|settle|정산|결제": ["_security/fintech_rules.md", "_domain/brix_logic.md"],
+      "search|recommend|검색|추천": ["_strategies/search.md"],
+      "chart|graph|통계": ["_constants/design_tokens.md"]
+    }
+  },
+  "performance": {
+    "minifyMarkdown": true,
+    "removeComments": true,
+    "cacheDuration": 3600
+  }
+}

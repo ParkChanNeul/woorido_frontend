@@ -1,0 +1,26 @@
+{
+  "frontend": {
+    "framework": "React 18.2.0",
+    "build_tool": "Vite",
+    "language": "TypeScript",
+    "styling": "CSS Modules + TailwindCSS (Utility only)",
+    "state_server": "@tanstack/react-query",
+    "state_client": "zustand",
+    "forms": "react-hook-form + zod",
+    "ui_primitives": "radix-ui",
+    "overlay": "vaul (BottomSheet), sonner (Toast)"
+  },
+  "backend_main": {
+    "framework": "Spring Boot 3.2.3",
+    "language": "Java 21 (LTS)",
+    "persistence": "MyBatis 3.0.3",
+    "db": "Oracle 21c XE",
+    "utils": "Spring Retry 2.0.5"
+  },
+  "backend_sub": {
+    "framework": "Django 5.0.1",
+    "language": "Python 3.11.7",
+    "search": "Elasticsearch 8.11.3",
+    "data_analysis": "Pandas 2.1.4"
+  }
+}
