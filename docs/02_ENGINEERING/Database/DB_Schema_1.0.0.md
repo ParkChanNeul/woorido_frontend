@@ -423,7 +423,7 @@ created_at              TIMESTAMP        NN                       생성일
 
 [컬럼값 정의]
   - choice            : AGREE(참석), DISAGREE(불참)
-  - actual_attendance : PENDING(대기중), ATTENDED(참석함), NO_SHOW(노쇼)
+  - actual_attendance : PENDING(대기중), ATTENDED(참석함)
 
 [Indexes]
   - UK_meeting_vote_records_vote_user (meeting_vote_id, user_id)
