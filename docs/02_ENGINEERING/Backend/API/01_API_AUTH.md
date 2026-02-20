@@ -390,6 +390,7 @@ curl -X POST https://api.woorido.com/api/v1/auth/password/reset \
 | HTTP | 코드 | 메시지 |
 |------|------|--------|
 | 404 | USER_001 | 사용자를 찾을 수 없습니다 |
+| 500 | AUTH_010 | 재설정 메일 전송에 실패했습니다 |
 
 ---
 

@@ -59,6 +59,7 @@ graph TB
 | | Spring Retry | 2.0.5 | 외부 서비스 재시도 |
 | | RestTemplate/WebClient | - | Django 호출용 |
 | **Sub Backend** | Django | 5.0.1 | 알고리즘/연산/검색 |
+| | Python | 3.11.3 (권장) | Django 런타임 |
 | | Django REST Framework | 3.14.0 | REST API 구성 |
 | | Pandas | 2.1.4 | 데이터 분석 |
 | | Elasticsearch-py | 8.11.1 | ES 클라이언트 |

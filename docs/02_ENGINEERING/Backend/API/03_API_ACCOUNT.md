@@ -42,14 +42,14 @@ curl -X GET https://api.woorido.com/api/v1/accounts/me \
 {
   "success": true,
   "data": {
-    "accountId": 1,
-    "userId": 1,
+    "accountId": "acc_1",
+    "userId": "user_1",
     "balance": 500000,
     "availableBalance": 450000,
     "lockedBalance": 50000,
     "limits": {
-      "dailyWithdrawLimit": 1000000,
-      "monthlyWithdrawLimit": 5000000,
+      "dailyWithdrawLimit": 5000000,
+      "monthlyWithdrawLimit": 20000000,
       "usedToday": 100000,
       "usedThisMonth": 500000
     },
@@ -69,7 +69,7 @@ curl -X GET https://api.woorido.com/api/v1/accounts/me \
 #### Response Elements
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| data.accountId | Long | 어카운트 ID |
+| data.accountId | String | 어카운트 ID |
 | data.balance | Long | 총 잔액 |
 | data.availableBalance | Long | 출금 가능 잔액 |
 | data.lockedBalance | Long | 보증금 잠금 금액 |
@@ -116,7 +116,7 @@ curl -X GET "https://api.woorido.com/api/v1/accounts/me/transactions?type=CHARGE
   "data": {
     "content": [
       {
-        "transactionId": 1,
+        "transactionId": "tx_1",
         "type": "CHARGE",
         "amount": 100000,
         "balance": 500000,
@@ -125,13 +125,13 @@ curl -X GET "https://api.woorido.com/api/v1/accounts/me/transactions?type=CHARGE
         "createdAt": "2026-01-14T10:00:00Z"
       },
       {
-        "transactionId": 2,
+        "transactionId": "tx_2",
         "type": "SUPPORT",
         "amount": -100000,
         "balance": 400000,
         "description": "책벌레들 서포트 납입",
         "relatedChallenge": {
-          "challengeId": 1,
+          "challengeId": "challenge_1",
           "name": "책벌레들"
         },
         "createdAt": "2026-01-14T11:00:00Z"
